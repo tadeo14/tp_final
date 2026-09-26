@@ -63,14 +63,8 @@ de comidas + difusión pública**, algo que ninguna de las referencias cubre jun
 | Turnos de comida | Asigna equipos a turnos según su grilla de partidos | Ve su turno asignado |
 | Vista pública | — | Filtra por equipo, cancha u horario; link para compartir |
 
-**Fuera de alcance (salvo que lo pidamos)**
 
-- Pagos, app nativa, notificaciones push.
-- Roles complejos (solo organizador y vista pública).
-- Estadísticas individuales de jugadores, otros deportes.
-- Carga de resultados (solo si sobra tiempo).
-
-## 🛠️ Stack tecnológico (propuesta a confirmar)
+## 🛠️ Stack tecnológico
 
 | Área | Tecnología |
 |---|---|
@@ -79,13 +73,6 @@ de comidas + difusión pública**, algo que ninguna de las referencias cubre jun
 | Base de datos | PostgreSQL |
 | Despliegue | Backend + BD en Render/Railway; frontend en Vercel/Netlify |
 | Control de versiones | Git y GitHub |
-
-*Justificación:* es el mismo stack que ya usamos en el otro TFI (Campus Virtual), lo
-que reduce curva de aprendizaje en un proyecto de tiempo acotado — criterio que
-marca el material de cátedra de U1-A2 (el mejor stack es el que ya se domina, salvo
-que el proyecto exija otra cosa). Acá no hay nada que empuje a cambiar: es una app
-CRUD + un algoritmo de asignación en memoria, sin requisitos de concurrencia ni
-tiempo real que justifiquen otra tecnología.
 
 ## 🗓️ Plan de trabajo
 
