@@ -1,83 +1,113 @@
-# 🎓 Campus Virtual de Materias y Recursos de Estudio
+<!-- /docs/propuesta.md (o README.md en la raíz del repo) -->
+
+# 🏀 Fixture y Difusión de Torneos de Básquet
 
 Proyecto Final — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
 
-[![Java](https://img.shields.io/badge/Backend-Java%20%2F%20Spring%20Boot-brightgreen)](#-stack-tecnológico)
-[![React](https://img.shields.io/badge/Frontend-React-61DAFB)](#-stack-tecnológico)
-[![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-336791)](#-stack-tecnológico)
-[![Status](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)]()
-
----
-
 ## 📌 Descripción
 
-Los estudiantes suelen necesitar acceder de forma centralizada a los contenidos y materiales de estudio de sus materias (documentos, guías y videos), pero muchas veces esta información se encuentra dispersa en distintos canales (correo, grupos de mensajería, carpetas compartidas), lo que dificulta su organización y consulta.
+Los organizadores de torneos de básquet en clubes locales arman a mano el fixture,
+la asignación de canchas y horarios, y la coordinación de comidas, y difunden esa
+información por canales informales (WhatsApp, grupos, planillas impresas). Esto
+genera superposiciones de horarios, canchas ociosas y equipos que no saben dónde
+ni cuándo juegan.
 
-Este proyecto propone el desarrollo de un **campus virtual web** que permita a un estudiante ingresar con su cuenta y acceder al contenido y material de estudio de las materias en las que está inscripto, incluyendo archivos (PDFs) y videos. El sistema cuenta además con un rol de **administrador/docente** encargado de cargar y mantener actualizado dicho contenido.
+Este proyecto propone una **app web** que centraliza en un solo lugar la
+configuración del torneo, la generación automática del fixture (sin superposiciones
+y con descanso mínimo entre partidos), la logística de comidas y una vista pública
+de difusión, para torneos de cualquier categoría y tamaño (infantiles, juveniles o
+mayores).
 
 ## 🎯 Objetivos
 
 **Objetivo general**
 
-Desarrollar una plataforma web tipo campus virtual que centralice el acceso al material de estudio de las materias de una institución educativa.
+Desarrollar una plataforma web que automatice la organización de torneos de
+básquet (fixture, canchas, horarios, comidas) y publique la información en una
+vista pública de solo lectura.
 
 **Objetivos específicos**
 
-- Permitir el registro e inicio de sesión diferenciando roles de estudiante y administrador/docente.
-- Permitir a los estudiantes visualizar el listado de materias y su material asociado.
-- Permitir a los estudiantes visualizar y descargar archivos, y acceder a videos del material de estudio.
-- Permitir al rol administrador/docente crear y mantener materias y cargar material nuevo.
+- Permitir configurar un torneo (días, sedes, canchas, franjas horarias, categorías y ramas) sin valores fijos en el código.
+- Permitir inscribir equipos por club, categoría y rama.
+- Generar automáticamente un fixture sin superposiciones de cancha/horario y con descanso mínimo entre partidos de un mismo equipo.
+- Asignar turnos de comida a los equipos según su propia grilla de partidos.
+- Publicar una vista pública del fixture, filtrable por equipo, cancha u horario, con link para compartir.
+
+## 🔎 Antecedentes
+
+*Información pública relevada de cada sitio, no verificada — se toma solo la idea, no diseño ni marca.*
+
+| App | Qué resuelve | Qué tomamos de referencia |
+|---|---|---|
+| Playinga | Fixture multisede, calendario drag & drop, detección de conflictos | Idea de detección automática de superposiciones |
+| Xporty | Horarios automáticos según disponibilidad de cancha, fases y clasificaciones | Enfoque de asignación automática de horarios |
+| Enjore | Página pública del torneo y difusión | Vista pública de solo lectura |
+| Exposure Basketball | Flujo específico de básquet: agenda, tablas y resultados | Validación de agenda por equipo |
+| Reservaplay | Formulario de inscripción por categoría | Formulario de inscripción de equipos |
+
+## 💡 Diferencial
+
+Las apps de referencia ya resuelven fixture, canchas y horarios por separado. Nuestro
+diferencial es una herramienta **simple, en español y gratuita**, pensada para clubes
+locales (no ligas profesionales), que integra en un solo lugar **fixture + logística
+de comidas + difusión pública**, algo que ninguna de las referencias cubre junta.
 
 ## 🧩 Alcance del proyecto (MVP)
 
-| Módulo | Estudiante | Admin / Docente |
+| Módulo | Organizador | Público (sin login) |
 |---|---|---|
-| **Login** | Accede y ve sus materias | Accede al panel de gestión |
-| **Materias** | Ve listado y detalle | Crea y edita materias |
-| **Material de estudio** | Ve y descarga archivos / videos | Sube archivos y enlaces de video |
+| Configuración del torneo | Define sedes, canchas, franjas, categorías y ramas | — |
+| Inscripción de equipos | Carga club, categoría, rama y contacto del responsable | — |
+| Fixture automático | Genera partidos sin superposición ni conflicto de cancha | Ve el fixture completo |
+| Turnos de comida | Asigna equipos a turnos según su grilla de partidos | Ve su turno asignado |
+| Vista pública | — | Filtra por equipo, cancha u horario; link para compartir |
 
-**Fuera de alcance (mejoras futuras)**
+**Fuera de alcance (salvo que lo pidamos)**
 
-- Foros de discusión y mensajería entre usuarios.
-- Exámenes y evaluaciones en línea.
-- Sistema de calificaciones.
-- Videoconferencias en vivo.
+- Pagos, app nativa, notificaciones push.
+- Roles complejos (solo organizador y vista pública).
+- Estadísticas individuales de jugadores, otros deportes.
+- Carga de resultados (solo si sobra tiempo).
 
-## 🛠️ Stack tecnológico
+## 🛠️ Stack tecnológico (propuesta a confirmar)
 
 | Área | Tecnología |
 |---|---|
-| **Backend** | Java + Spring Boot (Spring Data JPA para persistencia, Spring Security para autenticación y roles) |
-| **Frontend** | React |
-| **Base de datos** | PostgreSQL |
-| **Almacenamiento** | Archivos (PDFs) en servicio de almacenamiento externo; videos enlazados desde plataforma externa (ej. YouTube en modo no listado) |
-| **Despliegue** | Backend y base de datos en Render/Railway; frontend en Vercel/Netlify |
-| **Control de versiones** | Git y GitHub |
+| Backend | Java + Spring Boot (Spring Data JPA) |
+| Frontend | React |
+| Base de datos | PostgreSQL |
+| Despliegue | Backend + BD en Render/Railway; frontend en Vercel/Netlify |
+| Control de versiones | Git y GitHub |
+
+*Justificación:* es el mismo stack que ya usamos en el otro TFI (Campus Virtual), lo
+que reduce curva de aprendizaje en un proyecto de tiempo acotado — criterio que
+marca el material de cátedra de U1-A2 (el mejor stack es el que ya se domina, salvo
+que el proyecto exija otra cosa). Acá no hay nada que empuje a cambiar: es una app
+CRUD + un algoritmo de asignación en memoria, sin requisitos de concurrencia ni
+tiempo real que justifiquen otra tecnología.
 
 ## 🗓️ Plan de trabajo
 
 | Etapa | Actividad | Duración estimada |
 |---|---|---|
-| 1 | Propuesta, elección de tutor, repositorio y diseño de base de datos | Semanas 1-2 |
-| 2 | Desarrollo del backend: modelos, autenticación y API REST | Semanas 3-5 |
-| 3 | Desarrollo del frontend: pantallas de login, materias y material | Semanas 5-7 |
-| 4 | Integración frontend-backend y carga de contenido de prueba | Semana 8 |
-| 5 | Pruebas, corrección de errores y despliegue | Semana 9 |
-| 6 | Documentación final y preparación de la presentación | Semana 10 |
+| 1 | Propuesta, tutor, repo, antecedentes | Semanas 1-2 |
+| 2 | Diseño: modelo de datos y listado de módulos | Semanas 2-3 |
+| 3 | Backend: modelos, API REST, algoritmo de fixture | Semanas 3-6 |
+| 4 | Frontend: configuración, inscripción, vista pública | Semanas 5-7 |
+| 5 | Integración, datos de prueba, turnos de comida | Semana 8 |
+| 6 | Despliegue, documentación, video | Semanas 9-10 |
 
-> El plan es una estimación inicial y podrá ajustarse junto con el tutor una vez aprobada la propuesta.
+> Estimación inicial, se ajusta con el tutor tras aprobar la propuesta.
 
 ## 👥 Equipo
 
-- Daniel Alfredo Oscar Alderete
-- Tadeo Oscar Acosta
+- Daniel
+- Tadeo
 
 **Tutor propuesto:** Oscar Londero
 
 ## 📂 Repositorio
 
-Todo el desarrollo del proyecto (backend, frontend y documentación) se aloja en este repositorio.
-
----
-
-<p align="center">Proyecto Final — Tecnicatura Universitaria en Programación a Distancia, UTN</p>
+Todo el desarrollo (backend, frontend, base de datos y documentación) vive en este
+repositorio, organizado en `/frontend`, `/backend`, `/database` y `/docs`.
