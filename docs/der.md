@@ -64,7 +64,7 @@ erDiagram
         bigint torneo_id FK
         varchar nombre "U9, U11, U13"
         int minutos_netos
-        int cantidad_cuartos
+        int cantidad_cuartos "informativo, no entra en el cálculo"
         int pausas_min
         int margen_detenciones_min
         int max_partidos_dia
@@ -117,12 +117,12 @@ erDiagram
 | `torneo` | Un torneo con sus parámetros generales | `turnos_cada_min`, `recambio_min`, `descanso_minimo_min`, `estado` |
 | `franja_horaria` | Ventana de juego de un día (R4) | Los días del torneo salen de acá; no se guardan fechas de inicio/fin |
 | `sede`, `cancha` | Dónde se juega (R5) | `habilitada` permite sacar una cancha sin borrarla |
-| `categoria` | U9, U11, U13… con los parámetros de duración y tope diario (R6) | Los parámetros que en `restricciones.md` son "nivel categoría" |
+| `categoria` | U9, U11, U13… con los parámetros de duración y tope diario (R6) | Los parámetros que en `restricciones.md` son "nivel categoría". `cantidad_cuartos` es informativo (ver abajo) |
 | `rama` | Masculino, Femenino… | Configurable, no es un enum fijo |
 | `zona` | Grupo de una categoría y rama | La cantidad de zonas es la cantidad de filas, no un campo aparte |
 | `club` | Club que inscribe equipos | Por torneo. Puede coincidir con una sede, pero son conceptos distintos |
 | `equipo` | Equipo inscripto | Solo responsable y teléfono como datos personales. `zona_id` + `orden_en_zona` = resultado del sorteo |
-| `partido` | Enfrentamiento del fixture | Lo crea el generador (zona, equipos, ronda) y lo completa el programador (cancha, inicio) |
+| `partido` | Enfrentamiento del fixture | Lo crea el generador (zona, equipos, ronda) y lo completa el programador (cancha, inicio). La base no impide asignar una cancha de otro torneo: eso lo controla R5 |
 
 ## Cálculos que no se guardan (D8)
 
@@ -134,6 +134,11 @@ erDiagram
 | Categoría y rama del partido | Las de su zona |
 | Equipo "libre" en una ronda | El equipo de la zona que no figura en ningún partido de esa ronda |
 | Días del torneo | Fechas distintas de `franja_horaria` |
+
+**`cantidad_cuartos` no participa del cálculo.** `minutos_netos` ya es el total de juego (ej. U9: 4 × 7 = 28) y
+`pausas_min` ya suma todas las pausas (1' + 2' + 1' = 4). Se guarda porque `restricciones.md` lo lista como
+parámetro de la categoría y sirve para mostrar el formato del partido (4 cuartos de 7 minutos).
+No es un dato derivado: no se puede obtener de las otras columnas.
 
 ## Qué garantiza la base y qué garantiza el backend
 
@@ -150,6 +155,12 @@ La base asegura que los datos sean **coherentes entre sí**; las reglas del fixt
 | Un partido está sin programar o tiene cancha **e** inicio | Base | `CHECK ((cancha_id IS NULL) = (inicio IS NULL))` |
 | Solo existen los estados BORRADOR y PUBLICADO | Base | `CHECK` |
 | Parámetros positivos / no negativos | Base | `CHECK` |
+| La cancha de un partido pertenece al torneo del partido y está habilitada | Backend | R5 en `ValidadorRestricciones` |
 | R1–R8 (superposiciones, descanso, franjas, tope, turnos, completitud) | Backend | `ValidadorRestricciones` |
+| No se sortea, genera ni programa un torneo PUBLICADO (D20) | Backend | Servicio, antes de llamar al generador o al programador |
 
 R1 y R2 no se pueden expresar en la base sin guardar el fin del partido, que es un dato derivado (D8).
+
+R5 tampoco se controla en la base: `partido.cancha_id` apunta a cualquier `cancha`, sin verificar que su sede sea
+del torneo de la zona del partido. Hacerlo con FKs obligaría a copiar `torneo_id` en `cancha` y `partido`;
+como R5 ya tiene que estar en el validador (también verifica `habilitada`), se deja ahí para no duplicar la regla.

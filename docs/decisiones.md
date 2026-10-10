@@ -23,3 +23,4 @@ Cada decisión con su motivo, para poder defenderla en la oral.
 | D17 | 2026-10-10 | FKs compuestas para que equipo, zona y partido no mezclen torneos, categorías ni ramas | Errores de carga que la base puede impedir sin lógica en el backend |
 | D18 | 2026-10-10 | Los "libres" y la cantidad de zonas no se guardan: se deducen | Evita datos derivados (normalización) |
 | D19 | 2026-10-10 | Categorías, ramas y clubes son tablas por torneo, no enums | Regla 1 de `CLAUDE.md`: nada de valores fijos en el código |
+| D20 | 2026-10-10 | Con el torneo PUBLICADO no se sortea, genera ni programa de nuevo; el servicio lo rechaza | El fixture publicado es el que ven los equipos: regenerarlo cambiaría horarios sin aviso. Solo en BORRADOR se puede generar y regenerar (`restricciones.md`, sección 6) |

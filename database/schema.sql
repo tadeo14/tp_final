@@ -7,8 +7,13 @@
 -- Criterio general: la base garantiza la INTEGRIDAD de los datos (claves,
 -- unicidad, valores válidos). Las restricciones del fixture R1–R8 las verifica
 -- únicamente el ValidadorRestricciones del backend (CLAUDE.md, regla 3).
+--
+-- ATENCIÓN: este script BORRA todas las tablas (y sus datos) antes de crearlas.
+-- Es para desarrollo y pruebas locales. No ejecutarlo contra una base con
+-- datos reales: se pierde todo.
 -- =============================================================================
 
+-- Borra las tablas existentes y TODOS sus datos (ver advertencia arriba).
 DROP TABLE IF EXISTS partido, equipo, zona, club, franja_horaria, rama,
                      categoria, cancha, sede, torneo, organizador CASCADE;
 
@@ -82,7 +87,7 @@ CREATE TABLE categoria (
     torneo_id              BIGINT      NOT NULL REFERENCES torneo (id) ON DELETE CASCADE,
     nombre                 VARCHAR(50) NOT NULL,
     minutos_netos          INTEGER     NOT NULL,
-    cantidad_cuartos       INTEGER     NOT NULL,
+    cantidad_cuartos       INTEGER     NOT NULL,  -- informativo: no entra en el cálculo
     pausas_min             INTEGER     NOT NULL,  -- total entre cuartos + entretiempo
     margen_detenciones_min INTEGER     NOT NULL,
     max_partidos_dia       INTEGER     NOT NULL,
@@ -182,7 +187,7 @@ CREATE TABLE partido (
     equipo_local_id     BIGINT    NOT NULL,
     equipo_visitante_id BIGINT    NOT NULL,
     ronda               INTEGER   NOT NULL,
-    cancha_id           BIGINT    REFERENCES cancha (id),
+    cancha_id           BIGINT    REFERENCES cancha (id),  -- que sea del torneo y esté habilitada lo controla R5
     inicio              TIMESTAMP,
     -- Ambos equipos tienen que pertenecer a la zona del partido.
     CONSTRAINT fk_partido_local     FOREIGN KEY (equipo_local_id, zona_id)
