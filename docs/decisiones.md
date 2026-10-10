@@ -17,3 +17,9 @@ Cada decisión con su motivo, para poder defenderla en la oral.
 | D11 | 2026-10-10 | Estados BORRADOR y PUBLICADO; la vista pública solo muestra lo publicado | Pedido del tutor |
 | D12 | 2026-10-10 | Comidas, fase final y edición manual quedan fuera de P0 | Priorizar que el generador funcione (pedido del tutor) |
 | D13 | 2026-10-10 | Algoritmo en clases de dominio sin Spring ni JPA | Se testea con JUnit sin base de datos |
+| D14 | 2026-10-10 | La base garantiza integridad (FKs, únicos, CHECK); R1–R8 los valida solo el `ValidadorRestricciones` | Una sola fuente de verdad para las reglas del fixture. Además R1–R2 necesitarían guardar el fin del partido, que es derivado (D8) |
+| D15 | 2026-10-10 | El partido guarda solo `cancha_id` e `inicio`; el fin es `inicio + bloque` | Consecuencia de D7 y D8: si cambia un parámetro de la categoría, el fin se recalcula solo |
+| D16 | 2026-10-10 | El sorteo se guarda en `equipo.zona_id` + `equipo.orden_en_zona` | Hace reproducible el fixture (D5). El orden fija quién se cruza con quién en cada ronda |
+| D17 | 2026-10-10 | FKs compuestas para que equipo, zona y partido no mezclen torneos, categorías ni ramas | Errores de carga que la base puede impedir sin lógica en el backend |
+| D18 | 2026-10-10 | Los "libres" y la cantidad de zonas no se guardan: se deducen | Evita datos derivados (normalización) |
+| D19 | 2026-10-10 | Categorías, ramas y clubes son tablas por torneo, no enums | Regla 1 de `CLAUDE.md`: nada de valores fijos en el código |
