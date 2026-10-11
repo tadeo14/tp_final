@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +30,7 @@ class ValidadorRestriccionesTest {
     private final ConfiguracionTorneo<String> config = new ConfiguracionTorneo<>(15, 10, 90,
             List.of(new Franja(SABADO, LocalTime.of(9, 0), LocalTime.of(20, 0)),
                     new Franja(DOMINGO, LocalTime.of(9, 0), LocalTime.of(16, 0))),
-            Set.of("Cancha 1", "Cancha 2"));
+            List.of("Cancha 1", "Cancha 2"));
 
     private final ValidadorRestricciones validador = new ValidadorRestricciones();
 

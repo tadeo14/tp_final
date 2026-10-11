@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ class ConfiguracionTorneoTest {
 
     // Caso real: turnos cada 15, recambio 10, descanso 90.
     private final ConfiguracionTorneo<String> config =
-            new ConfiguracionTorneo<>(15, 10, 90, List.of(), Set.of());
+            new ConfiguracionTorneo<>(15, 10, 90, List.of(), List.of());
 
     private static final ParametrosCategoria U9 = new ParametrosCategoria(28, 4, 10, 3);
     private static final ParametrosCategoria U11 = new ParametrosCategoria(32, 4, 10, 3);

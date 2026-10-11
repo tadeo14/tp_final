@@ -1,8 +1,8 @@
 package ar.edu.utn.fixture.dominio;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Parámetros del torneo que usan el validador y el programador, y el cálculo del bloque de cada partido.
@@ -14,6 +14,7 @@ import java.util.Set;
  * fin                 = inicio + bloque
  * </pre>
  *
+ * @param canchasHabilitadas canchas donde se puede programar, en el orden en que las recorre el Programador (D37)
  * @param <C> cómo se identifica una cancha (en la aplicación, su id; en los tests, un nombre)
  */
 public record ConfiguracionTorneo<C>(
@@ -21,14 +22,17 @@ public record ConfiguracionTorneo<C>(
         int recambioMin,
         int descansoMinimoMin,
         List<Franja> franjas,
-        Set<C> canchasHabilitadas) {
+        List<C> canchasHabilitadas) {
 
     public ConfiguracionTorneo {
         if (turnosCadaMin <= 0) {
             throw new IllegalArgumentException("\"Turnos cada\" tiene que ser mayor que 0");
         }
         franjas = List.copyOf(franjas);
-        canchasHabilitadas = Set.copyOf(canchasHabilitadas);
+        canchasHabilitadas = List.copyOf(canchasHabilitadas);
+        if (new HashSet<>(canchasHabilitadas).size() != canchasHabilitadas.size()) {
+            throw new IllegalArgumentException("Hay canchas repetidas");
+        }
     }
 
     public int duracionProgramadaMin(ParametrosCategoria categoria) {
