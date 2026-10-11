@@ -13,7 +13,7 @@
 | 4 | A | Generador de enfrentamientos y zonas | Sorteo + todos contra todos, tests T1–T2 | HECHO |
 | 5 | A | Validador de restricciones R1–R8 | `ValidadorRestricciones`, tests T4–T9 | HECHO |
 | 6 | A | Programador de cancha y horario | Programador greedy, tests T3, T10, T11 | HECHO |
-| 7 | A | API REST del recorrido | Endpoints + BORRADOR/PUBLICADO + datos del caso real | EN CURSO |
+| 7 | A | API REST del recorrido | Endpoints + BORRADOR/PUBLICADO + datos del caso real | HECHO |
 | 8 | A | Entrega de avance a Oscar | README actualizado + mensaje al tutor | PENDIENTE |
 | 9 | B | Despliegue del backend | API online (Render o Railway) + base online; verificar que Flyway crea las tablas | PENDIENTE |
 | 10 | B | Frontend del organizador | Pantallas: configurar, inscribir, generar, publicar | PENDIENTE |

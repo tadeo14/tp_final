@@ -16,4 +16,5 @@ en local y en el despliegue (decisión D21).
 
 - `pruebas_schema.sql`: pruebas de integridad del esquema. Cargan datos inválidos y muestran si la base
   los rechaza. Se corren en una base de desarrollo con la migración V1 aplicada.
-- Datos de ejemplo (seed) del caso real — paso 7 de la hoja de ruta.
+- `caso_real.sql`: datos de ejemplo del caso real (torneo en BORRADOR con 55 equipos y 13 zonas), para probar el
+  recorrido de la API. Ver `backend/README.md`.
