@@ -30,9 +30,9 @@ Si algo de este archivo contradice esos documentos, mandan los documentos. Si en
 ## Estructura del repo
 
 ```
-/backend    Proyecto Spring Boot
+/backend    Proyecto Spring Boot (las migraciones Flyway van en backend/src/main/resources/db/migration)
 /frontend   App React (todavía no)
-/database   DDL (schema.sql), datos de ejemplo (seed), migraciones
+/database   Datos de ejemplo (seed) y pruebas de la base. El esquema NO va acá: ver D21
 /docs       Documentación, decisiones, DER, informes
 ```
 
@@ -86,7 +86,7 @@ carga de resultados, jugadores, pagos, notificaciones, roles complejos.
 
 ## Próxima entrega (lo que pidió el tutor)
 
-1. DER en `docs/der.md` (Mermaid) y `database/schema.sql`
+1. DER en `docs/der.md` (Mermaid) y esquema SQL (hoy migración Flyway V1, ver D21)
 2. Proyecto Spring Boot en `/backend` que compile y arranque
 3. Generador de enfrentamientos y zonas, con tests
 4. Validador R1–R8 y programador, con tests T1–T11

@@ -1,0 +1,166 @@
+# =============================================================================
+# Recorrido de la API (paso 7 de la hoja de ruta).
+#
+# Formato de la extensión "REST Client" de VS Code: cada pedido se ejecuta con "Send Request".
+# En IntelliJ también abre, pero las variables {{nombre.response...}} se escriben distinto.
+#
+# Parte 1: recorrido con el caso real, cargado antes con database/caso_real.sql.
+# Parte 2: recorrido completo desde cero, con un torneo chico de prueba.
+# =============================================================================
+
+@base = http://localhost:8080
+
+### El backend responde y llega a la base
+GET {{base}}/api/salud
+
+
+# =============================================================================
+# PARTE 1 — Caso real
+# 1. Arrancar el backend una vez (Flyway crea las tablas).
+# 2. Ejecutar database/caso_real.sql en la base: al final muestra el id del torneo.
+# 3. Poner ese id acá abajo y ejecutar los pedidos en orden.
+# =============================================================================
+
+@torneo = 1
+
+### Ver el torneo (estado BORRADOR)
+GET {{base}}/api/torneos/{{torneo}}
+
+### Sortear las 13 zonas
+POST {{base}}/api/torneos/{{torneo}}/sorteo
+
+### Generar los enfrentamientos (91 partidos)
+POST {{base}}/api/torneos/{{torneo}}/fixture/generar
+
+### Programar cancha y horario
+POST {{base}}/api/torneos/{{torneo}}/fixture/programar
+
+### Validar R1–R8
+GET {{base}}/api/torneos/{{torneo}}/validacion
+
+### Publicar
+POST {{base}}/api/torneos/{{torneo}}/publicar
+
+### Vista pública: equipos del torneo (para elegir un id)
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Vista pública: fixture de un equipo (cambiar el id por uno de la lista anterior)
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos/1/fixture
+
+### D20: con el torneo publicado no se puede volver a sortear (409)
+POST {{base}}/api/torneos/{{torneo}}/sorteo
+
+
+# =============================================================================
+# PARTE 2 — Desde cero, con un torneo chico de prueba (U9 masculino, 9 equipos en 2 zonas)
+# Ejecutar en orden: cada pedido usa los ids que devolvieron los anteriores.
+# =============================================================================
+
+### Organizador
+# @name organizador
+POST {{base}}/api/organizadores
+Content-Type: application/json
+
+{"nombre": "Organizador de prueba", "email": "prueba@fixture.test", "contrasenia": "clave-de-prueba"}
+
+### Torneo
+# @name nuevoTorneo
+POST {{base}}/api/torneos
+Content-Type: application/json
+
+{"organizadorId": {{organizador.response.body.id}}, "nombre": "Torneo de prueba",
+ "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 90}
+
+### Franja del sábado
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/franjas
+Content-Type: application/json
+
+{"fecha": "2030-01-05", "desde": "09:00", "hasta": "20:00"}
+
+### Franja del domingo
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/franjas
+Content-Type: application/json
+
+{"fecha": "2030-01-06", "desde": "09:00", "hasta": "16:00"}
+
+### Sede
+# @name sede
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/sedes
+Content-Type: application/json
+
+{"nombre": "Sede de prueba"}
+
+### Cancha 1
+POST {{base}}/api/sedes/{{sede.response.body.id}}/canchas
+Content-Type: application/json
+
+{"nombre": "Cancha 1"}
+
+### Cancha 2
+POST {{base}}/api/sedes/{{sede.response.body.id}}/canchas
+Content-Type: application/json
+
+{"nombre": "Cancha 2"}
+
+### Categoría U9
+# @name categoria
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/categorias
+Content-Type: application/json
+
+{"nombre": "U9", "minutosNetos": 28, "cantidadCuartos": 4, "pausasMin": 4,
+ "margenDetencionesMin": 10, "maxPartidosDia": 3}
+
+### Rama
+# @name rama
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/ramas
+Content-Type: application/json
+
+{"nombre": "Masculino"}
+
+### Club
+# @name club
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/clubes
+Content-Type: application/json
+
+{"nombre": "Club de prueba"}
+
+### Zona A
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/zonas
+Content-Type: application/json
+
+{"categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}}, "nombre": "Zona A"}
+
+### Zona B
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/zonas
+Content-Type: application/json
+
+{"categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}}, "nombre": "Zona B"}
+
+### Equipo (repetir cambiando el nombre: "Equipo 2" … "Equipo 9")
+# @name equipo
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/equipos
+Content-Type: application/json
+
+{"clubId": {{club.response.body.id}}, "categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}},
+ "nombre": "Equipo 1", "responsableNombre": "Responsable de prueba", "responsableTelefono": "0000-0000"}
+
+### Sortear
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/sorteo
+
+### Generar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture/generar
+
+### Programar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture/programar
+
+### Ver el fixture completo (organizador)
+GET {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture
+
+### Validar
+GET {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/validacion
+
+### Publicar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/publicar
+
+### Fixture público del Equipo 1
+GET {{base}}/api/publico/torneos/{{nuevoTorneo.response.body.id}}/equipos/{{equipo.response.body.id}}/fixture
