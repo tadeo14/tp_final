@@ -65,7 +65,26 @@ Si con la configuración actual no se pueden programar todos los partidos respet
 - **no** deja partidos sin programar,
 - **no** crea superposiciones,
 
-y responde: **"No existe una programación válida con la configuración actual"**, indicando qué categoría o zona no pudo completarse, para que el organizador ajuste (más zonas, más franjas, menos margen, etc.).
+y responde con uno de estos dos mensajes, **indicando en ambos qué zona o equipo no se pudo ubicar**, para que el organizador ajuste (más zonas, más franjas, menos margen, etc.):
+
+| Situación | Mensaje | Qué se indica |
+|---|---|---|
+| Un **chequeo por conteo**, hecho antes de programar, **demuestra** que es imposible | **"No existe una programación válida con la configuración actual"** | La zona y el equipo que necesitan más partidos de los que pueden jugar, o las horas de cancha que faltan |
+| El conteo no demuestra que sea imposible, pero el programador **no encuentra** lugar para algún partido | **"No se encontró una programación válida con la configuración actual"** | El partido que no se pudo ubicar, con su zona y su ronda |
+
+Por qué dos mensajes (D34): el programador es greedy, no vuelve atrás. Si no encuentra lugar, eso no prueba que no exista
+ninguna solución. Solo se afirma "no existe" cuando el conteo lo demuestra.
+
+### Chequeo por conteo (D35)
+
+Se hace antes de programar. Si alguna de estas condiciones falla, seguro que no hay solución:
+
+1. **Partidos por equipo.** Cada equipo tiene que poder jugar todos sus partidos. En una franja de L minutos, con bloque B
+   y descanso D, un equipo juega como máximo `⌊(L + D) / (B + D)⌋` partidos. Por día, como máximo eso sumado en las franjas
+   del día, y nunca más que el tope diario. El total de los días tiene que alcanzar.
+   Ejemplo T10: un equipo de una zona de 10 necesita 9 partidos y puede jugar como máximo 3 × 2 días = 6.
+2. **Horas de cancha.** La suma de los bloques de todos los partidos no puede superar los minutos de cancha disponibles
+   (minutos de cada franja × canchas habilitadas).
 
 ## 6. Estados y edición
 
