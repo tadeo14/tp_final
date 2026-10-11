@@ -22,6 +22,28 @@ En Windows: `mvnw.cmd` en lugar de `./mvnw`.
 Al arrancar, Flyway crea o actualiza las tablas con las migraciones de
 `src/main/resources/db/migration` (D21). Para comprobar que responde: `GET /api/salud`.
 
+## Tests con PostgreSQL local
+
+Así se corren en el entorno de Claude Code (D24). Sirve igual en cualquier PC con PostgreSQL instalado.
+
+1. Crear un usuario y una base vacía para los tests (una sola vez):
+
+   ```bash
+   sudo -u postgres psql -c "CREATE ROLE fixture LOGIN PASSWORD 'fixture'"
+   sudo -u postgres psql -c "CREATE DATABASE fixture_test OWNER fixture"
+   ```
+
+   Es una base local de desarrollo, por eso la contraseña simple. Nunca usar estas credenciales en una base online.
+
+2. Correr los tests apuntando a esa base:
+
+   ```bash
+   DB_URL=jdbc:postgresql://localhost:5432/fixture_test DB_USER=fixture DB_PASSWORD=fixture ./mvnw test
+   ```
+
+Flyway crea las tablas la primera vez. Los tests no dejan datos: cada uno hace rollback al terminar.
+Si cambia una migración ya aplicada, borrar y crear de nuevo la base (`DROP DATABASE fixture_test`).
+
 ## Paquetes (`ar.edu.utn.fixture`)
 
 | Paquete | Qué contiene |
