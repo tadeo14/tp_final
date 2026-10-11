@@ -36,7 +36,8 @@ El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`]
 | 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
 | 7. API REST | Recorrido completo, BORRADOR/PUBLICADO, datos del caso real | [`backend/README.md`](backend/README.md) |
 
-**67 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md).
+**67 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
 
