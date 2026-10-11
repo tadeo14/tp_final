@@ -1,5 +1,5 @@
 -- =============================================================================
--- Fixture de Torneos de Básquet (TFI UTN) — Esquema de base de datos (P0)
+-- Fixture de Torneos de Básquet (TFI UTN) — Esquema inicial (P0)
 -- Motor: PostgreSQL
 --
 -- DER y justificación de cada tabla: docs/der.md
@@ -8,14 +8,9 @@
 -- unicidad, valores válidos). Las restricciones del fixture R1–R8 las verifica
 -- únicamente el ValidadorRestricciones del backend (CLAUDE.md, regla 3).
 --
--- ATENCIÓN: este script BORRA todas las tablas (y sus datos) antes de crearlas.
--- Es para desarrollo y pruebas locales. No ejecutarlo contra una base con
--- datos reales: se pierde todo.
+-- Migración V1 de Flyway. NO MODIFICAR una vez aplicada: los cambios al
+-- esquema van en una migración nueva (V2__..., V3__...).
 -- =============================================================================
-
--- Borra las tablas existentes y TODOS sus datos (ver advertencia arriba).
-DROP TABLE IF EXISTS partido, equipo, zona, club, franja_horaria, rama,
-                     categoria, cancha, sede, torneo, organizador CASCADE;
 
 -- -----------------------------------------------------------------------------
 -- Organizador: dueño del torneo. Es el único que ve y edita un torneo en

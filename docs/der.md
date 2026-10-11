@@ -1,6 +1,6 @@
 # DER — Modelo de datos (P0)
 
-> DDL completo en [`database/schema.sql`](../database/schema.sql).
+> DDL completo en la migración Flyway [`V1__esquema_inicial.sql`](../backend/src/main/resources/db/migration/V1__esquema_inicial.sql).
 > Cubre solo el alcance P0 de `CLAUDE.md`: no hay comidas, resultados, fase final ni jugadores.
 
 ## Diagrama
