@@ -14,4 +14,6 @@ en local y en el despliegue (decisión D21).
 
 ## Qué va acá
 
+- `pruebas_schema.sql`: pruebas de integridad del esquema. Cargan datos inválidos y muestran si la base
+  los rechaza. Se corren en una base de desarrollo con la migración V1 aplicada.
 - Datos de ejemplo (seed) del caso real — paso 7 de la hoja de ruta.

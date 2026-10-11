@@ -1,6 +1,7 @@
 -- =============================================================================
 -- Pruebas del esquema (DATOS DE PRUEBA, no son del torneo real)
--- Ejecutar DESPUÉS de schema.sql, en una base de desarrollo.
+-- Ejecutar en una base de desarrollo que ya tenga aplicada la migración V1
+-- (backend/src/main/resources/db/migration), por ejemplo después de arrancar el backend una vez.
 -- Cada prueba intenta cargar algo inválido y muestra si la base lo rechazó.
 -- Al final muestra una tabla con el resultado de cada prueba (sirve en cualquier editor web).
 -- =============================================================================
