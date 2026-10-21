@@ -24,6 +24,7 @@ import ar.edu.utn.fixture.dominio.ValidadorRestricciones;
 import ar.edu.utn.fixture.dto.Respuestas.Generacion;
 import ar.edu.utn.fixture.dto.Respuestas.PartidoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Publicado;
+import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Validacion;
 import ar.edu.utn.fixture.dto.Respuestas.ViolacionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaSorteada;
@@ -228,8 +229,13 @@ public class FixtureServicio {
      * con la foto de todos los partidos: es lo que ve el público desde ahora (D46).
      * Con el torneo publicado no se puede modificar nada hasta reabrirlo (D20, D47).
      */
-    public Publicado publicar(Long organizadorId, Long torneoId) {
+    public Publicado publicar(Long organizadorId, Long torneoId, String motivo) {
         Torneo torneo = torneos.editable(torneoId, organizadorId);
+        int numero = publicaciones.findFirstByTorneoIdOrderByNumeroDesc(torneoId).map(p -> p.getNumero() + 1).orElse(1);
+        String motivoLimpio = motivo == null || motivo.isBlank() ? null : motivo.trim();
+        if (numero > 1 && motivoLimpio == null) {
+            throw new DatosInvalidosException("La versión " + numero + " corrige un fixture ya publicado: hay que indicar el motivo");
+        }
         List<Partido> fixture = partidosGenerados(torneoId);
         ResultadoValidacion<EquipoRef, CanchaRef> resultado = validarFixture(torneo, fixture);
         if (!resultado.esValido()) {
@@ -237,8 +243,7 @@ public class FixtureServicio {
                     resultado.violaciones().stream().map(v -> v.restriccion().name() + ": " + v.detalle()).toList());
         }
 
-        int numero = publicaciones.findFirstByTorneoIdOrderByNumeroDesc(torneoId).map(p -> p.getNumero() + 1).orElse(1);
-        Publicacion publicacion = publicaciones.save(new Publicacion(torneo, numero, Instant.now(), null));
+        Publicacion publicacion = publicaciones.save(new Publicacion(torneo, numero, Instant.now(), motivoLimpio));
         ConfiguracionTorneo<CanchaRef> tiempos = AdaptadorDominio.parametrosDeTiempo(torneo);
         partidosPublicados.saveAll(fixture.stream()
                 .map(p -> new PartidoPublicado(publicacion, p,
@@ -247,6 +252,19 @@ public class FixtureServicio {
 
         torneo.setEstado(EstadoTorneo.PUBLICADO);
         return new Publicado(torneo.getId(), torneo.getEstado(), Publicaciones.version(publicacion));
+    }
+
+    /**
+     * Vuelve a BORRADOR un torneo publicado para corregirlo (D47). Lo publicado no se pierde: la vista pública
+     * sigue mostrando la última versión hasta que se publique la siguiente, que exige motivo.
+     */
+    public TorneoDetalle reabrir(Long organizadorId, Long torneoId) {
+        Torneo torneo = torneos.delOrganizador(torneoId, organizadorId);
+        if (torneo.getEstado() != EstadoTorneo.PUBLICADO) {
+            throw new ConflictoException("El torneo " + torneoId + " no está publicado: no hay nada que reabrir");
+        }
+        torneo.setEstado(EstadoTorneo.BORRADOR);
+        return Torneos.detalle(torneo);
     }
 
     private ResultadoValidacion<EquipoRef, CanchaRef> validarFixture(Torneo torneo, List<Partido> fixture) {

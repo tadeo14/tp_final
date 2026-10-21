@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -79,6 +80,106 @@ class PublicacionApiTest extends ApiTestBase {
         long torneo = torneoChicoProgramado();
 
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos")).andExpect(status().isNotFound());
+    }
+
+    // ---------------------------------------------------------------- reabrir y republicar
+
+    @Test
+    void reabrir_elPublicoSigueViendoLaV1HastaQueSeRepublicaYDespuesVeLaV2() throws Exception {
+        long torneo = torneoChicoProgramado();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(post(base + "/publicar")).andExpect(status().isOk());
+        Equipo equipo = equipos.findByTorneoIdOrderByIdAsc(torneo).get(0);
+        String nombreOriginal = equipo.getNombre();
+
+        mvc.perform(post(base + "/reabrir"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("BORRADOR"));
+
+        // Corrección del organizador: se corrige el nombre de un equipo y se vuelve a programar.
+        equipo.setNombre("Equipo corregido");
+        em.flush();
+        mvc.perform(post(base + "/fixture/programar")).andExpect(status().isOk());
+
+        // Mientras está en BORRADOR, el público sigue viendo la versión 1, sin la corrección.
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equipo.getId() + "/fixture"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version.numero").value(1))
+                .andExpect(jsonPath("$.equipo").value(nombreOriginal));
+
+        mvc.perform(post(base + "/publicar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"motivo\": \"Corrección del nombre de un equipo\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("PUBLICADO"))
+                .andExpect(jsonPath("$.version.numero").value(2))
+                .andExpect(jsonPath("$.version.motivo").value("Corrección del nombre de un equipo"));
+
+        // Después de republicar, el público ve la versión 2 con su motivo.
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equipo.getId() + "/fixture"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version.numero").value(2))
+                .andExpect(jsonPath("$.version.motivo").value("Corrección del nombre de un equipo"))
+                .andExpect(jsonPath("$.equipo").value("Equipo corregido"));
+    }
+
+    @Test
+    void reabrir_permiteVolverACambiarLaConfiguracion() throws Exception {
+        long torneo = torneoChicoProgramado();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(post(base + "/publicar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/ramas").contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"Femenino\"}"))
+                .andExpect(status().isConflict());
+
+        mvc.perform(post(base + "/reabrir")).andExpect(status().isOk());
+
+        mvc.perform(post(base + "/ramas").contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"Femenino\"}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void republicarSinMotivo_respondeBadRequest() throws Exception {
+        long torneo = torneoChicoProgramado();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(post(base + "/publicar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/reabrir")).andExpect(status().isOk());
+
+        mvc.perform(post(base + "/publicar"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("La versión 2 corrige un fixture ya publicado: hay que indicar el motivo"));
+        mvc.perform(post(base + "/publicar").contentType(MediaType.APPLICATION_JSON).content("{\"motivo\": \"   \"}"))
+                .andExpect(status().isBadRequest());
+        // No se publicó nada: sigue en BORRADOR y el público ve la versión 1.
+        mvc.perform(get(base)).andExpect(jsonPath("$.estado").value("BORRADOR"));
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
+                .andExpect(jsonPath("$.version.numero").value(1));
+    }
+
+    @Test
+    void reabrirUnTorneoAjeno_respondeNotFound() throws Exception {
+        long torneo = torneoChicoProgramado();
+        mvc.perform(post("/api/torneos/" + torneo + "/publicar")).andExpect(status().isOk());
+
+        mvcCon(nuevoOrganizador().token()).perform(post("/api/torneos/" + torneo + "/reabrir"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("No existe el torneo " + torneo));
+        mvc.perform(get("/api/torneos/" + torneo)).andExpect(jsonPath("$.estado").value("PUBLICADO"));
+    }
+
+    @Test
+    void reabrirUnTorneoEnBorrador_respondeConflict() throws Exception {
+        long torneo = torneoChicoProgramado();
+
+        mvc.perform(post("/api/torneos/" + torneo + "/reabrir"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("El torneo " + torneo + " no está publicado: no hay nada que reabrir"));
+    }
+
+    @Test
+    void reabrirSinToken_respondeUnauthorized() throws Exception {
+        long torneo = torneoChicoProgramado();
+        mvc.perform(post("/api/torneos/" + torneo + "/publicar")).andExpect(status().isOk());
+
+        mvcSinToken.perform(post("/api/torneos/" + torneo + "/reabrir")).andExpect(status().isUnauthorized());
     }
 
     private String vistaPublica(long torneo, long equipo) throws Exception {

@@ -35,6 +35,10 @@ public final class Pedidos {
             @NotNull @PositiveOrZero Integer descansoMinimoMin) {
     }
 
+    /** Cuerpo opcional de publicar. El motivo es obligatorio desde la versión 2 (corrección, D47). */
+    public record PedidoPublicacion(@Size(max = 500, message = "debe tener como máximo 500 caracteres") String motivo) {
+    }
+
     public record NuevaFranja(@NotNull LocalDate fecha, @NotNull LocalTime desde, @NotNull LocalTime hasta) {
     }
 
