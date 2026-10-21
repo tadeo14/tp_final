@@ -54,8 +54,23 @@ public final class Respuestas {
             LocalDateTime inicio, LocalDateTime fin) {
     }
 
-    /** Fixture de un equipo. Las rondas libres se deducen: no se guardan (D18). */
-    public record FixtureDeEquipo(Long equipoId, String equipo, String club, String zona,
+    /** Qué versión publicada se está mostrando (D46). {@code motivo} es null en la versión 1. */
+    public record VersionPublicada(int numero, Instant publicadaEn, String motivo) {
+    }
+
+    /** Respuesta de publicar: la versión que se acaba de crear. */
+    public record Publicado(Long torneoId, EstadoTorneo estado, VersionPublicada version) {
+    }
+
+    /** Equipo según la última versión publicada (sin datos de contacto). */
+    public record EquipoPublicado(Long id, String nombre, String categoria, String rama, String zona) {
+    }
+
+    public record EquiposPublicados(VersionPublicada version, List<EquipoPublicado> equipos) {
+    }
+
+    /** Fixture de un equipo según la última versión publicada. Las rondas libres se deducen: no se guardan (D18). */
+    public record FixtureDeEquipo(VersionPublicada version, Long equipoId, String equipo, String zona,
             List<PartidoDeEquipo> partidos, List<Integer> rondasLibres) {
     }
 

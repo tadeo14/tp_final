@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.utn.fixture.dto.Respuestas.Generacion;
 import ar.edu.utn.fixture.dto.Respuestas.PartidoDetalle;
-import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.Publicado;
 import ar.edu.utn.fixture.dto.Respuestas.Validacion;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaSorteada;
 import ar.edu.utn.fixture.servicio.FixtureServicio;
@@ -56,7 +56,7 @@ public class FixtureControlador {
     }
 
     @PostMapping("/publicar")
-    public TorneoDetalle publicar(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+    public Publicado publicar(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
         return servicio.publicar(organizadorId, torneoId);
     }
 }

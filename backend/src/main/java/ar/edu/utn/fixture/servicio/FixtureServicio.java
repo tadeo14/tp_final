@@ -1,5 +1,6 @@
 package ar.edu.utn.fixture.servicio;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ import ar.edu.utn.fixture.dominio.SorteoZonas;
 import ar.edu.utn.fixture.dominio.ValidadorRestricciones;
 import ar.edu.utn.fixture.dto.Respuestas.Generacion;
 import ar.edu.utn.fixture.dto.Respuestas.PartidoDetalle;
-import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.Publicado;
 import ar.edu.utn.fixture.dto.Respuestas.Validacion;
 import ar.edu.utn.fixture.dto.Respuestas.ViolacionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaSorteada;
@@ -30,12 +31,16 @@ import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Equipo;
 import ar.edu.utn.fixture.entidad.EstadoTorneo;
 import ar.edu.utn.fixture.entidad.Partido;
+import ar.edu.utn.fixture.entidad.PartidoPublicado;
+import ar.edu.utn.fixture.entidad.Publicacion;
 import ar.edu.utn.fixture.entidad.Torneo;
 import ar.edu.utn.fixture.entidad.Zona;
 import ar.edu.utn.fixture.repositorio.CanchaRepositorio;
 import ar.edu.utn.fixture.repositorio.EquipoRepositorio;
 import ar.edu.utn.fixture.repositorio.FranjaHorariaRepositorio;
+import ar.edu.utn.fixture.repositorio.PartidoPublicadoRepositorio;
 import ar.edu.utn.fixture.repositorio.PartidoRepositorio;
+import ar.edu.utn.fixture.repositorio.PublicacionRepositorio;
 import ar.edu.utn.fixture.repositorio.ZonaRepositorio;
 import ar.edu.utn.fixture.servicio.AdaptadorDominio.CanchaRef;
 import ar.edu.utn.fixture.servicio.AdaptadorDominio.EquipoRef;
@@ -55,18 +60,23 @@ public class FixtureServicio {
     private final PartidoRepositorio partidos;
     private final FranjaHorariaRepositorio franjas;
     private final CanchaRepositorio canchas;
+    private final PublicacionRepositorio publicaciones;
+    private final PartidoPublicadoRepositorio partidosPublicados;
     private final ValidadorRestricciones validador = new ValidadorRestricciones();
     private final GeneradorEnfrentamientos generador = new GeneradorEnfrentamientos();
     private final Programador programador = new Programador(validador);
 
     public FixtureServicio(Torneos torneos, ZonaRepositorio zonas, EquipoRepositorio equipos, PartidoRepositorio partidos,
-            FranjaHorariaRepositorio franjas, CanchaRepositorio canchas) {
+            FranjaHorariaRepositorio franjas, CanchaRepositorio canchas, PublicacionRepositorio publicaciones,
+            PartidoPublicadoRepositorio partidosPublicados) {
         this.torneos = torneos;
         this.zonas = zonas;
         this.equipos = equipos;
         this.partidos = partidos;
         this.franjas = franjas;
         this.canchas = canchas;
+        this.publicaciones = publicaciones;
+        this.partidosPublicados = partidosPublicados;
     }
 
     // ------------------------------------------------------------------ sortear zonas
@@ -213,16 +223,30 @@ public class FixtureServicio {
         return new Validacion(resultado.esValido(), violaciones);
     }
 
-    /** Publica solo si el fixture cumple R1–R8. Después ya no se puede modificar (D20). */
-    public TorneoDetalle publicar(Long organizadorId, Long torneoId) {
+    /**
+     * Publica solo si el fixture cumple R1–R8. En la misma transacción crea la versión siguiente (1, 2, 3…)
+     * con la foto de todos los partidos: es lo que ve el público desde ahora (D46).
+     * Con el torneo publicado no se puede modificar nada hasta reabrirlo (D20, D47).
+     */
+    public Publicado publicar(Long organizadorId, Long torneoId) {
         Torneo torneo = torneos.editable(torneoId, organizadorId);
-        ResultadoValidacion<EquipoRef, CanchaRef> resultado = validarFixture(torneo, partidosGenerados(torneoId));
+        List<Partido> fixture = partidosGenerados(torneoId);
+        ResultadoValidacion<EquipoRef, CanchaRef> resultado = validarFixture(torneo, fixture);
         if (!resultado.esValido()) {
             throw new FixtureInvalidoException("El fixture no cumple las restricciones obligatorias y no se puede publicar",
                     resultado.violaciones().stream().map(v -> v.restriccion().name() + ": " + v.detalle()).toList());
         }
+
+        int numero = publicaciones.findFirstByTorneoIdOrderByNumeroDesc(torneoId).map(p -> p.getNumero() + 1).orElse(1);
+        Publicacion publicacion = publicaciones.save(new Publicacion(torneo, numero, Instant.now(), null));
+        ConfiguracionTorneo<CanchaRef> tiempos = AdaptadorDominio.parametrosDeTiempo(torneo);
+        partidosPublicados.saveAll(fixture.stream()
+                .map(p -> new PartidoPublicado(publicacion, p,
+                        tiempos.fin(p.getInicio(), AdaptadorDominio.parametros(p.getZona().getCategoria()))))
+                .toList());
+
         torneo.setEstado(EstadoTorneo.PUBLICADO);
-        return Torneos.detalle(torneo);
+        return new Publicado(torneo.getId(), torneo.getEstado(), Publicaciones.version(publicacion));
     }
 
     private ResultadoValidacion<EquipoRef, CanchaRef> validarFixture(Torneo torneo, List<Partido> fixture) {

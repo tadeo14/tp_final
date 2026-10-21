@@ -39,15 +39,6 @@ public class Torneos {
         return t;
     }
 
-    /** El torneo, solo si está publicado. Si no, para el público no existe. */
-    public Torneo publicado(Long torneoId) {
-        Torneo t = repositorio.findById(torneoId).orElse(null);
-        if (t == null || t.getEstado() != EstadoTorneo.PUBLICADO) {
-            throw new NoEncontradoException("No hay un torneo publicado con id " + torneoId);
-        }
-        return t;
-    }
-
     public List<Torneo> delOrganizador(Long organizadorId) {
         return repositorio.findByOrganizadorIdOrderByIdAsc(organizadorId);
     }

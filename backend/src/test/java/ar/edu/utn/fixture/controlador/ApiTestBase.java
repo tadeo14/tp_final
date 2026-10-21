@@ -107,6 +107,30 @@ abstract class ApiTestBase {
         return crear(url, cuerpo).get("id").asLong();
     }
 
+    /**
+     * Torneo de prueba listo para publicar: U9 masculino, 4 equipos en una zona, 2 canchas, sábado de 9 a 20.
+     * Ya sorteado, generado (6 partidos) y programado. Devuelve el id del torneo.
+     */
+    protected long torneoChicoProgramado() throws Exception {
+        long torneo = crearTorneoDePrueba();
+        String base = "/api/torneos/" + torneo;
+        crear(base + "/franjas", "{\"fecha\":\"2030-01-05\",\"desde\":\"09:00\",\"hasta\":\"20:00\"}");
+        long sede = crearId(base + "/sedes", "{\"nombre\":\"Sede de prueba\"}");
+        crear("/api/sedes/" + sede + "/canchas", "{\"nombre\":\"Cancha 1\"}");
+        crear("/api/sedes/" + sede + "/canchas", "{\"nombre\":\"Cancha 2\"}");
+        long categoria = crearId(base + "/categorias", ConfiguracionApiTest.CATEGORIA_U9);
+        long rama = crearId(base + "/ramas", "{\"nombre\":\"Masculino\"}");
+        long club = crearId(base + "/clubes", "{\"nombre\":\"Club de prueba\"}");
+        crear(base + "/zonas", "{\"categoriaId\":%d,\"ramaId\":%d,\"nombre\":\"Zona A\"}".formatted(categoria, rama));
+        for (int i = 1; i <= 4; i++) {
+            crear(base + "/equipos", ConfiguracionApiTest.equipo(club, categoria, rama, "Equipo " + i));
+        }
+        mvc.perform(post(base + "/sorteo")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/generar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/programar")).andExpect(status().isOk());
+        return torneo;
+    }
+
     protected long crearTorneoDePrueba() throws Exception {
         return crearId("/api/torneos", """
                 {"nombre": "Torneo de prueba", "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 90}

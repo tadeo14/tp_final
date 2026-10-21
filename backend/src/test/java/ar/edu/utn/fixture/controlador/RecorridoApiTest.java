@@ -90,14 +90,16 @@ class RecorridoApiTest extends ApiTestBase {
 
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(9)));
+                .andExpect(jsonPath("$.version.numero").value(1))
+                .andExpect(jsonPath("$.equipos", hasSize(9)));
 
         String zonaDelPrimero = json.readTree(mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
-                .andReturn().getResponse().getContentAsString()).get(0).get("zona").asText();
+                .andReturn().getResponse().getContentAsString()).get("equipos").get(0).get("zona").asText();
         boolean zonaDeCinco = zonaDelPrimero.endsWith("Zona A");
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equiposU9.get(0) + "/fixture"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.equipo").value("Equipo 1"))
+                .andExpect(jsonPath("$.version.numero").value(1))
                 .andExpect(jsonPath("$.partidos", hasSize(zonaDeCinco ? 4 : 3)))
                 .andExpect(jsonPath("$.rondasLibres", hasSize(zonaDeCinco ? 1 : 0)))
                 .andExpect(jsonPath("$.partidos[0].rival").exists())
