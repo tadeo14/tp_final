@@ -6,9 +6,14 @@ Spring Boot 3.5 · Java 17 · Maven (incluye wrapper: no hace falta instalar Mav
 
 | Variable | Ejemplo |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://<host>.neon.tech/<base>?sslmode=require` (endpoint directo, no el `-pooler`) |
+| `DB_URL` | `jdbc:postgresql://<host>/<base>?sslmode=require` |
 | `DB_USER` | usuario de la base |
 | `DB_PASSWORD` | contraseña de la base — **nunca** se sube al repo |
+| `JWT_SECRETO` | secreto para firmar los tokens, al menos 32 caracteres. Generarlo con `head -c 48 /dev/urandom \| base64` — **nunca** se sube al repo |
+| `JWT_EXPIRACION_MIN` | minutos que dura un token, por ejemplo `120` |
+| `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-front.onrender.com` |
+
+Sin `JWT_SECRETO` o `JWT_EXPIRACION_MIN` la aplicación no arranca. Los tests no las necesitan: generan un secreto al azar.
 
 ## Comandos
 
@@ -46,15 +51,23 @@ Si cambia una migración ya aplicada, borrar y crear de nuevo la base (`DROP DAT
 
 ## API
 
-Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos, 404 no existe,
-409 torneo publicado (D20, D39) o dato repetido, 422 sin programación válida o fixture que no cumple R1–R8.
+Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos, 401 falta iniciar sesión o
+login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publicado (D20, D39) o dato repetido,
+422 sin programación válida o fixture que no cumple R1–R8.
 
-**Configuración (organizador)**
+**Login (público)**
 
 | Método | Ruta | Qué hace |
 |---|---|---|
-| POST | `/api/organizadores` | Crea un organizador (la contraseña se guarda como hash) |
-| POST | `/api/torneos` | Crea un torneo en BORRADOR |
+| POST | `/api/auth/registro` | Registra un organizador (la contraseña se guarda como hash PBKDF2) |
+| POST | `/api/auth/login` | Devuelve un token JWT. Se manda en `Authorization: Bearer {token}` |
+
+**Configuración (organizador, con token)** — cada organizador solo ve y edita sus torneos (D45).
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| GET | `/api/torneos` | Mis torneos |
+| POST | `/api/torneos` | Crea un torneo en BORRADOR, a nombre del organizador del token |
 | GET | `/api/torneos/{id}` | Datos y estado del torneo |
 | POST | `/api/torneos/{id}/franjas` | Agrega una franja horaria |
 | POST | `/api/torneos/{id}/sedes` | Agrega una sede |
@@ -66,7 +79,7 @@ Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos,
 | POST | `/api/torneos/{id}/equipos` | Inscribe un equipo |
 | GET | `/api/torneos/{id}/equipos` | Lista los equipos (sin datos de contacto) |
 
-**Fixture (organizador)**
+**Fixture (organizador, con token)**
 
 | Método | Ruta | Qué hace |
 |---|---|---|
@@ -77,7 +90,7 @@ Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos,
 | GET | `/api/torneos/{id}/validacion` | Resultado de R1–R8 |
 | POST | `/api/torneos/{id}/publicar` | Publica si cumple R1–R8; después no se puede modificar |
 
-**Vista pública (sin login, solo torneos publicados)**
+**Vista pública (sin token, solo torneos publicados)**
 
 | Método | Ruta | Qué hace |
 |---|---|---|
@@ -87,9 +100,10 @@ Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos,
 ## Probar el recorrido con el caso real
 
 1. Arrancar el backend una vez, para que Flyway cree las tablas.
-2. Ejecutar [`database/caso_real.sql`](../database/caso_real.sql) en la base: carga el torneo del caso real
-   (55 equipos, 13 zonas, 8 canchas) y muestra su id.
-3. Seguir [`recorrido.http`](recorrido.http): sortear, generar, programar, validar, publicar y consultar un equipo.
+2. Registrar el organizador `ejemplo@fixture.test` con `POST /api/auth/registro` (está en `recorrido.http`).
+3. Ejecutar [`database/caso_real.sql`](../database/caso_real.sql) en la base: carga el torneo del caso real
+   (55 equipos, 13 zonas, 8 canchas) a nombre de ese organizador y muestra su id.
+4. Seguir [`recorrido.http`](recorrido.http): login, sortear, generar, programar, validar, publicar y consultar un equipo.
 
 `recorrido.http` usa el formato de la extensión REST Client de VS Code. Tiene también un recorrido
 desde cero con un torneo chico de prueba.
@@ -103,3 +117,5 @@ desde cero con un torneo chico de prueba.
 | `repositorio` | Acceso a datos (Spring Data JPA) |
 | `servicio` | Casos de uso: cargan datos, llaman al dominio y guardan el resultado |
 | `controlador` | Endpoints REST |
+| `seguridad` | Login con JWT: rutas públicas y protegidas, filtro del token, CORS |
+| `dto` | Datos de entrada y salida de la API |

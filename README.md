@@ -34,32 +34,36 @@ El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`]
 | 4. Sorteo y enfrentamientos | Método del círculo — tests T1, T2 | [`algoritmo-enfrentamientos.md`](docs/algoritmo-enfrentamientos.md) |
 | 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
 | 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
-| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO, datos del caso real | [`backend/README.md`](backend/README.md) |
+| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO, datos del caso real, login con JWT | [`backend/README.md`](backend/README.md) |
 
-**67 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**93 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
 
-Requiere Java 17+ y un PostgreSQL. La conexión se configura con variables de entorno (nunca en el repo):
+Requiere Java 17+ y un PostgreSQL. La configuración va por variables de entorno (nunca en el repo):
 
 ```bash
 cd backend
 export DB_URL=jdbc:postgresql://localhost:5432/fixture_test DB_USER=fixture DB_PASSWORD=fixture
-
 ./mvnw test             # tests (no dejan datos en la base)
+
+export JWT_SECRETO="$(head -c 48 /dev/urandom | base64)" JWT_EXPIRACION_MIN=120
 ./mvnw spring-boot:run  # API en http://localhost:8080 — Flyway crea las tablas
 ```
 
-**Recorrido con el caso real:** con el backend arrancado, ejecutar [`database/caso_real.sql`](database/caso_real.sql)
-en la base y seguir [`backend/recorrido.http`](backend/recorrido.http) (sortear → generar → programar → validar →
-publicar → consultar un equipo). Detalle en [`backend/README.md`](backend/README.md).
+Las operaciones del organizador exigen iniciar sesión (JWT, D44) y cada organizador solo ve sus torneos (D45);
+la vista pública no pide login.
+
+**Recorrido con el caso real:** registrar el organizador `ejemplo@fixture.test`, ejecutar
+[`database/caso_real.sql`](database/caso_real.sql) en la base, iniciar sesión y seguir
+[`backend/recorrido.http`](backend/recorrido.http) (sortear → generar → programar → validar → publicar → consultar
+un equipo). Detalle en [`backend/README.md`](backend/README.md).
 
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
   el sábado. El fixture es válido, pero no está equilibrado. Es la primera mejora P1.
-- **Sin login (D43):** los endpoints del organizador no piden autenticación. Hay que resolverlo antes del despliegue.
 - **Base online:** el entorno de desarrollo no llega a Neon; por ahora se prueba con PostgreSQL local (D24).
   La base online se configura en el despliegue (paso 9).
 
