@@ -1,6 +1,7 @@
 package ar.edu.utn.fixture.servicio;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -244,7 +245,9 @@ public class FixtureServicio {
                     resultado.violaciones().stream().map(v -> v.restriccion().name() + ": " + v.detalle()).toList());
         }
 
-        Publicacion publicacion = publicaciones.save(new Publicacion(torneo, numero, Instant.now(), motivoLimpio));
+        // Microsegundos: es la precisión con la que PostgreSQL guarda la fecha; así se ve igual en todas las respuestas.
+        Instant ahora = Instant.now().truncatedTo(ChronoUnit.MICROS);
+        Publicacion publicacion = publicaciones.save(new Publicacion(torneo, numero, ahora, motivoLimpio));
         ConfiguracionTorneo<CanchaRef> tiempos = AdaptadorDominio.parametrosDeTiempo(torneo);
         partidosPublicados.saveAll(fixture.stream()
                 .map(p -> new PartidoPublicado(publicacion, p,

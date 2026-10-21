@@ -38,12 +38,18 @@ class PublicacionApiTest extends ApiTestBase {
     void publicarCreaLaVersion1() throws Exception {
         long torneo = torneoChicoProgramado();
 
-        mvc.perform(post("/api/torneos/" + torneo + "/publicar"))
+        JsonNode publicado = json.readTree(mvc.perform(post("/api/torneos/" + torneo + "/publicar"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("PUBLICADO"))
                 .andExpect(jsonPath("$.version.numero").value(1))
-                .andExpect(jsonPath("$.version.publicadaEn").exists())
-                .andExpect(jsonPath("$.version.motivo").doesNotExist());
+                .andExpect(jsonPath("$.version.motivo").doesNotExist())
+                .andReturn().getResponse().getContentAsString());
+
+        // La fecha que devuelve publicar es la misma que después muestra el historial (guardada en la base).
+        em.clear();
+        JsonNode historial = json.readTree(mvc.perform(get("/api/torneos/" + torneo + "/publicaciones"))
+                .andReturn().getResponse().getContentAsString());
+        assertThat(historial.get(0).get("publicadaEn")).isEqualTo(publicado.get("version").get("publicadaEn"));
     }
 
     @Test
