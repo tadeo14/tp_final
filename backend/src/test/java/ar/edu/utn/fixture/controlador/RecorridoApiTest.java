@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
  * Recorrido completo de CLAUDE.md por la API, con un torneo chico de prueba:
  * crear torneo → categoría → equipos → canchas y franjas → sortear → generar → programar → validar → publicar
  * → consultar por equipo. Además, los estados BORRADOR/PUBLICADO y la regla D20. Datos de PRUEBA.
+ *
+ * <p>Los pasos del organizador van con su token ({@code mvc}); la consulta pública, sin token ({@code mvcSinToken}).
  */
 class RecorridoApiTest extends ApiTestBase {
 
@@ -78,22 +80,22 @@ class RecorridoApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.valido").value(true))
                 .andExpect(jsonPath("$.violaciones", hasSize(0)));
 
-        // Antes de publicar, el público no ve el torneo.
-        mvc.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
+        // Antes de publicar, el público (sin token) no ve el torneo.
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andExpect(status().isNotFound());
 
         mvc.perform(post(base + "/publicar"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("PUBLICADO"));
 
-        mvc.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(9)));
 
-        String zonaDelPrimero = json.readTree(mvc.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
+        String zonaDelPrimero = json.readTree(mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andReturn().getResponse().getContentAsString()).get(0).get("zona").asText();
         boolean zonaDeCinco = zonaDelPrimero.endsWith("Zona A");
-        mvc.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equiposU9.get(0) + "/fixture"))
+        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equiposU9.get(0) + "/fixture"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.equipo").value("Equipo 1"))
                 .andExpect(jsonPath("$.partidos", hasSize(zonaDeCinco ? 4 : 3)))
