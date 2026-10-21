@@ -1,6 +1,7 @@
 package ar.edu.utn.fixture.controlador;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -180,6 +181,41 @@ class PublicacionApiTest extends ApiTestBase {
         mvc.perform(post("/api/torneos/" + torneo + "/publicar")).andExpect(status().isOk());
 
         mvcSinToken.perform(post("/api/torneos/" + torneo + "/reabrir")).andExpect(status().isUnauthorized());
+    }
+
+    // ---------------------------------------------------------------- historial
+
+    @Test
+    void historial_listaLasVersionesDeLaMasNuevaALaMasVieja() throws Exception {
+        long torneo = torneoChicoProgramado();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(get(base + "/publicaciones")).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
+
+        mvc.perform(post(base + "/publicar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/reabrir")).andExpect(status().isOk());
+        mvc.perform(post(base + "/publicar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"motivo\": \"Cancha 2 fuera de servicio\"}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(get(base + "/publicaciones"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].numero").value(2))
+                .andExpect(jsonPath("$[0].motivo").value("Cancha 2 fuera de servicio"))
+                .andExpect(jsonPath("$[0].publicadaEn").exists())
+                .andExpect(jsonPath("$[1].numero").value(1))
+                .andExpect(jsonPath("$[1].motivo").doesNotExist());
+    }
+
+    @Test
+    void historial_deUnTorneoAjeno_respondeNotFound_ySinToken401() throws Exception {
+        long torneo = torneoChicoProgramado();
+        mvc.perform(post("/api/torneos/" + torneo + "/publicar")).andExpect(status().isOk());
+
+        mvcCon(nuevoOrganizador().token()).perform(get("/api/torneos/" + torneo + "/publicaciones"))
+                .andExpect(status().isNotFound());
+        mvcSinToken.perform(get("/api/torneos/" + torneo + "/publicaciones"))
+                .andExpect(status().isUnauthorized());
     }
 
     private String vistaPublica(long torneo, long equipo) throws Exception {

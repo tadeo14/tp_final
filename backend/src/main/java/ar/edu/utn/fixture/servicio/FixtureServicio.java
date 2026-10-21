@@ -26,6 +26,7 @@ import ar.edu.utn.fixture.dto.Respuestas.PartidoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Publicado;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Validacion;
+import ar.edu.utn.fixture.dto.Respuestas.VersionPublicada;
 import ar.edu.utn.fixture.dto.Respuestas.ViolacionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaSorteada;
 import ar.edu.utn.fixture.entidad.Cancha;
@@ -265,6 +266,13 @@ public class FixtureServicio {
         }
         torneo.setEstado(EstadoTorneo.BORRADOR);
         return Torneos.detalle(torneo);
+    }
+
+    /** Historial de versiones publicadas, de la más nueva a la más vieja. Vacío si nunca se publicó. */
+    @Transactional(readOnly = true)
+    public List<VersionPublicada> publicaciones(Long organizadorId, Long torneoId) {
+        torneos.delOrganizador(torneoId, organizadorId);
+        return publicaciones.findByTorneoIdOrderByNumeroDesc(torneoId).stream().map(Publicaciones::version).toList();
     }
 
     private ResultadoValidacion<EquipoRef, CanchaRef> validarFixture(Torneo torneo, List<Partido> fixture) {

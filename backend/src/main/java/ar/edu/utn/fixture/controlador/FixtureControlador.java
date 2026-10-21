@@ -16,6 +16,7 @@ import ar.edu.utn.fixture.dto.Respuestas.PartidoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Publicado;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Validacion;
+import ar.edu.utn.fixture.dto.Respuestas.VersionPublicada;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaSorteada;
 import ar.edu.utn.fixture.servicio.FixtureServicio;
 import jakarta.validation.Valid;
@@ -70,5 +71,11 @@ public class FixtureControlador {
     @PostMapping("/reabrir")
     public TorneoDetalle reabrir(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
         return servicio.reabrir(organizadorId, torneoId);
+    }
+
+    /** Historial de versiones publicadas (número, fecha y motivo), de la más nueva a la más vieja. */
+    @GetMapping("/publicaciones")
+    public List<VersionPublicada> publicaciones(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+        return servicio.publicaciones(organizadorId, torneoId);
     }
 }
