@@ -7,20 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import ar.edu.utn.fixture.repositorio.OrganizadorRepositorio;
 
 /**
  * Endpoints de configuración del torneo. Los datos son DATOS DE PRUEBA.
  */
 class ConfiguracionApiTest extends ApiTestBase {
-
-    @Autowired
-    private OrganizadorRepositorio organizadores;
 
     @Test
     void creaUnTorneoEnBorrador() throws Exception {
@@ -33,20 +26,9 @@ class ConfiguracionApiTest extends ApiTestBase {
     }
 
     @Test
-    void laContraseniaSeGuardaComoHashYNoSeDevuelve() throws Exception {
-        JsonNode creado = crear("/api/organizadores",
-                "{\"nombre\":\"Org\",\"email\":\"hash@prueba.test\",\"contrasenia\":\"clave-de-prueba\"}");
-
-        assertThat(creado.has("contrasenia")).isFalse();
-        assertThat(creado.has("passwordHash")).isFalse();
-        String guardado = organizadores.findById(creado.get("id").asLong()).orElseThrow().getPasswordHash();
-        assertThat(guardado).startsWith("pbkdf2$").doesNotContain("clave-de-prueba");
-    }
-
-    @Test
     void pedidoConDatosInvalidos_respondeBadRequestConElDetalle() throws Exception {
         mvc.perform(post("/api/torneos").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"organizadorId\": 1, \"nombre\": \"\", \"turnosCadaMin\": 0, \"recambioMin\": 10, \"descansoMinimoMin\": 90}"))
+                        .content("{\"nombre\": \"\", \"turnosCadaMin\": 0, \"recambioMin\": 10, \"descansoMinimoMin\": 90}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Hay datos inválidos en el pedido"))
                 .andExpect(jsonPath("$.detalles.length()").value(2));

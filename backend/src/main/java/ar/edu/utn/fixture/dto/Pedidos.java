@@ -24,8 +24,11 @@ public final class Pedidos {
             @NotBlank @Size(min = 8, message = "debe tener al menos 8 caracteres") String contrasenia) {
     }
 
+    public record Credenciales(@NotBlank @Email String email, @NotBlank String contrasenia) {
+    }
+
+    /** El organizador no viene en el pedido: es el del token (D45). */
     public record NuevoTorneo(
-            @NotNull Long organizadorId,
             @NotBlank String nombre,
             @NotNull @Positive Integer turnosCadaMin,
             @NotNull @PositiveOrZero Integer recambioMin,

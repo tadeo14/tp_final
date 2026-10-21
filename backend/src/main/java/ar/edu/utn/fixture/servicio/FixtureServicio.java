@@ -75,8 +75,8 @@ public class FixtureServicio {
      * Sortea los equipos de cada categoría y rama entre sus zonas y guarda el resultado (D5, D16).
      * Si ya había un sorteo, lo rehace a pedido del organizador, y borra los partidos generados con el anterior.
      */
-    public List<ZonaSorteada> sortear(Long torneoId) {
-        torneos.editable(torneoId);
+    public List<ZonaSorteada> sortear(Long organizadorId, Long torneoId) {
+        torneos.editable(torneoId, organizadorId);
         partidos.borrarDelTorneo(torneoId);
 
         List<Equipo> todos = equipos.findByTorneoIdOrderByIdAsc(torneoId);
@@ -134,8 +134,8 @@ public class FixtureServicio {
     // ------------------------------------------------------------------ generar enfrentamientos
 
     /** Todos contra todos dentro de cada zona, en el orden del sorteo. Reemplaza los partidos anteriores. */
-    public Generacion generar(Long torneoId) {
-        torneos.editable(torneoId);
+    public Generacion generar(Long organizadorId, Long torneoId) {
+        torneos.editable(torneoId, organizadorId);
         long sinZona = equipos.findByTorneoIdOrderByIdAsc(torneoId).stream().filter(e -> e.getZona() == null).count();
         if (sinZona > 0) {
             throw new DatosInvalidosException("Primero hay que sortear las zonas: hay " + sinZona + " equipos sin zona");
@@ -173,8 +173,8 @@ public class FixtureServicio {
      * Asigna cancha y horario con el Programador. Si no hay solución responde 422 con el mensaje y el detalle,
      * y no guarda nada (la transacción se deshace).
      */
-    public List<PartidoDetalle> programar(Long torneoId) {
-        Torneo torneo = torneos.editable(torneoId);
+    public List<PartidoDetalle> programar(Long organizadorId, Long torneoId) {
+        Torneo torneo = torneos.editable(torneoId, organizadorId);
         List<Partido> fixture = partidosGenerados(torneoId);
         List<Cancha> habilitadas = canchas.findBySedeTorneoIdAndHabilitadaTrueOrderByIdAsc(torneoId);
         ConfiguracionTorneo<CanchaRef> config = AdaptadorDominio.configuracion(
@@ -204,8 +204,8 @@ public class FixtureServicio {
 
     /** Verifica R1–R8 con el ValidadorRestricciones, el mismo que usa el programador (regla 3). */
     @Transactional(readOnly = true)
-    public Validacion validar(Long torneoId) {
-        Torneo torneo = torneos.buscar(torneoId);
+    public Validacion validar(Long organizadorId, Long torneoId) {
+        Torneo torneo = torneos.delOrganizador(torneoId, organizadorId);
         ResultadoValidacion<EquipoRef, CanchaRef> resultado = validarFixture(torneo, partidosGenerados(torneoId));
         List<ViolacionDetalle> violaciones = resultado.violaciones().stream()
                 .map(v -> new ViolacionDetalle(v.restriccion().name(), v.restriccion().descripcion(), v.detalle()))
@@ -214,8 +214,8 @@ public class FixtureServicio {
     }
 
     /** Publica solo si el fixture cumple R1–R8. Después ya no se puede modificar (D20). */
-    public TorneoDetalle publicar(Long torneoId) {
-        Torneo torneo = torneos.editable(torneoId);
+    public TorneoDetalle publicar(Long organizadorId, Long torneoId) {
+        Torneo torneo = torneos.editable(torneoId, organizadorId);
         ResultadoValidacion<EquipoRef, CanchaRef> resultado = validarFixture(torneo, partidosGenerados(torneoId));
         if (!resultado.esValido()) {
             throw new FixtureInvalidoException("El fixture no cumple las restricciones obligatorias y no se puede publicar",
@@ -237,8 +237,8 @@ public class FixtureServicio {
 
     /** Fixture completo, en BORRADOR o PUBLICADO. */
     @Transactional(readOnly = true)
-    public List<PartidoDetalle> fixture(Long torneoId) {
-        Torneo torneo = torneos.buscar(torneoId);
+    public List<PartidoDetalle> fixture(Long organizadorId, Long torneoId) {
+        Torneo torneo = torneos.delOrganizador(torneoId, organizadorId);
         return detalles(torneo, partidos.buscarFixture(torneoId));
     }
 

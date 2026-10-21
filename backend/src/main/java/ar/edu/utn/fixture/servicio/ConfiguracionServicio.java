@@ -13,11 +13,9 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
-import ar.edu.utn.fixture.dto.Pedidos.NuevoOrganizador;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
-import ar.edu.utn.fixture.dto.Respuestas.OrganizadorCreado;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Categoria;
@@ -73,18 +71,10 @@ public class ConfiguracionServicio {
         this.equipos = equipos;
     }
 
-    public OrganizadorCreado crearOrganizador(NuevoOrganizador pedido) {
-        Organizador o = new Organizador();
-        o.setNombre(pedido.nombre());
-        o.setEmail(pedido.email());
-        o.setPasswordHash(Contrasenias.hashear(pedido.contrasenia()));
-        organizadores.save(o);
-        return new OrganizadorCreado(o.getId(), o.getNombre(), o.getEmail());
-    }
-
-    public TorneoDetalle crearTorneo(NuevoTorneo pedido) {
-        Organizador organizador = organizadores.findById(pedido.organizadorId())
-                .orElseThrow(() -> new NoEncontradoException("No existe el organizador " + pedido.organizadorId()));
+    /** El torneo queda a nombre del organizador autenticado (D45). */
+    public TorneoDetalle crearTorneo(Long organizadorId, NuevoTorneo pedido) {
+        Organizador organizador = organizadores.findById(organizadorId)
+                .orElseThrow(() -> new NoEncontradoException("No existe el organizador " + organizadorId));
         Torneo t = new Torneo();
         t.setOrganizador(organizador);
         t.setNombre(pedido.nombre());
@@ -95,13 +85,19 @@ public class ConfiguracionServicio {
         return Torneos.detalle(t);
     }
 
+    /** Solo los torneos del organizador autenticado. */
     @Transactional(readOnly = true)
-    public TorneoDetalle obtenerTorneo(Long torneoId) {
-        return Torneos.detalle(torneos.buscar(torneoId));
+    public List<TorneoDetalle> listarTorneos(Long organizadorId) {
+        return torneos.delOrganizador(organizadorId).stream().map(Torneos::detalle).toList();
     }
 
-    public Creado agregarFranja(Long torneoId, NuevaFranja pedido) {
-        Torneo t = torneos.editable(torneoId);
+    @Transactional(readOnly = true)
+    public TorneoDetalle obtenerTorneo(Long organizadorId, Long torneoId) {
+        return Torneos.detalle(torneos.delOrganizador(torneoId, organizadorId));
+    }
+
+    public Creado agregarFranja(Long organizadorId, Long torneoId, NuevaFranja pedido) {
+        Torneo t = torneos.editable(torneoId, organizadorId);
         if (!pedido.hasta().isAfter(pedido.desde())) {
             throw new DatosInvalidosException("La franja tiene que terminar después de empezar");
         }
@@ -114,18 +110,21 @@ public class ConfiguracionServicio {
         return new Creado(f.getId(), f.getFecha() + " " + f.getDesde() + "–" + f.getHasta());
     }
 
-    public Creado agregarSede(Long torneoId, NuevaSede pedido) {
+    public Creado agregarSede(Long organizadorId, Long torneoId, NuevaSede pedido) {
         Sede s = new Sede();
-        s.setTorneo(torneos.editable(torneoId));
+        s.setTorneo(torneos.editable(torneoId, organizadorId));
         s.setNombre(pedido.nombre());
         s.setDireccion(pedido.direccion());
         sedes.save(s);
         return new Creado(s.getId(), s.getNombre());
     }
 
-    public Creado agregarCancha(Long sedeId, NuevaCancha pedido) {
-        Sede sede = sedes.findById(sedeId).orElseThrow(() -> new NoEncontradoException("No existe la sede " + sedeId));
-        torneos.editable(sede.getTorneo().getId());
+    public Creado agregarCancha(Long organizadorId, Long sedeId, NuevaCancha pedido) {
+        // Una sede de un torneo ajeno se trata igual que una que no existe (D45).
+        Sede sede = sedes.findById(sedeId)
+                .filter(s -> s.getTorneo().getOrganizador().getId().equals(organizadorId))
+                .orElseThrow(() -> new NoEncontradoException("No existe la sede " + sedeId));
+        torneos.editable(sede.getTorneo().getId(), organizadorId);
         Cancha c = new Cancha();
         c.setSede(sede);
         c.setNombre(pedido.nombre());
@@ -134,9 +133,9 @@ public class ConfiguracionServicio {
         return new Creado(c.getId(), sede.getNombre() + " - " + c.getNombre());
     }
 
-    public Creado agregarCategoria(Long torneoId, NuevaCategoria pedido) {
+    public Creado agregarCategoria(Long organizadorId, Long torneoId, NuevaCategoria pedido) {
         Categoria c = new Categoria();
-        c.setTorneo(torneos.editable(torneoId));
+        c.setTorneo(torneos.editable(torneoId, organizadorId));
         c.setNombre(pedido.nombre());
         c.setMinutosNetos(pedido.minutosNetos());
         c.setCantidadCuartos(pedido.cantidadCuartos());
@@ -147,25 +146,25 @@ public class ConfiguracionServicio {
         return new Creado(c.getId(), c.getNombre());
     }
 
-    public Creado agregarRama(Long torneoId, NuevaRama pedido) {
+    public Creado agregarRama(Long organizadorId, Long torneoId, NuevaRama pedido) {
         Rama r = new Rama();
-        r.setTorneo(torneos.editable(torneoId));
+        r.setTorneo(torneos.editable(torneoId, organizadorId));
         r.setNombre(pedido.nombre());
         ramas.save(r);
         return new Creado(r.getId(), r.getNombre());
     }
 
-    public Creado agregarClub(Long torneoId, NuevoClub pedido) {
+    public Creado agregarClub(Long organizadorId, Long torneoId, NuevoClub pedido) {
         Club c = new Club();
-        c.setTorneo(torneos.editable(torneoId));
+        c.setTorneo(torneos.editable(torneoId, organizadorId));
         c.setNombre(pedido.nombre());
         clubes.save(c);
         return new Creado(c.getId(), c.getNombre());
     }
 
     /** Las zonas se definen antes del sorteo: la cantidad de zonas de una categoría y rama es la cantidad de filas (D18). */
-    public Creado agregarZona(Long torneoId, NuevaZona pedido) {
-        Torneo t = torneos.editable(torneoId);
+    public Creado agregarZona(Long organizadorId, Long torneoId, NuevaZona pedido) {
+        Torneo t = torneos.editable(torneoId, organizadorId);
         Zona z = new Zona();
         z.setTorneo(t);
         z.setCategoria(categoriaDelTorneo(pedido.categoriaId(), torneoId));
@@ -175,8 +174,8 @@ public class ConfiguracionServicio {
         return new Creado(z.getId(), Etiquetas.zona(z));
     }
 
-    public EquipoResumen inscribirEquipo(Long torneoId, NuevoEquipo pedido) {
-        Torneo t = torneos.editable(torneoId);
+    public EquipoResumen inscribirEquipo(Long organizadorId, Long torneoId, NuevoEquipo pedido) {
+        Torneo t = torneos.editable(torneoId, organizadorId);
         Equipo e = new Equipo();
         e.setTorneo(t);
         e.setClub(clubes.findByIdAndTorneoId(pedido.clubId(), torneoId)
@@ -191,8 +190,8 @@ public class ConfiguracionServicio {
     }
 
     @Transactional(readOnly = true)
-    public List<EquipoResumen> listarEquipos(Long torneoId) {
-        torneos.buscar(torneoId);
+    public List<EquipoResumen> listarEquipos(Long organizadorId, Long torneoId) {
+        torneos.delOrganizador(torneoId, organizadorId);
         return equipos.findByTorneoIdOrderByIdAsc(torneoId).stream().map(Etiquetas::resumen).toList();
     }
 

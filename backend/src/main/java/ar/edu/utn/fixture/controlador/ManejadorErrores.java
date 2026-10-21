@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import ar.edu.utn.fixture.dto.Respuestas.Error;
 import ar.edu.utn.fixture.servicio.ConflictoException;
+import ar.edu.utn.fixture.servicio.CredencialesInvalidasException;
 import ar.edu.utn.fixture.servicio.DatosInvalidosException;
 import ar.edu.utn.fixture.servicio.FixtureInvalidoException;
 import ar.edu.utn.fixture.servicio.NoEncontradoException;
@@ -25,6 +26,11 @@ public class ManejadorErrores {
     @ExceptionHandler(NoEncontradoException.class)
     public ResponseEntity<Error> noEncontrado(NoEncontradoException e) {
         return respuesta(HttpStatus.NOT_FOUND, e.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<Error> credencialesInvalidas(CredencialesInvalidasException e) {
+        return respuesta(HttpStatus.UNAUTHORIZED, e.getMessage(), List.of());
     }
 
     @ExceptionHandler(ConflictoException.class)
