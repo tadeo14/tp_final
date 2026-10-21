@@ -1,6 +1,7 @@
 # DER — Modelo de datos (P0)
 
-> DDL completo en la migración Flyway [`V1__esquema_inicial.sql`](../backend/src/main/resources/db/migration/V1__esquema_inicial.sql).
+> DDL completo en las migraciones Flyway [`V1__esquema_inicial.sql`](../backend/src/main/resources/db/migration/V1__esquema_inicial.sql)
+> y [`V2__publicaciones.sql`](../backend/src/main/resources/db/migration/V2__publicaciones.sql) (versiones publicadas).
 > Cubre solo el alcance P0 de `CLAUDE.md`: no hay comidas, resultados, fase final ni jugadores.
 
 ## Diagrama
@@ -24,6 +25,8 @@ erDiagram
     EQUIPO ||--o{ PARTIDO : "juega de local"
     EQUIPO ||--o{ PARTIDO : "juega de visitante"
     CANCHA |o--o{ PARTIDO : "se programa en"
+    TORNEO ||--o{ PUBLICACION : "se publica en"
+    PUBLICACION ||--|{ PARTIDO_PUBLICADO : "guarda la foto de"
 
     ORGANIZADOR {
         bigint id PK
@@ -107,7 +110,33 @@ erDiagram
         bigint cancha_id FK "NULL hasta programar"
         timestamp inicio "NULL hasta programar"
     }
+    PUBLICACION {
+        bigint id PK
+        bigint torneo_id FK
+        int numero "1, 2, 3... único por torneo"
+        timestamptz publicada_en
+        varchar motivo "NULL solo en la versión 1"
+    }
+    PARTIDO_PUBLICADO {
+        bigint id PK
+        bigint publicacion_id FK "ON DELETE CASCADE"
+        bigint equipo_local_id "sin FK"
+        bigint equipo_visitante_id "sin FK"
+        varchar equipo_local
+        varchar equipo_visitante
+        varchar categoria
+        varchar rama
+        varchar zona
+        int ronda
+        varchar sede
+        varchar cancha
+        timestamp inicio
+        timestamp fin "se guarda (D48)"
+    }
 ```
+
+`PARTIDO_PUBLICADO` no tiene relación con `EQUIPO` ni con `PARTIDO`: es una foto con textos. Los ids de los equipos
+sirven para filtrar el fixture de un equipo, pero no son claves foráneas (D46).
 
 ## Entidades
 
@@ -123,6 +152,18 @@ erDiagram
 | `club` | Club que inscribe equipos | Por torneo. Puede coincidir con una sede, pero son conceptos distintos |
 | `equipo` | Equipo inscripto | Solo responsable y teléfono como datos personales. `zona_id` + `orden_en_zona` = resultado del sorteo |
 | `partido` | Enfrentamiento del fixture | Lo crea el generador (zona, equipos, ronda) y lo completa el programador (cancha, inicio). La base no impide asignar una cancha de otro torneo: eso lo controla R5 |
+| `publicacion` | Una versión publicada del fixture (V2) | Número 1, 2, 3… por torneo. La última es la que ve el público. El motivo es obligatorio desde la versión 2 |
+| `partido_publicado` | Foto de un partido tal como se publicó (V2) | Textos desnormalizados, inmutable: nunca se hace UPDATE. Cambiar equipos, canchas o configuración no la afecta |
+
+## Versiones publicadas (D46, D47, D48)
+
+- **Publicar** valida R1–R8 y, en la misma transacción, crea la publicación N+1 con la foto de todos los partidos.
+- **Reabrir** pasa el torneo de PUBLICADO a BORRADOR para corregirlo. La vista pública sigue mostrando la última
+  versión, y la siguiente publicación exige un motivo.
+- **La vista pública lee siempre la foto** de la última publicación, nunca las tablas vivas (`partido`, `equipo`,
+  `cancha`…). Un torneo nunca publicado no existe para el público.
+- **La foto guarda el `fin`** del partido, a diferencia de `partido` (D8): es el horario que se comunicó, y no tiene
+  que cambiar si después cambian las duraciones de la categoría (D48).
 
 ## Cálculos que no se guardan (D8)
 
@@ -157,7 +198,10 @@ La base asegura que los datos sean **coherentes entre sí**; las reglas del fixt
 | Parámetros positivos / no negativos | Base | `CHECK` |
 | La cancha de un partido pertenece al torneo del partido y está habilitada | Backend | R5 en `ValidadorRestricciones` |
 | R1–R8 (superposiciones, descanso, franjas, tope, turnos, completitud) | Backend | `ValidadorRestricciones` |
-| No se sortea, genera ni programa un torneo PUBLICADO (D20) | Backend | Servicio, antes de llamar al generador o al programador |
+| No se sortea, genera, programa ni configura un torneo PUBLICADO; para corregirlo hay que reabrirlo (D20, D39, D47) | Backend | Servicio, antes de llamar al generador o al programador |
+| Número de versión único por torneo; motivo obligatorio desde la versión 2 | Base | `UNIQUE (torneo_id, numero)` y `CHECK` |
+| La foto publicada no se modifica | Backend | Entidades `@Immutable` sin setters; ninguna operación la actualiza |
+| La vista pública muestra solo lo publicado | Backend | `ConsultaPublicaServicio` lee solo `partido_publicado` |
 
 R1 y R2 no se pueden expresar en la base sin guardar el fin del partido, que es un dato derivado (D8).
 

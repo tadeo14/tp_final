@@ -60,7 +60,7 @@ Authorization: Bearer {{loginCasoReal.response.body.token}}
 GET {{base}}/api/torneos/{{torneo}}/validacion
 Authorization: Bearer {{loginCasoReal.response.body.token}}
 
-### Publicar
+### Publicar: crea la versión 1 (sin motivo)
 POST {{base}}/api/torneos/{{torneo}}/publicar
 Authorization: Bearer {{loginCasoReal.response.body.token}}
 
@@ -76,6 +76,37 @@ Authorization: Bearer {{loginCasoReal.response.body.token}}
 
 ### Sin token, las operaciones del organizador responden 401
 POST {{base}}/api/torneos/{{torneo}}/sorteo
+
+# --- Corrección después de publicar (D46, D47) ---
+
+### Reabrir: vuelve a BORRADOR para corregir. El público sigue viendo la versión 1
+POST {{base}}/api/torneos/{{torneo}}/reabrir
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### (Acá se corrige: por ejemplo, volver a programar después de un cambio)
+POST {{base}}/api/torneos/{{torneo}}/fixture/programar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Vista pública mientras está en BORRADOR: sigue mostrando la versión 1
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Republicar sin motivo: 400 (desde la versión 2 es obligatorio)
+POST {{base}}/api/torneos/{{torneo}}/publicar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Republicar con motivo: crea la versión 2
+POST {{base}}/api/torneos/{{torneo}}/publicar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+Content-Type: application/json
+
+{"motivo": "Cancha fuera de servicio: se reprogramaron los partidos"}
+
+### Vista pública: ahora muestra la versión 2 y su motivo
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Historial de versiones (organizador)
+GET {{base}}/api/torneos/{{torneo}}/publicaciones
+Authorization: Bearer {{loginCasoReal.response.body.token}}
 
 
 # =============================================================================

@@ -90,8 +90,13 @@ Se hace antes de programar. Si alguna de estas condiciones falla, seguro que no 
 
 | Estado | Quién lo ve | Qué se puede hacer |
 |---|---|---|
-| BORRADOR | Solo el organizador | Generar, regenerar, revisar |
-| PUBLICADO | Todos (vista pública) | Consultar por equipo, cancha u horario |
+| BORRADOR | Solo el organizador | Configurar, generar, regenerar, revisar y publicar |
+| PUBLICADO | Todos (vista pública) | Consultar por equipo. El organizador solo puede **reabrirlo** para corregirlo |
+
+**Versiones publicadas (D46, D47):** cada vez que se publica se guarda una versión (1, 2, 3…) con una foto
+inmutable de los partidos. Para corregir un fixture publicado se lo **reabre** (vuelve a BORRADOR), se corrige y se
+vuelve a publicar indicando el **motivo**. Mientras tanto, el público sigue viendo la última versión publicada; un
+torneo nunca publicado no se ve.
 
 Si en el futuro se permite mover partidos a mano, el backend vuelve a validar **las mismas reglas R1–R8** con el mismo validador del generador.
 

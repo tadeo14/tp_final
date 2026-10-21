@@ -52,7 +52,7 @@ Si cambia una migración ya aplicada, borrar y crear de nuevo la base (`DROP DAT
 ## API
 
 Errores con formato `{"error": "...", "detalles": [...]}`: 400 datos inválidos, 401 falta iniciar sesión o
-login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publicado (D20, D39) o dato repetido,
+login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publicado (D20, D39: hay que reabrirlo) o dato repetido,
 422 sin programación válida o fixture que no cumple R1–R8.
 
 **Login (público)**
@@ -88,9 +88,12 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | POST | `/api/torneos/{id}/fixture/programar` | Asigna cancha y horario (422 si no hay solución) |
 | GET | `/api/torneos/{id}/fixture` | Fixture completo, con el fin calculado de cada partido |
 | GET | `/api/torneos/{id}/validacion` | Resultado de R1–R8 |
-| POST | `/api/torneos/{id}/publicar` | Publica si cumple R1–R8; después no se puede modificar |
+| POST | `/api/torneos/{id}/publicar` | Publica si cumple R1–R8: crea la versión siguiente con una foto de los partidos. Desde la versión 2 exige `{"motivo": "..."}` |
+| POST | `/api/torneos/{id}/reabrir` | Vuelve a BORRADOR un torneo publicado para corregirlo; el público sigue viendo la última versión |
+| GET | `/api/torneos/{id}/publicaciones` | Historial de versiones: número, fecha y motivo |
 
-**Vista pública (sin token, solo torneos publicados)**
+**Vista pública (sin token)** — muestra siempre la última versión publicada (con su número, fecha y motivo),
+aunque el torneo se haya reabierto. Un torneo nunca publicado responde 404.
 
 | Método | Ruta | Qué hace |
 |---|---|---|
