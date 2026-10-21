@@ -1,5 +1,6 @@
 package ar.edu.utn.fixture.dto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,6 +19,10 @@ public final class Respuestas {
     }
 
     public record OrganizadorCreado(Long id, String nombre, String email) {
+    }
+
+    /** Respuesta del login: el token se manda después en el encabezado "Authorization: Bearer {token}". */
+    public record Sesion(String token, String tipo, Instant expiraEn, OrganizadorCreado organizador) {
     }
 
     public record TorneoDetalle(Long id, String nombre, EstadoTorneo estado,

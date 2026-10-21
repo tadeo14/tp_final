@@ -7,11 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ar.edu.utn.fixture.PropiedadesDePrueba;
 
 /**
  * Base de los tests de la API: arranca la aplicación contra la base de DB_URL y cada test
@@ -21,6 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @Transactional
 abstract class ApiTestBase {
+
+    @DynamicPropertySource
+    static void propiedades(DynamicPropertyRegistry registro) {
+        PropiedadesDePrueba.registrar(registro);
+    }
 
     @Autowired
     protected MockMvc mvc;
@@ -41,7 +50,7 @@ abstract class ApiTestBase {
     }
 
     protected long crearTorneoDePrueba() throws Exception {
-        long organizador = crearId("/api/organizadores",
+        long organizador = crearId("/api/auth/registro",
                 "{\"nombre\":\"Organizador de prueba\",\"email\":\"org" + System.nanoTime() + "@prueba.test\",\"contrasenia\":\"clave-de-prueba\"}");
         return crearId("/api/torneos", """
                 {"organizadorId": %d, "nombre": "Torneo de prueba",

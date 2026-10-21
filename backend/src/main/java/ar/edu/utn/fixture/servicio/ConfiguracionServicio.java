@@ -13,11 +13,9 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
-import ar.edu.utn.fixture.dto.Pedidos.NuevoOrganizador;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
-import ar.edu.utn.fixture.dto.Respuestas.OrganizadorCreado;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Categoria;
@@ -71,15 +69,6 @@ public class ConfiguracionServicio {
         this.clubes = clubes;
         this.zonas = zonas;
         this.equipos = equipos;
-    }
-
-    public OrganizadorCreado crearOrganizador(NuevoOrganizador pedido) {
-        Organizador o = new Organizador();
-        o.setNombre(pedido.nombre());
-        o.setEmail(pedido.email());
-        o.setPasswordHash(Contrasenias.hashear(pedido.contrasenia()));
-        organizadores.save(o);
-        return new OrganizadorCreado(o.getId(), o.getNombre(), o.getEmail());
     }
 
     public TorneoDetalle crearTorneo(NuevoTorneo pedido) {

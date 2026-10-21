@@ -24,6 +24,9 @@ public final class Pedidos {
             @NotBlank @Size(min = 8, message = "debe tener al menos 8 caracteres") String contrasenia) {
     }
 
+    public record Credenciales(@NotBlank @Email String email, @NotBlank String contrasenia) {
+    }
+
     public record NuevoTorneo(
             @NotNull Long organizadorId,
             @NotBlank String nombre,

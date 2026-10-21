@@ -19,11 +19,9 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
-import ar.edu.utn.fixture.dto.Pedidos.NuevoOrganizador;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
-import ar.edu.utn.fixture.dto.Respuestas.OrganizadorCreado;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.servicio.ConfiguracionServicio;
 import jakarta.validation.Valid;
@@ -39,12 +37,6 @@ public class TorneoControlador {
 
     public TorneoControlador(ConfiguracionServicio servicio) {
         this.servicio = servicio;
-    }
-
-    @PostMapping("/organizadores")
-    @ResponseStatus(HttpStatus.CREATED)
-    public OrganizadorCreado crearOrganizador(@Valid @RequestBody NuevoOrganizador pedido) {
-        return servicio.crearOrganizador(pedido);
     }
 
     @PostMapping("/torneos")
