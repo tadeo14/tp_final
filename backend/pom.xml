@@ -43,6 +43,11 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
+        <!-- Autenticación del organizador: rutas públicas y protegidas (D44) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <!-- Tokens JWT para el login del organizador (D44) -->
         <dependency>
             <groupId>com.auth0</groupId>

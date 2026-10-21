@@ -31,7 +31,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registro_guardaLaContraseniaComoHashYNoLaDevuelve() throws Exception {
-        JsonNode creado = crear("/api/auth/registro", REGISTRO);
+        JsonNode creado = crear(mvcSinToken, "/api/auth/registro", REGISTRO);
 
         assertThat(creado.get("email").asText()).isEqualTo("ana@prueba.test");
         assertThat(creado.has("contrasenia")).isFalse();
@@ -42,9 +42,9 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registro_conEmailYaUsado_respondeConflict() throws Exception {
-        crear("/api/auth/registro", REGISTRO);
+        crear(mvcSinToken, "/api/auth/registro", REGISTRO);
 
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvcSinToken.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
                         .content(REGISTRO.replace("ana@prueba.test", "ANA@Prueba.test")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("Ya existe un organizador con ese email"));
@@ -52,16 +52,16 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void registro_conContraseniaCorta_respondeBadRequest() throws Exception {
-        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
+        mvcSinToken.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON)
                         .content(REGISTRO.replace("clave-de-prueba", "corta")))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void login_conLosDatosCorrectos_devuelveUnTokenDelOrganizador() throws Exception {
-        long id = crearId("/api/auth/registro", REGISTRO);
+        long id = crear(mvcSinToken, "/api/auth/registro", REGISTRO).get("id").asLong();
 
-        String respuesta = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        String respuesta = mvcSinToken.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"ana@prueba.test\", \"contrasenia\": \"clave-de-prueba\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tipo").value("Bearer"))
@@ -75,9 +75,9 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void login_conContraseniaIncorrecta_respondeUnauthorized() throws Exception {
-        crear("/api/auth/registro", REGISTRO);
+        crear(mvcSinToken, "/api/auth/registro", REGISTRO);
 
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvcSinToken.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"ana@prueba.test\", \"contrasenia\": \"otra-clave\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value("Email o contraseña incorrectos"));
@@ -85,7 +85,7 @@ class AuthApiTest extends ApiTestBase {
 
     @Test
     void login_conEmailInexistente_respondeElMismoMensaje() throws Exception {
-        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvcSinToken.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"nadie@prueba.test\", \"contrasenia\": \"clave-de-prueba\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value("Email o contraseña incorrectos"));
