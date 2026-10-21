@@ -1,5 +1,7 @@
 package ar.edu.utn.fixture.servicio;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
@@ -19,14 +21,18 @@ public class Torneos {
         this.repositorio = repositorio;
     }
 
-    public Torneo buscar(Long torneoId) {
-        return repositorio.findById(torneoId)
+    /**
+     * El torneo, solo si es del organizador. Si es de otro, responde lo mismo que si no existiera (404):
+     * así no se revela que el torneo existe (D45).
+     */
+    public Torneo delOrganizador(Long torneoId, Long organizadorId) {
+        return repositorio.findByIdAndOrganizadorId(torneoId, organizadorId)
                 .orElseThrow(() -> new NoEncontradoException("No existe el torneo " + torneoId));
     }
 
-    /** El torneo, solo si se puede modificar: en PUBLICADO no se cambia nada (D20, D39). */
-    public Torneo editable(Long torneoId) {
-        Torneo t = buscar(torneoId);
+    /** El torneo del organizador, solo si se puede modificar: en PUBLICADO no se cambia nada (D20, D39). */
+    public Torneo editable(Long torneoId, Long organizadorId) {
+        Torneo t = delOrganizador(torneoId, organizadorId);
         if (t.getEstado() == EstadoTorneo.PUBLICADO) {
             throw new ConflictoException("El torneo " + torneoId + " está publicado: no se puede modificar (D20)");
         }
@@ -40,6 +46,10 @@ public class Torneos {
             throw new NoEncontradoException("No hay un torneo publicado con id " + torneoId);
         }
         return t;
+    }
+
+    public List<Torneo> delOrganizador(Long organizadorId) {
+        return repositorio.findByOrganizadorIdOrderByIdAsc(organizadorId);
     }
 
     public void guardar(Torneo torneo) {

@@ -27,8 +27,8 @@ public final class Pedidos {
     public record Credenciales(@NotBlank @Email String email, @NotBlank String contrasenia) {
     }
 
+    /** El organizador no viene en el pedido: es el del token (D45). */
     public record NuevoTorneo(
-            @NotNull Long organizadorId,
             @NotBlank String nombre,
             @NotNull @Positive Integer turnosCadaMin,
             @NotNull @PositiveOrZero Integer recambioMin,

@@ -3,6 +3,7 @@ package ar.edu.utn.fixture.controlador;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import jakarta.validation.Valid;
 
 /**
  * Endpoints del organizador para configurar el torneo e inscribir equipos.
+ * Exigen un organizador autenticado; el id sale del token, no del pedido (D44, D45).
  */
 @RestController
 @RequestMapping("/api")
@@ -41,65 +43,72 @@ public class TorneoControlador {
 
     @PostMapping("/torneos")
     @ResponseStatus(HttpStatus.CREATED)
-    public TorneoDetalle crearTorneo(@Valid @RequestBody NuevoTorneo pedido) {
-        return servicio.crearTorneo(pedido);
+    public TorneoDetalle crearTorneo(@AuthenticationPrincipal Long organizadorId, @Valid @RequestBody NuevoTorneo pedido) {
+        return servicio.crearTorneo(organizadorId, pedido);
+    }
+
+    /** Solo los torneos del organizador autenticado. */
+    @GetMapping("/torneos")
+    public List<TorneoDetalle> listarTorneos(@AuthenticationPrincipal Long organizadorId) {
+        return servicio.listarTorneos(organizadorId);
     }
 
     @GetMapping("/torneos/{torneoId}")
-    public TorneoDetalle obtenerTorneo(@PathVariable Long torneoId) {
-        return servicio.obtenerTorneo(torneoId);
+    public TorneoDetalle obtenerTorneo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+        return servicio.obtenerTorneo(organizadorId, torneoId);
     }
 
     @PostMapping("/torneos/{torneoId}/franjas")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarFranja(@PathVariable Long torneoId, @Valid @RequestBody NuevaFranja pedido) {
-        return servicio.agregarFranja(torneoId, pedido);
+    public Creado agregarFranja(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevaFranja pedido) {
+        return servicio.agregarFranja(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/sedes")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarSede(@PathVariable Long torneoId, @Valid @RequestBody NuevaSede pedido) {
-        return servicio.agregarSede(torneoId, pedido);
+    public Creado agregarSede(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevaSede pedido) {
+        return servicio.agregarSede(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/sedes/{sedeId}/canchas")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarCancha(@PathVariable Long sedeId, @Valid @RequestBody NuevaCancha pedido) {
-        return servicio.agregarCancha(sedeId, pedido);
+    public Creado agregarCancha(@AuthenticationPrincipal Long organizadorId, @PathVariable Long sedeId,
+            @Valid @RequestBody NuevaCancha pedido) {
+        return servicio.agregarCancha(organizadorId, sedeId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/categorias")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarCategoria(@PathVariable Long torneoId, @Valid @RequestBody NuevaCategoria pedido) {
-        return servicio.agregarCategoria(torneoId, pedido);
+    public Creado agregarCategoria(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevaCategoria pedido) {
+        return servicio.agregarCategoria(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/ramas")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarRama(@PathVariable Long torneoId, @Valid @RequestBody NuevaRama pedido) {
-        return servicio.agregarRama(torneoId, pedido);
+    public Creado agregarRama(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevaRama pedido) {
+        return servicio.agregarRama(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/clubes")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarClub(@PathVariable Long torneoId, @Valid @RequestBody NuevoClub pedido) {
-        return servicio.agregarClub(torneoId, pedido);
+    public Creado agregarClub(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevoClub pedido) {
+        return servicio.agregarClub(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/zonas")
     @ResponseStatus(HttpStatus.CREATED)
-    public Creado agregarZona(@PathVariable Long torneoId, @Valid @RequestBody NuevaZona pedido) {
-        return servicio.agregarZona(torneoId, pedido);
+    public Creado agregarZona(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevaZona pedido) {
+        return servicio.agregarZona(organizadorId, torneoId, pedido);
     }
 
     @PostMapping("/torneos/{torneoId}/equipos")
     @ResponseStatus(HttpStatus.CREATED)
-    public EquipoResumen inscribirEquipo(@PathVariable Long torneoId, @Valid @RequestBody NuevoEquipo pedido) {
-        return servicio.inscribirEquipo(torneoId, pedido);
+    public EquipoResumen inscribirEquipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevoEquipo pedido) {
+        return servicio.inscribirEquipo(organizadorId, torneoId, pedido);
     }
 
     @GetMapping("/torneos/{torneoId}/equipos")
-    public List<EquipoResumen> listarEquipos(@PathVariable Long torneoId) {
-        return servicio.listarEquipos(torneoId);
+    public List<EquipoResumen> listarEquipos(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+        return servicio.listarEquipos(organizadorId, torneoId);
     }
 }

@@ -109,8 +109,7 @@ abstract class ApiTestBase {
 
     protected long crearTorneoDePrueba() throws Exception {
         return crearId("/api/torneos", """
-                {"organizadorId": %d, "nombre": "Torneo de prueba",
-                 "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 90}
-                """.formatted(organizadorId));
+                {"nombre": "Torneo de prueba", "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 90}
+                """);
     }
 }

@@ -7,21 +7,23 @@
 --
 -- Del caso real: cantidades, parámetros, sedes ("Club A" y "Club B", anonimizadas) y zonas.
 -- DATOS DE PRUEBA (no figuran en el caso real): las fechas, los nombres de los equipos, el club de los
--- equipos, el responsable y el teléfono, y el organizador.
+-- equipos, el responsable y el teléfono, y el email del organizador.
 --
--- Uso: con el backend ya arrancado una vez (Flyway creó las tablas), ejecutar este archivo en la base
--- (psql o el editor SQL de Neon). Se puede ejecutar más de una vez: cada vez crea un torneo nuevo.
--- Al final muestra el id del torneo creado.
+-- Uso:
+--   1. Arrancar el backend una vez (Flyway crea las tablas).
+--   2. Registrar el organizador dueño del torneo: POST /api/auth/registro con el email
+--      ejemplo@fixture.test y la contraseña que quieran (ver backend/recorrido.http).
+--   3. Ejecutar este archivo en la base (psql o el editor SQL de Neon). Al final muestra el id del torneo.
+--   4. Iniciar sesión con ese organizador (POST /api/auth/login) y seguir el recorrido.
+-- Se puede ejecutar más de una vez: cada vez crea un torneo nuevo.
 -- =============================================================================
 
--- Organizador de ejemplo. No puede iniciar sesión: en P0 no hay login (D43).
-INSERT INTO organizador (nombre, email, password_hash)
-VALUES ('Organizador de ejemplo', 'ejemplo@fixture.test', 'sin-login')
-ON CONFLICT (email) DO NOTHING;
-
+-- El torneo queda a nombre del organizador ejemplo@fixture.test, que tiene que estar registrado (paso 2):
+-- solo él lo ve y lo edita (D45). Este script no crea organizadores para no guardar contraseñas en el repo.
+-- Si no está registrado, este INSERT falla con "null value in column organizador_id" y no se carga nada más.
 INSERT INTO torneo (organizador_id, nombre, turnos_cada_min, recambio_min, descanso_minimo_min)
-SELECT id, 'Torneo formativo (caso real)', 15, 10, 90
-FROM organizador WHERE email = 'ejemplo@fixture.test';
+VALUES ((SELECT id FROM organizador WHERE email = 'ejemplo@fixture.test'),
+        'Torneo formativo (caso real)', 15, 10, 90);
 
 -- Sábado 9 a 20 y domingo 9 a 16 (fechas de ejemplo).
 INSERT INTO franja_horaria (torneo_id, fecha, desde, hasta)

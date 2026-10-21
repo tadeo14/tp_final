@@ -28,7 +28,7 @@ class ConfiguracionApiTest extends ApiTestBase {
     @Test
     void pedidoConDatosInvalidos_respondeBadRequestConElDetalle() throws Exception {
         mvc.perform(post("/api/torneos").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"organizadorId\": 1, \"nombre\": \"\", \"turnosCadaMin\": 0, \"recambioMin\": 10, \"descansoMinimoMin\": 90}"))
+                        .content("{\"nombre\": \"\", \"turnosCadaMin\": 0, \"recambioMin\": 10, \"descansoMinimoMin\": 90}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Hay datos inválidos en el pedido"))
                 .andExpect(jsonPath("$.detalles.length()").value(2));
