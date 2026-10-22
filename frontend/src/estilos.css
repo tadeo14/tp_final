@@ -143,6 +143,20 @@ th { background: #eef1f5; }
 .formulario-alta h3 { margin: 0.5rem 0 0; }
 .paso button { margin-bottom: 0.25rem; }
 
+/* ---------- Vista pública ---------- */
+.version { color: var(--texto-suave); font-size: 0.875rem; margin-bottom: 1rem; }
+.version p { margin: 0; }
+.aviso .motivo { font-weight: 400; margin-top: 0.25rem; }
+.buscador { display: flex; flex-direction: column; gap: 0.25rem; font-weight: 600; margin-bottom: 1rem; }
+.partido p { margin: 0 0 0.2rem; }
+.partido-cuando { font-weight: 700; color: var(--naranja-oscuro); }
+.partido-rival { font-size: 1.05rem; }
+.boton-whatsapp {
+  display: block; text-align: center; margin: 1rem 0; padding: 0.75rem 1rem; border-radius: var(--radio);
+  background: #128c4b; color: #fff; font-weight: 600; text-decoration: none;
+}
+.boton-whatsapp:hover { background: #0e6f3b; }
+
 /* ---------- Pantallas grandes ---------- */
 @media (min-width: 600px) {
   .fila { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
