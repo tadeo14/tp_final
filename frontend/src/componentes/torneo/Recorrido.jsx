@@ -4,7 +4,8 @@ import MensajeError from '../MensajeError.jsx';
 import TablaFixture from './TablaFixture.jsx';
 
 /**
- * Recorrido del fixture: sortear → generar → programar → validar. Cada paso muestra su resultado o el error
+ * Recorrido del fixture: sortear → generar → programar → validar (publicar está en la pestaña Publicación).
+ * Cada paso muestra su resultado o el error
  * del backend tal cual (por ejemplo "No existe una programación válida con la configuración actual").
  */
 export default function Recorrido({ torneoId, publicado, fixture, recargar }) {
@@ -106,6 +107,8 @@ export default function Recorrido({ torneoId, publicado, fixture, recargar }) {
           </div>
         )}
       </section>
+
+      <p className="nota">5. Publicar: en la pestaña Publicación.</p>
 
       <section className="tarjeta">
         <h2>Fixture ({fixture.length} partidos)</h2>

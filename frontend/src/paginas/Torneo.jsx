@@ -6,14 +6,16 @@ import Encabezado from '../componentes/Encabezado.jsx';
 import EstadoTorneo from '../componentes/EstadoTorneo.jsx';
 import MensajeError from '../componentes/MensajeError.jsx';
 import Configuracion from '../componentes/torneo/Configuracion.jsx';
+import Publicacion from '../componentes/torneo/Publicacion.jsx';
 import Recorrido from '../componentes/torneo/Recorrido.jsx';
 
 const PESTANIAS = [
   { id: 'configuracion', nombre: 'Configuración' },
   { id: 'recorrido', nombre: 'Recorrido' },
+  { id: 'publicacion', nombre: 'Publicación' },
 ];
 
-/** Pantalla 3: detalle del torneo, con la configuración y el recorrido del fixture. Siempre muestra el estado. */
+/** Pantallas 3 y 4: detalle del torneo (configuración, recorrido y publicación). Siempre muestra el estado. */
 export default function Torneo() {
   const { id } = useParams();
   const [datos, setDatos] = useState(null);
@@ -22,10 +24,11 @@ export default function Torneo() {
 
   const recargar = useCallback(async () => {
     const base = `/api/torneos/${id}`;
-    const [torneo, configuracion, equipos, fixture] = await Promise.all([
+    const [torneo, configuracion, equipos, fixture, publicaciones] = await Promise.all([
       api.get(base), api.get(`${base}/configuracion`), api.get(`${base}/equipos`), api.get(`${base}/fixture`),
+      api.get(`${base}/publicaciones`),
     ]);
-    setDatos({ torneo, configuracion, equipos, fixture });
+    setDatos({ torneo, configuracion, equipos, fixture, publicaciones });
   }, [id]);
 
   useEffect(() => {
@@ -68,6 +71,9 @@ export default function Torneo() {
             )}
             {pestania === 'recorrido' && (
               <Recorrido torneoId={id} publicado={publicado} fixture={datos.fixture} recargar={recargar} />
+            )}
+            {pestania === 'publicacion' && (
+              <Publicacion torneoId={id} publicado={publicado} publicaciones={datos.publicaciones} recargar={recargar} />
             )}
           </>
         )}
