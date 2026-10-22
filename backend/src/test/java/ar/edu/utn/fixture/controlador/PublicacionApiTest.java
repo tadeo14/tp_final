@@ -66,6 +66,7 @@ class PublicacionApiTest extends ApiTestBase {
         for (Cancha c : canchas.findBySedeTorneoIdAndHabilitadaTrueOrderByIdAsc(torneo)) {
             c.setNombre(c.getNombre() + " (renombrada)");
         }
+        equipo.getClub().setNombre("Club con otro nombre");
         Categoria categoria = equipo.getCategoria();
         categoria.setMinutosNetos(40); // el bloque pasa de 60 a 75 minutos: el fin calculado cambiaría
         em.flush();
@@ -79,7 +80,8 @@ class PublicacionApiTest extends ApiTestBase {
         assertThat(vistaPublica(torneo, equipo.getId())).isEqualTo(fixtureAntes);
         assertThat(mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andReturn().getResponse().getContentAsString()).isEqualTo(equiposAntes);
-        assertThat(fixtureAntes).doesNotContain("Equipo con otro nombre").doesNotContain("(renombrada)");
+        assertThat(fixtureAntes).doesNotContain("Equipo con otro nombre").doesNotContain("(renombrada)")
+                .doesNotContain("Club con otro nombre").contains("\"club\":\"Club de prueba\"");
     }
 
     @Test

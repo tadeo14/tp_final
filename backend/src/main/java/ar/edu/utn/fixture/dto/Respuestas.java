@@ -50,7 +50,7 @@ public final class Respuestas {
     public record Validacion(boolean valido, List<ViolacionDetalle> violaciones) {
     }
 
-    public record PartidoDeEquipo(int ronda, String rival, String condicion, String sede, String cancha,
+    public record PartidoDeEquipo(int ronda, String rival, String clubRival, String condicion, String sede, String cancha,
             LocalDateTime inicio, LocalDateTime fin) {
     }
 
@@ -63,14 +63,14 @@ public final class Respuestas {
     }
 
     /** Equipo según la última versión publicada (sin datos de contacto). */
-    public record EquipoPublicado(Long id, String nombre, String categoria, String rama, String zona) {
+    public record EquipoPublicado(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
     public record EquiposPublicados(VersionPublicada version, List<EquipoPublicado> equipos) {
     }
 
     /** Fixture de un equipo según la última versión publicada. Las rondas libres se deducen: no se guardan (D18). */
-    public record FixtureDeEquipo(VersionPublicada version, Long equipoId, String equipo, String zona,
+    public record FixtureDeEquipo(VersionPublicada version, Long equipoId, String equipo, String club, String zona,
             List<PartidoDeEquipo> partidos, List<Integer> rondasLibres) {
     }
 
