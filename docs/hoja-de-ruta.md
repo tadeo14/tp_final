@@ -16,9 +16,9 @@
 | 7 | A | API REST del recorrido | Endpoints + BORRADOR/PUBLICADO + datos del caso real | HECHO |
 | 8 | A | Entrega de avance a Oscar | README actualizado + mensaje al tutor | PENDIENTE |
 | 9 | B | Despliegue del backend | Render (Docker) + Supabase. Imagen, `render.yaml` y guía en `deploy.md` listos; falta crear las cuentas y el servicio | EN CURSO |
-| 10 | B | Frontend del organizador | Pantallas: configurar, inscribir, generar, publicar | PENDIENTE |
-| 11 | B | Vista pública y difusión | Fixture por equipo/cancha/horario + link para WhatsApp | PENDIENTE |
-| 12 | B | Despliegue del frontend | App online (Vercel o Netlify) | PENDIENTE |
+| 10 | B | Frontend del organizador | React + Vite (D54): login, mis torneos, configuración, recorrido, publicación con versiones | HECHO |
+| 11 | B | Vista pública y difusión | Equipos y fixture por equipo sin login + botón de WhatsApp (D57) | HECHO |
+| 12 | B | Despliegue del frontend | Sitio estático de Render (D58). Configuración y guía en `deploy.md` listas; falta crear el sitio | EN CURSO |
 | 13 | C | Documentación e informe final | README final, informe, merge a `master` | PENDIENTE |
 | 14 | C | Video | Guion en inglés + grabación | PENDIENTE |
 | 15 | C | Defensa oral | Presentación + ensayo de preguntas | PENDIENTE |

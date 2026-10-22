@@ -24,14 +24,14 @@ Si algo de este archivo contradice esos documentos, mandan los documentos. Si en
 | Backend | Java 17 + Spring Boot 3 + Spring Data JPA, Maven |
 | Base de datos | PostgreSQL |
 | Tests | JUnit 5 |
-| Frontend | React (más adelante, no es prioridad ahora) |
-| Despliegue | Backend + BD en Render o Railway; frontend en Vercel o Netlify |
+| Frontend | React + Vite (JavaScript), react-router-dom, CSS propio (D54) |
+| Despliegue | Backend en Render (Docker) + BD en Supabase; frontend como sitio estático de Render (D49–D58) |
 
 ## Estructura del repo
 
 ```
 /backend    Proyecto Spring Boot (las migraciones Flyway van en backend/src/main/resources/db/migration)
-/frontend   App React (todavía no)
+/frontend   App React con Vite (organizador + vista pública)
 /database   Datos de ejemplo (seed) y pruebas de la base. El esquema NO va acá: ver D21
 /docs       Documentación, decisiones, DER, informes
 ```

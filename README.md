@@ -3,7 +3,7 @@
 Trabajo Final Integrador — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
 Equipo: Daniel y Tadeo · Tutor: Oscar Londero
 
-API web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
+App web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
 horarios **sin conflictos** y publica el fixture en una vista pública de solo lectura.
 
 ## Alcance (P0)
@@ -36,8 +36,10 @@ El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`]
 | 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
 | 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
 | 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT | [`backend/README.md`](backend/README.md) |
+| 10. Frontend del organizador | React + Vite: login, mis torneos, configuración, recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
+| 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-**106 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**108 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
@@ -61,18 +63,25 @@ la vista pública no pide login.
 [`backend/recorrido.http`](backend/recorrido.http) (sortear → generar → programar → validar → publicar → consultar
 un equipo). Detalle en [`backend/README.md`](backend/README.md).
 
+**Frontend** (Node 20.19+): con el backend corriendo y `CORS_ORIGENES=http://localhost:5173`,
+
+```bash
+cd frontend && npm ci && npm run dev   # http://localhost:5173
+```
+
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
   el sábado. El fixture es válido. Antes de cambiarlo hay que confirmar con el organizador real si es un problema;
   si lo es, entra como preferencia de optimización, no como regla nueva.
-- **Despliegue (paso 9):** listo para Render (Docker) + Supabase, guía en [`docs/deploy.md`](docs/deploy.md).
+- **Despliegue (pasos 9 y 12):** listo para Render (backend Docker + frontend estático) + Supabase, guía en
+  [`docs/deploy.md`](docs/deploy.md).
   En el plan gratis, el primer pedido después de 15 minutos sin uso tarda alrededor de 1 minuto (arranque en frío).
 
 ## Stack
 
-Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven.
-Despliegue: Render (Docker) + Supabase ([`docs/deploy.md`](docs/deploy.md)). Más adelante: frontend en React.
+Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven · React + Vite (JavaScript).
+Despliegue: Render (Docker y sitio estático) + Supabase ([`docs/deploy.md`](docs/deploy.md)).
 
 ## Estructura
 
@@ -80,5 +89,5 @@ Despliegue: Render (Docker) + Supabase ([`docs/deploy.md`](docs/deploy.md)). Má
 /backend    API Spring Boot (dominio puro, entidades, servicios, controladores, tests)
 /database   Datos de ejemplo del caso real y pruebas del esquema
 /docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta
-/frontend   (fase B)
+/frontend   App React: pantallas del organizador y vista pública
 ```
