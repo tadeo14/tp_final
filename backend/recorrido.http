@@ -1,0 +1,251 @@
+# =============================================================================
+# Recorrido de la API.
+#
+# Formato de la extensión "REST Client" de VS Code: cada pedido se ejecuta con "Send Request", en orden.
+# En IntelliJ también abre, pero las variables {{nombre.response...}} se escriben distinto.
+#
+# Las operaciones del organizador exigen iniciar sesión (D44): se manda el token del login en el
+# encabezado "Authorization: Bearer {token}". La vista pública (/api/publico/...) no pide token.
+#
+# Parte 1: recorrido con el caso real (database/caso_real.sql).
+# Parte 2: recorrido completo desde cero, con un torneo chico de prueba.
+# =============================================================================
+
+@base = http://localhost:8080
+
+### El backend responde y llega a la base (público)
+GET {{base}}/api/salud
+
+
+# =============================================================================
+# PARTE 1 — Caso real
+# 1. Arrancar el backend una vez (Flyway crea las tablas).
+# 2. Registrar el organizador dueño del torneo (pedido de abajo).
+# 3. Ejecutar database/caso_real.sql en la base: al final muestra el id del torneo. Ponerlo en @torneo.
+# 4. Iniciar sesión y seguir en orden.
+# =============================================================================
+
+@torneo = 1
+
+### Registrar el organizador del caso real (una sola vez; la contraseña la eligen ustedes)
+POST {{base}}/api/auth/registro
+Content-Type: application/json
+
+{"nombre": "Organizador de ejemplo", "email": "ejemplo@fixture.test", "contrasenia": "clave-de-prueba"}
+
+### Iniciar sesión: devuelve el token
+# @name loginCasoReal
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "ejemplo@fixture.test", "contrasenia": "clave-de-prueba"}
+
+### Ver el torneo (estado BORRADOR)
+GET {{base}}/api/torneos/{{torneo}}
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Sortear las 13 zonas
+POST {{base}}/api/torneos/{{torneo}}/sorteo
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Generar los enfrentamientos (91 partidos)
+POST {{base}}/api/torneos/{{torneo}}/fixture/generar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Programar cancha y horario
+POST {{base}}/api/torneos/{{torneo}}/fixture/programar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Validar R1–R8
+GET {{base}}/api/torneos/{{torneo}}/validacion
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Publicar: crea la versión 1 (sin motivo)
+POST {{base}}/api/torneos/{{torneo}}/publicar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Vista pública, sin token: equipos del torneo (para elegir un id)
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Vista pública, sin token: fixture de un equipo (cambiar el id por uno de la lista anterior)
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos/1/fixture
+
+### D20: con el torneo publicado no se puede volver a sortear (409)
+POST {{base}}/api/torneos/{{torneo}}/sorteo
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Sin token, las operaciones del organizador responden 401
+POST {{base}}/api/torneos/{{torneo}}/sorteo
+
+# --- Corrección después de publicar (D46, D47) ---
+
+### Reabrir: vuelve a BORRADOR para corregir. El público sigue viendo la versión 1
+POST {{base}}/api/torneos/{{torneo}}/reabrir
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### (Acá se corrige: por ejemplo, volver a programar después de un cambio)
+POST {{base}}/api/torneos/{{torneo}}/fixture/programar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Vista pública mientras está en BORRADOR: sigue mostrando la versión 1
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Republicar sin motivo: 400 (desde la versión 2 es obligatorio)
+POST {{base}}/api/torneos/{{torneo}}/publicar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+### Republicar con motivo: crea la versión 2
+POST {{base}}/api/torneos/{{torneo}}/publicar
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+Content-Type: application/json
+
+{"motivo": "Cancha fuera de servicio: se reprogramaron los partidos"}
+
+### Vista pública: ahora muestra la versión 2 y su motivo
+GET {{base}}/api/publico/torneos/{{torneo}}/equipos
+
+### Historial de versiones (organizador)
+GET {{base}}/api/torneos/{{torneo}}/publicaciones
+Authorization: Bearer {{loginCasoReal.response.body.token}}
+
+
+# =============================================================================
+# PARTE 2 — Desde cero, con un torneo chico de prueba (U9 masculino, 9 equipos en 2 zonas)
+# Ejecutar en orden: cada pedido usa el token y los ids que devolvieron los anteriores.
+# =============================================================================
+
+### Registro
+POST {{base}}/api/auth/registro
+Content-Type: application/json
+
+{"nombre": "Organizador de prueba", "email": "prueba@fixture.test", "contrasenia": "clave-de-prueba"}
+
+### Login
+# @name login
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email": "prueba@fixture.test", "contrasenia": "clave-de-prueba"}
+
+### Torneo (queda a nombre del organizador del token)
+# @name nuevoTorneo
+POST {{base}}/api/torneos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Torneo de prueba", "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 90}
+
+### Mis torneos
+GET {{base}}/api/torneos
+Authorization: Bearer {{login.response.body.token}}
+
+### Franja del sábado
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/franjas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"fecha": "2030-01-05", "desde": "09:00", "hasta": "20:00"}
+
+### Franja del domingo
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/franjas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"fecha": "2030-01-06", "desde": "09:00", "hasta": "16:00"}
+
+### Sede
+# @name sede
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/sedes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Sede de prueba"}
+
+### Cancha 1
+POST {{base}}/api/sedes/{{sede.response.body.id}}/canchas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Cancha 1"}
+
+### Cancha 2
+POST {{base}}/api/sedes/{{sede.response.body.id}}/canchas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Cancha 2"}
+
+### Categoría U9
+# @name categoria
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "U9", "minutosNetos": 28, "cantidadCuartos": 4, "pausasMin": 4,
+ "margenDetencionesMin": 10, "maxPartidosDia": 3}
+
+### Rama
+# @name rama
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/ramas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Masculino"}
+
+### Club
+# @name club
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/clubes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"nombre": "Club de prueba"}
+
+### Zona A
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/zonas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}}, "nombre": "Zona A"}
+
+### Zona B
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/zonas
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}}, "nombre": "Zona B"}
+
+### Equipo (repetir cambiando el nombre: "Equipo 2" … "Equipo 9")
+# @name equipo
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/equipos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{"clubId": {{club.response.body.id}}, "categoriaId": {{categoria.response.body.id}}, "ramaId": {{rama.response.body.id}},
+ "nombre": "Equipo 1", "responsableNombre": "Responsable de prueba", "responsableTelefono": "0000-0000"}
+
+### Sortear
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/sorteo
+Authorization: Bearer {{login.response.body.token}}
+
+### Generar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture/generar
+Authorization: Bearer {{login.response.body.token}}
+
+### Programar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture/programar
+Authorization: Bearer {{login.response.body.token}}
+
+### Ver el fixture completo (organizador)
+GET {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/fixture
+Authorization: Bearer {{login.response.body.token}}
+
+### Validar
+GET {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/validacion
+Authorization: Bearer {{login.response.body.token}}
+
+### Publicar
+POST {{base}}/api/torneos/{{nuevoTorneo.response.body.id}}/publicar
+Authorization: Bearer {{login.response.body.token}}
+
+### Fixture público del Equipo 1 (sin token)
+GET {{base}}/api/publico/torneos/{{nuevoTorneo.response.body.id}}/equipos/{{equipo.response.body.id}}/fixture
