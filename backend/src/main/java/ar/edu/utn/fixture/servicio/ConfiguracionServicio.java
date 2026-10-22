@@ -14,7 +14,13 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
+import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.CategoriaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.ConfiguracionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
+import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
@@ -187,6 +193,33 @@ public class ConfiguracionServicio {
         e.setResponsableTelefono(pedido.responsableTelefono());
         equipos.save(e);
         return Etiquetas.resumen(e);
+    }
+
+    /** Toda la configuración del torneo para mostrarla en el frontend (D56). Solo lectura; 404 si el torneo es ajeno. */
+    @Transactional(readOnly = true)
+    public ConfiguracionDetalle configuracion(Long organizadorId, Long torneoId) {
+        torneos.delOrganizador(torneoId, organizadorId);
+        List<Cancha> todasLasCanchas = canchas.findBySedeTorneoIdOrderByIdAsc(torneoId);
+        List<SedeDetalle> sedesDetalle = sedes.findByTorneoIdOrderByIdAsc(torneoId).stream()
+                .map(s -> new SedeDetalle(s.getId(), s.getNombre(), s.getDireccion(), todasLasCanchas.stream()
+                        .filter(c -> c.getSede().getId().equals(s.getId()))
+                        .map(c -> new CanchaDetalle(c.getId(), c.getNombre(), c.getHabilitada()))
+                        .toList()))
+                .toList();
+        return new ConfiguracionDetalle(
+                franjas.findByTorneoIdOrderByFechaAscDesdeAsc(torneoId).stream()
+                        .map(f -> new FranjaDetalle(f.getId(), f.getFecha(), f.getDesde(), f.getHasta())).toList(),
+                sedesDetalle,
+                categorias.findByTorneoIdOrderByIdAsc(torneoId).stream()
+                        .map(c -> new CategoriaDetalle(c.getId(), c.getNombre(), c.getMinutosNetos(), c.getCantidadCuartos(),
+                                c.getPausasMin(), c.getMargenDetencionesMin(), c.getMaxPartidosDia()))
+                        .toList(),
+                ramas.findByTorneoIdOrderByIdAsc(torneoId).stream().map(r -> new Creado(r.getId(), r.getNombre())).toList(),
+                clubes.findByTorneoIdOrderByIdAsc(torneoId).stream().map(c -> new Creado(c.getId(), c.getNombre())).toList(),
+                zonas.findByTorneoIdOrderByIdAsc(torneoId).stream()
+                        .map(z -> new ZonaDetalle(z.getId(), z.getNombre(), z.getCategoria().getId(), z.getRama().getId(),
+                                Etiquetas.zona(z)))
+                        .toList());
     }
 
     @Transactional(readOnly = true)

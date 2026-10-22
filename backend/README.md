@@ -81,6 +81,7 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | GET | `/api/torneos` | Mis torneos |
 | POST | `/api/torneos` | Crea un torneo en BORRADOR, a nombre del organizador del token |
 | GET | `/api/torneos/{id}` | Datos y estado del torneo |
+| GET | `/api/torneos/{id}/configuracion` | Toda la configuración: franjas, sedes con sus canchas, categorías, ramas, clubes y zonas |
 | POST | `/api/torneos/{id}/franjas` | Agrega una franja horaria |
 | POST | `/api/torneos/{id}/sedes` | Agrega una sede |
 | POST | `/api/sedes/{sedeId}/canchas` | Agrega una cancha a la sede |

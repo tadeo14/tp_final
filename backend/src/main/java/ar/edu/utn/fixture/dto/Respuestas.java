@@ -1,7 +1,9 @@
 package ar.edu.utn.fixture.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import ar.edu.utn.fixture.entidad.EstadoTorneo;
@@ -12,6 +14,27 @@ import ar.edu.utn.fixture.entidad.EstadoTorneo;
 public final class Respuestas {
 
     private Respuestas() {
+    }
+
+    public record FranjaDetalle(Long id, LocalDate fecha, LocalTime desde, LocalTime hasta) {
+    }
+
+    public record CanchaDetalle(Long id, String nombre, boolean habilitada) {
+    }
+
+    public record SedeDetalle(Long id, String nombre, String direccion, List<CanchaDetalle> canchas) {
+    }
+
+    public record CategoriaDetalle(Long id, String nombre, int minutosNetos, int cantidadCuartos, int pausasMin,
+            int margenDetencionesMin, int maxPartidosDia) {
+    }
+
+    public record ZonaDetalle(Long id, String nombre, Long categoriaId, Long ramaId, String etiqueta) {
+    }
+
+    /** Toda la configuración de un torneo en una sola respuesta (D56). Los equipos se piden aparte. */
+    public record ConfiguracionDetalle(List<FranjaDetalle> franjas, List<SedeDetalle> sedes,
+            List<CategoriaDetalle> categorias, List<Creado> ramas, List<Creado> clubes, List<ZonaDetalle> zonas) {
     }
 
     /** Respuesta simple al crear algo: el id y un nombre para reconocerlo. */

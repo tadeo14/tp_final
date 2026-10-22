@@ -21,6 +21,7 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
+import ar.edu.utn.fixture.dto.Respuestas.ConfiguracionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
@@ -105,6 +106,12 @@ public class TorneoControlador {
     @ResponseStatus(HttpStatus.CREATED)
     public EquipoResumen inscribirEquipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @Valid @RequestBody NuevoEquipo pedido) {
         return servicio.inscribirEquipo(organizadorId, torneoId, pedido);
+    }
+
+    /** Toda la configuración del torneo (franjas, sedes y canchas, categorías, ramas, clubes y zonas), D56. */
+    @GetMapping("/torneos/{torneoId}/configuracion")
+    public ConfiguracionDetalle configuracion(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+        return servicio.configuracion(organizadorId, torneoId);
     }
 
     @GetMapping("/torneos/{torneoId}/equipos")
