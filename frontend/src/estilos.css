@@ -133,6 +133,16 @@ table { width: 100%; border-collapse: collapse; background: var(--tarjeta); font
 th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--borde); vertical-align: top; }
 th { background: #eef1f5; }
 
+/* ---------- Detalle del torneo ---------- */
+.titulo-torneo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.titulo-torneo h1 { margin: 0.25rem 0; }
+.subtarjeta { border-top: 1px solid var(--borde); padding-top: 0.75rem; margin-top: 0.75rem; }
+.formulario-alta { margin-top: 0.75rem; }
+.formulario-alta fieldset { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.formulario-alta fieldset:disabled { opacity: 0.6; }
+.formulario-alta h3 { margin: 0.5rem 0 0; }
+.paso button { margin-bottom: 0.25rem; }
+
 /* ---------- Pantallas grandes ---------- */
 @media (min-width: 600px) {
   .fila { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
