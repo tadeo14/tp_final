@@ -1,7 +1,8 @@
 # DER — Modelo de datos (P0)
 
 > DDL completo en las migraciones Flyway [`V1__esquema_inicial.sql`](../backend/src/main/resources/db/migration/V1__esquema_inicial.sql)
-> y [`V2__publicaciones.sql`](../backend/src/main/resources/db/migration/V2__publicaciones.sql) (versiones publicadas).
+> , [`V2__publicaciones.sql`](../backend/src/main/resources/db/migration/V2__publicaciones.sql) (versiones publicadas)
+> y [`V3__club_en_foto.sql`](../backend/src/main/resources/db/migration/V3__club_en_foto.sql) (club en la foto).
 > Cubre solo el alcance P0 de `CLAUDE.md`: no hay comidas, resultados, fase final ni jugadores.
 
 ## Diagrama
@@ -124,6 +125,8 @@ erDiagram
         bigint equipo_visitante_id "sin FK"
         varchar equipo_local
         varchar equipo_visitante
+        varchar club_local "V3"
+        varchar club_visitante "V3"
         varchar categoria
         varchar rama
         varchar zona
@@ -153,7 +156,7 @@ sirven para filtrar el fixture de un equipo, pero no son claves foráneas (D46).
 | `equipo` | Equipo inscripto | Solo responsable y teléfono como datos personales. `zona_id` + `orden_en_zona` = resultado del sorteo |
 | `partido` | Enfrentamiento del fixture | Lo crea el generador (zona, equipos, ronda) y lo completa el programador (cancha, inicio). La base no impide asignar una cancha de otro torneo: eso lo controla R5 |
 | `publicacion` | Una versión publicada del fixture (V2) | Número 1, 2, 3… por torneo. La última es la que ve el público. El motivo es obligatorio desde la versión 2 |
-| `partido_publicado` | Foto de un partido tal como se publicó (V2) | Textos desnormalizados, inmutable: nunca se hace UPDATE. Cambiar equipos, canchas o configuración no la afecta |
+| `partido_publicado` | Foto de un partido tal como se publicó (V2, club en V3) | Textos desnormalizados (equipos y sus clubes, zona, sede, cancha, horarios), inmutable: nunca se hace UPDATE. Cambiar equipos, clubes, canchas o configuración no la afecta |
 
 ## Versiones publicadas (D46, D47, D48)
 
@@ -164,6 +167,7 @@ sirven para filtrar el fixture de un equipo, pero no son claves foráneas (D46).
   `cancha`…). Un torneo nunca publicado no existe para el público.
 - **La foto guarda el `fin`** del partido, a diferencia de `partido` (D8): es el horario que se comunicó, y no tiene
   que cambiar si después cambian las duraciones de la categoría (D48).
+- **La foto guarda el club** de cada equipo (V3): las familias buscan el fixture por club (D48).
 
 ## Cálculos que no se guardan (D8)
 

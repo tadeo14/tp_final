@@ -30,7 +30,7 @@ El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`]
 | Paso | Entregable | Docs |
 |---|---|---|
 | 1. Definición del problema | Caso real, restricciones R1–R8, decisiones | [`restricciones.md`](docs/restricciones.md), [`decisiones.md`](docs/decisiones.md) |
-| 2. Modelo de datos | DER y migraciones Flyway V1 (11 tablas) y V2 (versiones publicadas) | [`der.md`](docs/der.md) |
+| 2. Modelo de datos | DER y migraciones Flyway V1 (11 tablas), V2 (versiones publicadas) y V3 (club en la foto) | [`der.md`](docs/der.md) |
 | 3. Proyecto Spring Boot | Java 17, Spring Boot 3.5, JPA, Flyway, PostgreSQL | [`backend/README.md`](backend/README.md) |
 | 4. Sorteo y enfrentamientos | Método del círculo — tests T1, T2 | [`algoritmo-enfrentamientos.md`](docs/algoritmo-enfrentamientos.md) |
 | 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
