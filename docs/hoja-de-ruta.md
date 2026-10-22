@@ -23,13 +23,21 @@
 | 14 | C | Video | Guion en inglés + grabación | PENDIENTE |
 | 15 | C | Defensa oral | Presentación + ensayo de preguntas | PENDIENTE |
 
+## A confirmar con el organizador real
+
+**Reparto de los partidos entre sábado y domingo.** Hoy el programador llena el sábado primero: con el caso real,
+35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida"). El fixture es válido.
+
+No se implementa nada hasta confirmarlo con el organizador real: para clubes y familias puede ser preferible jugar
+un solo día y evitar un segundo traslado (devolución G165-dev_3). Si el organizador pide repartir, entra como
+**preferencia de optimización** del programador, **no** como una restricción obligatoria nueva (R1–R8 no cambian).
+
 ## Mejoras P1 (si sobra tiempo, en este orden)
 
-Ninguna se empieza antes de terminar la fase A.
+Ninguna se empieza antes de terminar la fase A. Según la devolución G165-dev_3, el foco ahora es
+autenticación → frontend mínimo → despliegue → prueba con el organizador real, no módulos nuevos.
 
-1. **Repartir los partidos de cada equipo entre los días.** Hoy el programador llena el sábado primero:
-   con el caso real, 35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida").
-2. Fase final con cruces entre zonas.
-3. Edición manual de partidos (validada con las mismas reglas R1–R8).
-4. Carga de resultados.
-5. Turnos de comidas.
+1. Fase final con cruces entre zonas.
+2. Edición manual de partidos (validada con las mismas reglas R1–R8).
+3. Carga de resultados.
+4. Turnos de comidas.

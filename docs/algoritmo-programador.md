@@ -97,8 +97,10 @@ El fixture es válido (cumple R1–R8), pero con el caso real queda así:
 Para un torneo de fin de semana esto no es lo que espera la organización: muchos equipos terminan el sábado y el
 domingo queda casi vacío (16 partidos, el último termina 12:30).
 
-Repartir los partidos de cada equipo entre los días es una **optimización**, que está fuera de P0
-("optimización de tiempos muertos"). Quedó registrada como **primera mejora P1** en [`hoja-de-ruta.md`](hoja-de-ruta.md).
+Antes de cambiar nada hay que **confirmarlo con el organizador real**: para clubes y familias puede ser mejor jugar
+un solo día y evitar un segundo traslado. Si pide repartir, entra como **preferencia de optimización** del
+programador, no como una restricción obligatoria nueva: R1–R8 no cambian y el fixture actual sigue siendo válido.
+Ver [`hoja-de-ruta.md`](hoja-de-ruta.md), "A confirmar con el organizador real".
 
 ## Tests
 

@@ -64,7 +64,8 @@ un equipo). Detalle en [`backend/README.md`](backend/README.md).
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
-  el sábado. El fixture es válido, pero no está equilibrado. Es la primera mejora P1.
+  el sábado. El fixture es válido. Antes de cambiarlo hay que confirmar con el organizador real si es un problema;
+  si lo es, entra como preferencia de optimización, no como regla nueva.
 - **Base online:** el entorno de desarrollo no llega a Neon; por ahora se prueba con PostgreSQL local (D24).
   La base online se configura en el despliegue (paso 9).
 
