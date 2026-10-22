@@ -1,0 +1,13 @@
+# Lo que no hace falta mandarle a Docker para construir la imagen.
+target/
+.mvn/
+mvnw
+mvnw.cmd
+.idea/
+.vscode/
+*.iml
+.env
+*.http
+README.md
+Dockerfile
+.dockerignore
