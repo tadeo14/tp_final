@@ -1,5 +1,5 @@
 # =============================================================================
-# Blueprint de Render (opcional): describe el servicio del backend para crearlo desde el panel de Render
+# Blueprint de Render (opcional): describe el backend y el frontend para crearlos desde el panel de Render
 # (New → Blueprint). Está en la raíz del repo porque Render lo exige ahí (D51).
 # Las variables NO tienen valores: Render los pide al crear el Blueprint. Ver docs/deploy.md.
 # =============================================================================
@@ -28,5 +28,21 @@ services:
         generateValue: true
       - key: JWT_EXPIRACION_MIN  # opcional: 480 si no se define
         sync: false
-      - key: CORS_ORIGENES       # opcional: dominio del frontend cuando exista
+      - key: CORS_ORIGENES       # URL del frontend, ej. https://fixture-frontend.onrender.com (sin / al final)
         sync: false
+
+  # Frontend: sitio estático (D58). La URL del backend sale de frontend/.env.production (VITE_API_URL, D54).
+  - type: web
+    name: fixture-frontend
+    runtime: static
+    branch: developC
+    # Con rootDir, Render solo vuelve a desplegar si cambia algo dentro de frontend/.
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    # Las rutas de react-router (/torneos/5, /torneo/5/equipo/12) no son archivos: se sirve index.html y
+    # react-router muestra la pantalla. Sin esto, recargar o abrir un enlace de WhatsApp da 404.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

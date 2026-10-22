@@ -11,7 +11,7 @@ Spring Boot 3.5 · Java 17 · Maven (incluye wrapper: no hace falta instalar Mav
 | `DB_PASSWORD` | contraseña de la base — **nunca** se sube al repo |
 | `JWT_SECRETO` | secreto para firmar los tokens, al menos 32 caracteres. Generarlo con `head -c 48 /dev/urandom \| base64` — **nunca** se sube al repo |
 | `JWT_EXPIRACION_MIN` | (opcional) minutos que dura un token; `480` si no se define |
-| `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-front.onrender.com` |
+| `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-frontend.onrender.com`. En local, `http://localhost:5173` para usar el frontend |
 
 | `PORT` | (opcional) puerto HTTP; `8080` si no se define. Render lo define solo |
 

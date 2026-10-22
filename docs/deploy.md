@@ -1,10 +1,15 @@
-# Despliegue: backend en Render + base en Supabase
+# Despliegue: backend y frontend en Render + base en Supabase
 
-> Paso 9 de la hoja de ruta. El backend corre en **Render** (web service con Docker, plan gratis) y la base
-> PostgreSQL en **Supabase** (plan gratis). Decisiones D49 a D53.
+> Pasos 9 y 12 de la hoja de ruta. El backend corre en **Render** (web service con Docker, plan gratis), la base
+> PostgreSQL en **Supabase** (plan gratis) y el frontend en **Render** como sitio estático (gratis).
+> Decisiones D49 a D53 y D58. El frontend se explica en la sección 8.
 
 ```
-Navegador / recorrido.http ──HTTPS──▶ Render: fixture-backend (Docker, Java 17)
+Navegador ──HTTPS──▶ Render: fixture-frontend (sitio estático: HTML + JS de React)
+    │
+    │ fetch a VITE_API_URL (CORS: el backend acepta el dominio de CORS_ORIGENES)
+    ▼
+Render: fixture-backend (Docker, Java 17)   ◀── también recorrido.http
                                              │
                                              │ JDBC + SSL, Session pooler (IPv4, puerto 5432)
                                              ▼
@@ -101,7 +106,7 @@ Hay dos formas. La **A** es la que se recomienda; la **B** usa el archivo `rende
 | `DB_PASSWORD` | Sí | La contraseña de la base |
 | `JWT_SECRETO` | Sí | Al menos 32 caracteres al azar. En el panel, el botón **Generate** de Render; o `openssl rand -base64 48` |
 | `JWT_EXPIRACION_MIN` | No | Minutos que dura un login. Si no se define: **480** (8 horas) |
-| `CORS_ORIGENES` | No | Dominio del frontend cuando exista, ej. `https://fixture-front.onrender.com`. Vacío: ningún otro dominio puede llamar a la API |
+| `CORS_ORIGENES` | Sí, para usar el frontend | URL del frontend (sección 8), ej. `https://fixture-frontend.onrender.com`, sin `/` al final. Varias, separadas por coma. Vacío: ningún navegador desde otro dominio puede llamar a la API |
 
 **No hay que definir:**
 - `PORT`: lo pone Render, y la aplicación lo lee.
@@ -183,3 +188,63 @@ Después de restaurar, al arrancar el backend Flyway ve las migraciones ya aplic
 | `password authentication failed` | `DB_USER` sin el `.<id>` del proyecto, o contraseña equivocada |
 | `Tenant or user not found` | `DB_USER` o región del host equivocados: copiarlos de nuevo de **Connect → Session pooler** |
 | El servicio se reinicia solo al arrancar | Se quedó sin memoria o el health check no respondió: revisar que el Health Check Path sea `/api/salud` |
+
+## 8. Frontend: sitio estático en Render
+
+El frontend (`/frontend`, React + Vite, D54) se compila a archivos estáticos (`dist/`): no necesita servidor propio.
+La URL del backend está en [`frontend/.env.production`](../frontend/.env.production)
+(`VITE_API_URL=https://fixture-backend-anko.onrender.com`) y queda **dentro** del JavaScript al compilar.
+
+### A. Desde el panel (recomendada)
+
+1. En Render: **New → Static Site** → elegir el repo `tadeo14/tp_final`.
+2. Completar:
+
+   | Campo | Valor |
+   |---|---|
+   | **Name** | `fixture-frontend` (define la URL: `https://fixture-frontend.onrender.com`; si está tomado, Render agrega un sufijo) |
+   | **Branch** | `developC` |
+   | **Root Directory** | `frontend` |
+   | **Build Command** | `npm ci && npm run build` |
+   | **Publish Directory** | `dist` |
+
+   No hace falta ninguna variable de entorno: `VITE_API_URL` sale de `.env.production`. Si alguna vez cambia la URL
+   del backend, se puede definir `VITE_API_URL` en **Environment** (tiene prioridad sobre el archivo) y volver a
+   desplegar, porque se lee al compilar, no al abrir la página.
+3. **Create Static Site.** El build tarda 1 o 2 minutos.
+4. **Regla de reescritura (obligatoria).** En el sitio: **Redirects/Rewrites → Add Rule**:
+
+   | Source | Destination | Action |
+   |---|---|---|
+   | `/*` | `/index.html` | **Rewrite** |
+
+   Sin esta regla, entrar directo a `/torneo/5` o recargar cualquier pantalla da **Not Found**: esas rutas no son
+   archivos, las resuelve react-router dentro de `index.html`. Los archivos que sí existen (`/assets/...`,
+   `/pelota.svg`) se siguen sirviendo normalmente.
+
+### B. Con el Blueprint
+
+`render.yaml` ya describe el sitio `fixture-frontend` (con la regla de reescritura). Si el backend ya se creó
+desde el panel, conviene crear el frontend también desde el panel (A), para no duplicar el backend.
+
+### Conectar el backend con el frontend (CORS)
+
+El navegador solo deja que la página del frontend llame a la API si el backend lo autoriza:
+
+1. Copiar la URL del sitio estático que muestra Render arriba a la izquierda, por ejemplo
+   `https://fixture-frontend.onrender.com` (con `https://` y **sin** `/` al final).
+2. En el servicio **fixture-backend → Environment**, poner esa URL en `CORS_ORIGENES` y guardar
+   (**Save, rebuild and deploy** o **Save and deploy**). El backend se reinicia con el valor nuevo.
+3. Si se usa también un dominio propio u otra URL, agregarla separada por coma:
+   `https://fixture-frontend.onrender.com,https://fixture.ejemplo.com`.
+
+Si falta este paso, el login muestra **"No se pudo conectar con el servidor…"** y la consola del navegador (F12)
+dice `blocked by CORS policy`.
+
+### Verificar
+
+1. Abrir la URL del frontend: tiene que aparecer el login. La primera vez puede tardar ~1 minuto si el backend
+   estaba dormido (la pantalla avisa "El servidor se está despertando").
+2. Crear una cuenta, crear un torneo y recorrer las pestañas Configuración → Recorrido → Publicación.
+3. Desde Publicación, **Ver la vista pública**, copiar el enlace y abrirlo en otro navegador o en el celular
+   **sin** iniciar sesión. Recargar la página: tiene que seguir funcionando (eso prueba la regla de reescritura).
