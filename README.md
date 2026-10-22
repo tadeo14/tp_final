@@ -66,13 +66,13 @@ un equipo). Detalle en [`backend/README.md`](backend/README.md).
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
   el sábado. El fixture es válido. Antes de cambiarlo hay que confirmar con el organizador real si es un problema;
   si lo es, entra como preferencia de optimización, no como regla nueva.
-- **Base online:** el entorno de desarrollo no llega a Neon; por ahora se prueba con PostgreSQL local (D24).
-  La base online se configura en el despliegue (paso 9).
+- **Despliegue (paso 9):** listo para Render (Docker) + Supabase, guía en [`docs/deploy.md`](docs/deploy.md).
+  En el plan gratis, el primer pedido después de 15 minutos sin uso tarda alrededor de 1 minuto (arranque en frío).
 
 ## Stack
 
 Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven.
-Más adelante: frontend en React y despliegue (Render/Railway + Vercel/Netlify).
+Despliegue: Render (Docker) + Supabase ([`docs/deploy.md`](docs/deploy.md)). Más adelante: frontend en React.
 
 ## Estructura
 

@@ -6,14 +6,26 @@ Spring Boot 3.5 · Java 17 · Maven (incluye wrapper: no hace falta instalar Mav
 
 | Variable | Ejemplo |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://<host>/<base>?sslmode=require` |
-| `DB_USER` | usuario de la base |
+| `DB_URL` | En local: `jdbc:postgresql://localhost:5432/fixture_test`. En Supabase: el Session pooler, `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require` (ver [`docs/deploy.md`](../docs/deploy.md)) |
+| `DB_USER` | usuario de la base (en Supabase: `postgres.<id-del-proyecto>`) |
 | `DB_PASSWORD` | contraseña de la base — **nunca** se sube al repo |
 | `JWT_SECRETO` | secreto para firmar los tokens, al menos 32 caracteres. Generarlo con `head -c 48 /dev/urandom \| base64` — **nunca** se sube al repo |
-| `JWT_EXPIRACION_MIN` | minutos que dura un token, por ejemplo `120` |
+| `JWT_EXPIRACION_MIN` | (opcional) minutos que dura un token; `480` si no se define |
 | `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-front.onrender.com` |
 
-Sin `JWT_SECRETO` o `JWT_EXPIRACION_MIN` la aplicación no arranca. Los tests no las necesitan: generan un secreto al azar.
+| `PORT` | (opcional) puerto HTTP; `8080` si no se define. Render lo define solo |
+
+Sin `JWT_SECRETO` la aplicación no arranca. Los tests no lo necesitan: generan un secreto al azar.
+
+## Docker
+
+```bash
+docker build -t fixture-backend .
+docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e JWT_SECRETO=... fixture-backend
+```
+
+La imagen compila con Maven y JDK 17 y corre con el JRE 17, con la memoria limitada para el plan gratis de
+Render (D49). Despliegue paso a paso en [`docs/deploy.md`](../docs/deploy.md).
 
 ## Comandos
 
