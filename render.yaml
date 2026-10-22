@@ -1,0 +1,32 @@
+# =============================================================================
+# Blueprint de Render (opcional): describe el servicio del backend para crearlo desde el panel de Render
+# (New → Blueprint). Está en la raíz del repo porque Render lo exige ahí (D51).
+# Las variables NO tienen valores: Render los pide al crear el Blueprint. Ver docs/deploy.md.
+# =============================================================================
+services:
+  - type: web
+    name: fixture-backend
+    runtime: docker
+    plan: free
+    branch: developC
+    # Rutas desde la raíz del repo: el Dockerfile y lo que necesita están en backend/.
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    # Solo se vuelve a desplegar si cambia algo dentro de backend/.
+    buildFilter:
+      paths:
+        - backend/**
+    healthCheckPath: /api/salud
+    envVars:
+      - key: DB_URL              # jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
+        sync: false
+      - key: DB_USER             # postgres.<id-del-proyecto>
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRETO         # Render genera un valor al azar
+        generateValue: true
+      - key: JWT_EXPIRACION_MIN  # opcional: 480 si no se define
+        sync: false
+      - key: CORS_ORIGENES       # opcional: dominio del frontend cuando exista
+        sync: false

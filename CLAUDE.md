@@ -36,7 +36,7 @@ Si algo de este archivo contradice esos documentos, mandan los documentos. Si en
 /docs       Documentación, decisiones, DER, informes
 ```
 
-Todo archivo nuevo va en una de estas carpetas.
+Todo archivo nuevo va en una de estas carpetas. Única excepción: `render.yaml` en la raíz, porque Render lo exige ahí (D51).
 
 ## Alcance actual (P0)
 
