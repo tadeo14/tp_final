@@ -1,6 +1,7 @@
 # Caso real de referencia
 
-> Torneo formativo real, anonimizado (clubes identificados como Club A y Club B).
+> Torneo formativo real, anonimizado (las sedes se identifican como Club A y Club B).
+> Los clubes de los equipos en los datos de ejemplo son nombres reales con participación ficticia (sección 4).
 > Es el **principal caso de prueba del sistema**, como pidió el tutor.
 
 ## 1. Situación actual (cómo se organiza hoy)
@@ -99,7 +100,43 @@ Además, todos contra todos son 240 partidos ≈ 261 horas de cancha, contra 144
 
 La ocupación del 68% hace que el caso no sea trivial: entra en total, pero el programador tiene que respetar a la vez canchas, descansos y topes diarios.
 
-## 4. Referencias consultadas
+## 4. Datos de ejemplo: clubes de los equipos
+
+El caso real no dice de qué club es cada equipo. Para que el ejemplo se parezca a un torneo real, `database/caso_real.sql`
+usa **14 clubes con nombres reales** de básquet de Argentina, tomados de información pública: notas de los diarios
+**Conclusión** y **La Capital** sobre el básquet de la región (D59).
+
+> **Los equipos y su reparto entre los clubes son ficticios.** No representan la participación real de ningún club
+> en este ni en ningún torneo. Responsable y teléfono siguen siendo de prueba.
+
+Provincial · Sportsmen Unidos · Náutico Sportivo Avellaneda · Unión Sionista · Sportivo América ·
+Santa Paula de Gálvez · Almagro de Esperanza · Atlético Carcarañá · Atalaya · Unión de Santo Tomé ·
+Paganini Alumni de Granadero Baigorria · Alumni de Casilda · Unión de Santa Fe · Centenario de Venado Tuerto
+
+**Reparto (sin azar, siempre igual):** los 55 equipos se numeran en orden (U9 masculino, U9 femenino, U11 masculino,
+U11 femenino, U13 masculino, U13 femenino) y se reparten como cartas: el equipo *k* va al club número
+((*k* − 1) mod 14) + 1, en el orden de la lista. Como ningún grupo tiene más de 14 equipos, un club nunca tiene dos
+equipos en la misma categoría y rama. Resultado: 13 clubes con 4 equipos y 1 con 3, todos con equipos en 3 categorías
+y en las 2 ramas. Cada equipo se llama como su club (en una misma categoría y rama no se repite).
+
+| Club | Equipos |
+|---|---|
+| Provincial | U9 M, U9 F, U11 F, U13 M |
+| Sportsmen Unidos | U9 M, U11 M, U11 F, U13 M |
+| Náutico Sportivo Avellaneda | U9 M, U11 M, U11 F, U13 F |
+| Unión Sionista | U9 M, U11 M, U11 F, U13 F |
+| Sportivo América | U9 M, U11 M, U11 F, U13 F |
+| Santa Paula de Gálvez | U9 M, U11 M, U11 F, U13 F |
+| Almagro de Esperanza | U9 M, U11 M, U11 F, U13 F |
+| Atlético Carcarañá | U9 M, U11 M, U11 F, U13 F |
+| Atalaya | U9 M, U11 M, U13 M, U13 F |
+| Unión de Santo Tomé | U9 M, U11 M, U13 M, U13 F |
+| Paganini Alumni de Granadero Baigorria | U9 F, U11 M, U13 M, U13 F |
+| Alumni de Casilda | U9 F, U11 M, U13 M, U13 F |
+| Unión de Santa Fe | U9 F, U11 M, U13 M, U13 F |
+| Centenario de Venado Tuerto | U9 F, U11 F, U13 M |
+
+## 5. Referencias consultadas
 
 - NBA & USA Basketball, *Youth Guidelines* (https://youthguidelines.nba.com): para 9 a 14 años recomienda como máximo 2 partidos por día, con precaución. No fija minutos de descanso. Nuestro tope de 3 es más permisivo.
 - No se encontró una norma argentina pública que fije topes de partidos o descansos en torneos formativos. Los valores de este torneo los definió la organización.
