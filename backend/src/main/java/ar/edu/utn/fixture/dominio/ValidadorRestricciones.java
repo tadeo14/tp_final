@@ -4,7 +4,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,6 +42,28 @@ public class ValidadorRestricciones {
         revisarCanchas(config, programados, violaciones);      // R1
         revisarEquipos(config, programados, violaciones);      // R2, R3 y R6
 
+        return new ResultadoValidacion<>(violaciones);
+    }
+
+    /**
+     * Como {@link #validar(ConfiguracionTorneo, List)}, y además R8 para los equipos: cada equipo inscripto tiene
+     * que jugar al menos un partido del fixture. Detecta, por ejemplo, un equipo dado de alta después del sorteo
+     * (no tiene zona ni partidos). La usa el servicio antes de publicar (D65).
+     */
+    public <E, C> ResultadoValidacion<E, C> validar(ConfiguracionTorneo<C> config, List<PartidoProgramado<E, C>> partidos,
+            Collection<E> equiposInscriptos) {
+        List<Violacion<E, C>> violaciones = new ArrayList<>(validar(config, partidos).violaciones());
+        Set<E> conPartidos = new HashSet<>();
+        for (PartidoProgramado<E, C> p : partidos) {
+            conPartidos.add(p.local());
+            conPartidos.add(p.visitante());
+        }
+        for (E equipo : equiposInscriptos) {
+            if (!conPartidos.contains(equipo)) {
+                violaciones.add(new Violacion<>(Restriccion.R8,
+                        "El equipo " + equipo + " está inscripto pero no tiene partidos en el fixture", List.of()));
+            }
+        }
         return new ResultadoValidacion<>(violaciones);
     }
 

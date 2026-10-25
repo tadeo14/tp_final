@@ -53,7 +53,7 @@ Si un fixture viola **cualquiera** de estas reglas, es **inválido**: no se guar
 | R5 | Cancha habilitada | El partido se asigna a una cancha habilitada del torneo |
 | R6 | Tope diario | Un equipo no juega más del máximo de partidos por día |
 | R7 | Inicio en turno | El inicio coincide con un turno válido (9:00, 9:15, 9:30… si es cada 15) |
-| R8 | Completitud | Todos los partidos generados quedan programados |
+| R8 | Completitud | Todos los partidos generados quedan programados, y todo equipo inscripto tiene partidos en el fixture (D65) |
 
 Ejemplo de R3 (U9, bloque 60, descanso 90): juega 9:00–10:00 → no puede empezar otro partido antes de las 11:30.
 

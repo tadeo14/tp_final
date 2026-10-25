@@ -15,6 +15,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Recorrido completo de CLAUDE.md por la API, con un torneo chico de prueba:
  * crear torneo → categoría → equipos → canchas y franjas → sortear → generar → programar → validar → publicar
@@ -147,6 +149,30 @@ class RecorridoApiTest extends ApiTestBase {
         mvc.perform(post(base + "/publicar"))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.detalles[0]").value(org.hamcrest.Matchers.startsWith("R8")));
+        mvc.perform(get(base)).andExpect(jsonPath("$.estado").value("BORRADOR"));
+    }
+
+    @Test
+    void equipoInscriptoDespuesDelSorteo_noSePuedePublicarYSeDiceQueEquipoFalta() throws Exception {
+        configurarTorneoChico();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(post(base + "/sorteo")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/generar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/programar")).andExpect(status().isOk());
+
+        // Alta tardía: el equipo no tiene zona ni partidos (D65). El alta no pide confirmación.
+        JsonNode config = json.readTree(mvc.perform(get(base + "/configuracion")).andReturn().getResponse().getContentAsString());
+        crear(base + "/equipos", ConfiguracionApiTest.equipo(config.get("clubes").get(0).get("id").asLong(),
+                config.get("categorias").get(0).get("id").asLong(), config.get("ramas").get(0).get("id").asLong(), "Equipo tardío"));
+
+        String falta = "El equipo Equipo tardío (U9 Masculino) está inscripto pero no tiene partidos en el fixture";
+        mvc.perform(get(base + "/validacion"))
+                .andExpect(jsonPath("$.valido").value(false))
+                .andExpect(jsonPath("$.violaciones[0].regla").value("R8"))
+                .andExpect(jsonPath("$.violaciones[0].detalle").value(falta));
+        mvc.perform(post(base + "/publicar"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.detalles[0]").value("R8: " + falta));
         mvc.perform(get(base)).andExpect(jsonPath("$.estado").value("BORRADOR"));
     }
 

@@ -283,7 +283,9 @@ public class FixtureServicio {
         ConfiguracionTorneo<CanchaRef> config = AdaptadorDominio.configuracion(torneo,
                 franjas.findByTorneoIdOrderByFechaAscDesdeAsc(torneoId),
                 canchas.findBySedeTorneoIdAndHabilitadaTrueOrderByIdAsc(torneoId));
-        return validador.validar(config, fixture.stream().map(AdaptadorDominio::programado).toList());
+        // También R8 para los equipos: todos los inscriptos tienen que tener partidos (D65).
+        List<EquipoRef> inscriptos = equipos.findByTorneoIdOrderByIdAsc(torneoId).stream().map(AdaptadorDominio::equipo).toList();
+        return validador.validar(config, fixture.stream().map(AdaptadorDominio::programado).toList(), inscriptos);
     }
 
     // ------------------------------------------------------------------ consulta del organizador

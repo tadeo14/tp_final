@@ -18,7 +18,10 @@ import ar.edu.utn.fixture.entidad.Torneo;
  */
 final class AdaptadorDominio {
 
-    /** Cómo ve el dominio a un equipo: el id lo identifica y el nombre aparece en los mensajes. */
+    /**
+     * Cómo ve el dominio a un equipo: el id lo identifica y el nombre aparece en los mensajes, con su categoría y
+     * rama para distinguir equipos del mismo club (D65): "Unión Sionista (U13 Femenino)".
+     */
     record EquipoRef(Long id, String nombre) {
         @Override
         public String toString() {
@@ -38,7 +41,8 @@ final class AdaptadorDominio {
     }
 
     static EquipoRef equipo(Equipo e) {
-        return new EquipoRef(e.getId(), e.getNombre());
+        return new EquipoRef(e.getId(),
+                e.getNombre() + " (" + e.getCategoria().getNombre() + " " + e.getRama().getNombre() + ")");
     }
 
     static CanchaRef cancha(Cancha c) {
