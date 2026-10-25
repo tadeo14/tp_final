@@ -6,6 +6,7 @@ import Encabezado from '../componentes/Encabezado.jsx';
 import EstadoTorneo from '../componentes/EstadoTorneo.jsx';
 import MensajeError from '../componentes/MensajeError.jsx';
 import Configuracion from '../componentes/torneo/Configuracion.jsx';
+import ParametrosTorneo from '../componentes/torneo/ParametrosTorneo.jsx';
 import Publicacion from '../componentes/torneo/Publicacion.jsx';
 import Recorrido from '../componentes/torneo/Recorrido.jsx';
 
@@ -51,10 +52,7 @@ export default function Torneo() {
               <h1>{torneo.nombre}</h1>
               <EstadoTorneo estado={torneo.estado} />
             </div>
-            <p className="nota">
-              Turnos cada {torneo.turnosCadaMin} min · recambio {torneo.recambioMin} min · descanso mínimo{' '}
-              {torneo.descansoMinimoMin} min
-            </p>
+            <ParametrosTorneo torneo={torneo} publicado={publicado} recargar={recargar} />
 
             <div className="pestanias" role="tablist">
               {PESTANIAS.map((p) => (
