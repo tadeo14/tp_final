@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
+import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
+import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.servicio.EdicionServicio;
 import jakarta.validation.Valid;
@@ -42,5 +44,19 @@ public class EdicionControlador {
     public void borrarFranja(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
             @PathVariable Long franjaId, @RequestParam(defaultValue = "false") boolean confirmar) {
         servicio.borrarFranja(organizadorId, torneoId, franjaId, confirmar);
+    }
+
+    @PutMapping("/torneos/{torneoId}/equipos/{equipoId}")
+    public EquipoResumen editarEquipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long equipoId, @Valid @RequestBody NuevoEquipo pedido,
+            @RequestParam(defaultValue = "false") boolean confirmar) {
+        return servicio.editarEquipo(organizadorId, torneoId, equipoId, pedido, confirmar);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/equipos/{equipoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarEquipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long equipoId, @RequestParam(defaultValue = "false") boolean confirmar) {
+        servicio.borrarEquipo(organizadorId, torneoId, equipoId, confirmar);
     }
 }
