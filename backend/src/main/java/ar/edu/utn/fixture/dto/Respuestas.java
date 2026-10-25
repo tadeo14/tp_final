@@ -34,6 +34,23 @@ public final class Respuestas {
     public record ZonaDetalle(Long id, String nombre, Long categoriaId, Long ramaId, String etiqueta) {
     }
 
+    /** Una zona propuesta y cuántos equipos van a quedar en ella después del sorteo (D69). */
+    public record ZonaPropuesta(String nombre, int equipos) {
+    }
+
+    /**
+     * Propuesta para una categoría y rama: las zonas a crear, las que ya hay (se reemplazarían) y, si no se propone
+     * ninguna, por qué.
+     */
+    public record GrupoPropuesto(Long categoriaId, String categoria, Long ramaId, String rama, int equipos,
+            List<ZonaPropuesta> zonas, List<String> zonasActuales, String aviso) {
+    }
+
+    /** Vista previa de "Proponer zonas" (D69): no guarda nada. */
+    public record PropuestaDeZonas(int maximoEquiposPorZona, List<GrupoPropuesto> grupos, int totalZonas,
+            boolean reemplazaZonas) {
+    }
+
     /** Toda la configuración de un torneo en una sola respuesta (D56). Los equipos se piden aparte. */
     public record ConfiguracionDetalle(List<FranjaDetalle> franjas, List<SedeDetalle> sedes,
             List<CategoriaDetalle> categorias, List<Creado> ramas, List<Creado> clubes, List<ZonaDetalle> zonas) {

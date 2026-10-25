@@ -34,7 +34,8 @@ final class MensajesValidacion {
             Map.entry("categoriaId", "Categoría"),
             Map.entry("ramaId", "Rama"),
             Map.entry("responsableNombre", "Responsable"),
-            Map.entry("responsableTelefono", "Teléfono del responsable"));
+            Map.entry("responsableTelefono", "Teléfono del responsable"),
+            Map.entry("maximoEquiposPorZona", "Máximo de equipos por zona"));
 
     /** Mensaje por tipo de anotación. Las que no están (por ejemplo @Size) ya traen su mensaje en español. */
     private static final Map<String, String> MENSAJES = Map.of(

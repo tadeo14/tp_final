@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -65,6 +66,12 @@ public final class Pedidos {
     }
 
     public record NuevaZona(@NotNull Long categoriaId, @NotNull Long ramaId, @NotBlank String nombre) {
+    }
+
+    /** Proponer zonas (D69): el máximo de equipos por zona no está fijo, viene en el pedido (regla 1). */
+    public record PedidoPropuestaZonas(
+            @NotNull @Min(value = 3, message = "tiene que ser al menos 3 (con 2 podría quedar una zona de un solo equipo)")
+            Integer maximoEquiposPorZona) {
     }
 
     /** Datos personales mínimos: solo responsable y teléfono (regla 7). */
