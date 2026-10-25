@@ -135,7 +135,7 @@ class RecorridoApiTest extends ApiTestBase {
         mvc.perform(post(base + "/publicar")).andExpect(status().isConflict());
         mvc.perform(post(base + "/ramas").contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"Femenino\"}"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("El torneo " + torneo + " está publicado: no se puede modificar (D20)"));
+                .andExpect(jsonPath("$.error").value("El torneo " + torneo + " está publicado: para modificarlo, primero hay que reabrirlo (D20, D47)"));
     }
 
     @Test

@@ -26,6 +26,20 @@ public interface PartidoRepositorio extends JpaRepository<Partido, Long> {
             """)
     List<Partido> buscarFixture(@Param("torneoId") Long torneoId);
 
+    @Query("select count(p) from Partido p where p.zona.torneo.id = :torneoId")
+    long contarDelTorneo(@Param("torneoId") Long torneoId);
+
+    @Query("select count(p) from Partido p where p.zona.torneo.id = :torneoId and p.inicio is not null")
+    long contarProgramadosDelTorneo(@Param("torneoId") Long torneoId);
+
+    long countByCanchaId(Long canchaId);
+
+    @Query("select count(p) from Partido p where p.cancha.sede.id = :sedeId")
+    long contarEnLaSede(@Param("sedeId") Long sedeId);
+
+    @Query("select count(p) from Partido p where p.equipoLocal.id = :equipoId or p.equipoVisitante.id = :equipoId")
+    long contarDelEquipo(@Param("equipoId") Long equipoId);
+
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("delete from Partido p where p.zona.id in (select z.id from Zona z where z.torneo.id = :torneoId)")
     void borrarDelTorneo(@Param("torneoId") Long torneoId);

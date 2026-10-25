@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import ar.edu.utn.fixture.dto.Respuestas.Error;
+import ar.edu.utn.fixture.servicio.ConfirmacionRequeridaException;
 import ar.edu.utn.fixture.servicio.ConflictoException;
 import ar.edu.utn.fixture.servicio.CredencialesInvalidasException;
 import ar.edu.utn.fixture.servicio.DatosInvalidosException;
@@ -36,6 +37,12 @@ public class ManejadorErrores {
     @ExceptionHandler(ConflictoException.class)
     public ResponseEntity<Error> conflicto(ConflictoException e) {
         return respuesta(HttpStatus.CONFLICT, e.getMessage(), List.of());
+    }
+
+    /** El cambio invalida el fixture: se puede hacer igual repitiendo el pedido con confirmar=true (D66). */
+    @ExceptionHandler(ConfirmacionRequeridaException.class)
+    public ResponseEntity<Error> confirmacionRequerida(ConfirmacionRequeridaException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new Error(e.getMessage(), List.of(), true));
     }
 
     @ExceptionHandler(DatosInvalidosException.class)

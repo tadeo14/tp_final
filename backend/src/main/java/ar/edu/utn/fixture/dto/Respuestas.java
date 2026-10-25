@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import ar.edu.utn.fixture.entidad.EstadoTorneo;
 
 /**
@@ -98,7 +100,15 @@ public final class Respuestas {
             List<PartidoDeEquipo> partidos, List<Integer> rondasLibres) {
     }
 
-    /** Formato de todos los errores de la API. */
-    public record Error(String error, List<String> detalles) {
+    /**
+     * Formato de todos los errores de la API. {@code requiereConfirmacion} solo aparece (true) cuando el cambio se
+     * puede hacer igual repitiendo el pedido con {@code confirmar=true} (D66); en los demás errores no se manda.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Error(String error, List<String> detalles, Boolean requiereConfirmacion) {
+
+        public Error(String error, List<String> detalles) {
+            this(error, detalles, null);
+        }
     }
 }
