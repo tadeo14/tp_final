@@ -21,6 +21,7 @@ import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.EquipoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
@@ -226,6 +227,16 @@ public class ConfiguracionServicio {
     public List<EquipoResumen> listarEquipos(Long organizadorId, Long torneoId) {
         torneos.delOrganizador(torneoId, organizadorId);
         return equipos.findByTorneoIdOrderByIdAsc(torneoId).stream().map(Etiquetas::resumen).toList();
+    }
+
+    /** Un equipo con sus datos de contacto, para el formulario de edición (D67). 404 si el torneo es ajeno. */
+    @Transactional(readOnly = true)
+    public EquipoDetalle equipo(Long organizadorId, Long torneoId, Long equipoId) {
+        torneos.delOrganizador(torneoId, organizadorId);
+        Equipo e = equipos.findByIdAndTorneoId(equipoId, torneoId)
+                .orElseThrow(() -> new NoEncontradoException("No existe el equipo " + equipoId + " en el torneo"));
+        return new EquipoDetalle(e.getId(), e.getNombre(), e.getClub().getId(), e.getCategoria().getId(), e.getRama().getId(),
+                e.getResponsableNombre(), e.getResponsableTelefono(), e.getZona() == null ? null : Etiquetas.zona(e.getZona()));
     }
 
     private Categoria categoriaDelTorneo(Long categoriaId, Long torneoId) {

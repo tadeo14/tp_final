@@ -91,6 +91,7 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | POST | `/api/torneos/{id}/zonas` | Define una zona de una categoría y rama |
 | POST | `/api/torneos/{id}/equipos` | Inscribe un equipo |
 | GET | `/api/torneos/{id}/equipos` | Lista los equipos (sin datos de contacto) |
+| GET | `/api/torneos/{id}/equipos/{equipoId}` | Un equipo con responsable y teléfono, para editarlo (D67) |
 
 **Editar y eliminar la configuración (organizador, con token, solo en BORRADOR, D66)**
 

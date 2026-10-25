@@ -58,6 +58,14 @@ public final class Respuestas {
     public record EquipoResumen(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
+    /**
+     * Un equipo con todo lo que se cargó, para editarlo (D67). Incluye responsable y teléfono: solo lo ve el dueño
+     * del torneo, nunca la vista pública (regla 7).
+     */
+    public record EquipoDetalle(Long id, String nombre, Long clubId, Long categoriaId, Long ramaId,
+            String responsableNombre, String responsableTelefono, String zona) {
+    }
+
     public record ZonaSorteada(String zona, List<String> equipos) {
     }
 

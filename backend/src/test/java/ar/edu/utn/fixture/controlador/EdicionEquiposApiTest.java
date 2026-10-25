@@ -51,6 +51,24 @@ class EdicionEquiposApiTest extends EdicionApiTestBase {
     }
 
     @Test
+    void detalleDelEquipo_traeLosDatosParaEditarSoloAlDuenio() throws Exception {
+        conFixtureProgramado();
+        String url = base + "/equipos/" + equipoId(0);
+
+        mvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Equipo 1"))
+                .andExpect(jsonPath("$.clubId").value(club))
+                .andExpect(jsonPath("$.categoriaId").value(categoria))
+                .andExpect(jsonPath("$.ramaId").value(rama))
+                .andExpect(jsonPath("$.responsableNombre").value("Responsable de prueba"))
+                .andExpect(jsonPath("$.responsableTelefono").value("0000-0000"))
+                .andExpect(jsonPath("$.zona").value("U9 Masculino - Zona A"));
+        ajeno().perform(get(url)).andExpect(status().isNotFound());
+        mvcSinToken.perform(get(url)).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void borrar_sinFixture_daDeBajaElEquipo() throws Exception {
         long t = crearTorneoDePrueba();
         String b = "/api/torneos/" + t;
