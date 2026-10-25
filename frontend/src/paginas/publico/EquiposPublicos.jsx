@@ -7,6 +7,7 @@ import MensajeError from '../../componentes/MensajeError.jsx';
 import CompartirWhatsApp from '../../componentes/publico/CompartirWhatsApp.jsx';
 import VersionVigente from '../../componentes/publico/VersionVigente.jsx';
 import VolverAlTorneo from '../../componentes/publico/VolverAlTorneo.jsx';
+import { zonaSinGrupo } from '../../formato.js';
 
 /** Pantalla 5, sin login: equipos de la última versión publicada, agrupados por categoría y rama (D57). */
 export default function EquiposPublicos() {
@@ -60,7 +61,7 @@ export default function EquiposPublicos() {
                         <span>
                           <strong>{e.nombre}</strong>
                           <br />
-                          <span className="nota">{e.club} · {e.zona}</span>
+                          <span className="nota">{e.club} · {zonaSinGrupo(e.zona, e.categoria, e.rama)}</span>
                         </span>
                         <span aria-hidden="true">›</span>
                       </Link>

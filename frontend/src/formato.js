@@ -29,3 +29,9 @@ export function porDia(partidos) {
   }
   return [...grupos.entries()];
 }
+
+/** "U9 Masculino - Zona B" → "Zona B" cuando la categoría y la rama ya se muestran en el título del grupo. */
+export function zonaSinGrupo(zona, categoria, rama) {
+  const prefijo = `${categoria} ${rama} - `;
+  return zona.startsWith(prefijo) ? zona.slice(prefijo.length) : zona;
+}
