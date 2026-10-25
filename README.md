@@ -73,8 +73,7 @@ cd frontend && npm ci && npm run dev   # http://localhost:5173
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
-  el sábado. El fixture es válido. Antes de cambiarlo hay que confirmar con el organizador real si es un problema;
-  si lo es, entra como preferencia de optimización, no como regla nueva.
+  el sábado. El fixture es válido. Se consultó al organizador real y no tiene problema con cómo queda (D64).
 - **Despliegue (pasos 9 y 12):** listo para Render (backend Docker + frontend estático) + Supabase, guía en
   [`docs/deploy.md`](docs/deploy.md).
   En el plan gratis, el primer pedido después de 15 minutos sin uso tarda alrededor de 1 minuto (arranque en frío).

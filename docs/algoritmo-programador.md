@@ -94,13 +94,12 @@ El fixture es válido (cumple R1–R8), pero con el caso real queda así:
 | Juegan los dos días | 20 (todos los de U9 y 5 de U11 femenino) |
 | Juegan solo el domingo | 0 |
 
-Para un torneo de fin de semana esto no es lo que espera la organización: muchos equipos terminan el sábado y el
-domingo queda casi vacío (16 partidos, el último termina 12:30).
+Muchos equipos terminan el sábado y el domingo queda casi vacío (16 partidos, el último termina 12:30).
 
-Antes de cambiar nada hay que **confirmarlo con el organizador real**: para clubes y familias puede ser mejor jugar
-un solo día y evitar un segundo traslado. Si pide repartir, entra como **preferencia de optimización** del
-programador, no como una restricción obligatoria nueva: R1–R8 no cambian y el fixture actual sigue siendo válido.
-Ver [`hoja-de-ruta.md`](hoja-de-ruta.md), "A confirmar con el organizador real".
+**Consultado con el organizador real (D64):** no tiene problema con cómo queda; para clubes y familias puede ser
+mejor jugar un solo día y evitar un segundo traslado. No se cambia el programador. Si más adelante se pidiera
+repartir, entraría como **preferencia de optimización**, no como una restricción obligatoria nueva (R1–R8 no
+cambian). Ver [`hoja-de-ruta.md`](hoja-de-ruta.md), "Consultado con el organizador real".
 
 ## Tests
 

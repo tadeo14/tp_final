@@ -23,14 +23,11 @@
 | 14 | C | Video | Guion en inglés + grabación | PENDIENTE |
 | 15 | C | Defensa oral | Presentación + ensayo de preguntas | PENDIENTE |
 
-## A confirmar con el organizador real
+## Consultado con el organizador real
 
-**Reparto de los partidos entre sábado y domingo.** Hoy el programador llena el sábado primero: con el caso real,
-35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida"). El fixture es válido.
-
-No se implementa nada hasta confirmarlo con el organizador real: para clubes y familias puede ser preferible jugar
-un solo día y evitar un segundo traslado (devolución G165-dev_3). Si el organizador pide repartir, entra como
-**preferencia de optimización** del programador, **no** como una restricción obligatoria nueva (R1–R8 no cambian).
+**Reparto de los partidos entre sábado y domingo (resuelto, D64).** El programador llena el sábado primero: con el
+caso real, 35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida"). El fixture
+es válido. La consulta se hizo y **el organizador no tiene problema con cómo queda hoy**: no se cambia el programador.
 
 ## Mejoras P1 (si sobra tiempo, en este orden)
 
