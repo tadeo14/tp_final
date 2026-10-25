@@ -48,11 +48,12 @@ public class ManejadorErrores {
         return respuesta(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), e.getDetalles());
     }
 
-    /** Fallan las anotaciones de los pedidos (@NotBlank, @Positive...). */
+    /** Fallan las anotaciones de los pedidos (@NotBlank, @Positive...). Los detalles van en español y ordenados (D61). */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Error> pedidoInvalido(MethodArgumentNotValidException e) {
         List<String> detalles = e.getBindingResult().getFieldErrors().stream()
-                .map(f -> f.getField() + ": " + f.getDefaultMessage())
+                .map(MensajesValidacion::traducir)
+                .sorted()
                 .toList();
         return respuesta(HttpStatus.BAD_REQUEST, "Hay datos inválidos en el pedido", detalles);
     }
