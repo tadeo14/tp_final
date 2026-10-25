@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
+import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
@@ -89,5 +91,17 @@ public class EdicionControlador {
     public void borrarCancha(@AuthenticationPrincipal Long organizadorId, @PathVariable Long sedeId,
             @PathVariable Long canchaId, @RequestParam(defaultValue = "false") boolean confirmar) {
         servicio.borrarCancha(organizadorId, sedeId, canchaId, confirmar);
+    }
+
+    @PutMapping("/torneos/{torneoId}/clubes/{clubId}")
+    public Creado editarClub(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long clubId, @Valid @RequestBody NuevoClub pedido) {
+        return servicio.editarClub(organizadorId, torneoId, clubId, pedido);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/clubes/{clubId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarClub(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @PathVariable Long clubId) {
+        servicio.borrarClub(organizadorId, torneoId, clubId);
     }
 }

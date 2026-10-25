@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
+import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
@@ -187,6 +189,34 @@ public class EdicionServicio {
 
     private static CanchaDetalle detalle(Cancha c) {
         return new CanchaDetalle(c.getId(), c.getNombre(), c.getHabilitada());
+    }
+
+    // ------------------------------------------------------------------ clubes
+
+    /** El nombre del club no afecta el fixture (la vista pública lo muestra desde la foto, D48). */
+    public Creado editarClub(Long organizadorId, Long torneoId, Long clubId, NuevoClub pedido) {
+        torneos.editable(torneoId, organizadorId);
+        Club c = club(clubId, torneoId);
+        c.setNombre(pedido.nombre());
+        c = clubes.save(c);
+        return new Creado(c.getId(), c.getNombre());
+    }
+
+    /** Un club con equipos no se borra: primero hay que dar de baja sus equipos o pasarlos a otro club. */
+    public void borrarClub(Long organizadorId, Long torneoId, Long clubId) {
+        torneos.editable(torneoId, organizadorId);
+        Club c = club(clubId, torneoId);
+        long enUso = equipos.countByClubId(clubId);
+        if (enUso > 0) {
+            throw new ConflictoException("El club " + c.getNombre() + " tiene " + cantidad(enUso, "equipo", "equipos")
+                    + ": para borrarlo, primero hay que dar de baja sus equipos o pasarlos a otro club");
+        }
+        clubes.delete(c);
+    }
+
+    /** "1 equipo", "4 equipos". */
+    private static String cantidad(long n, String singular, String plural) {
+        return n + " " + (n == 1 ? singular : plural);
     }
 
     // ------------------------------------------------------------------ búsquedas dentro del torneo (404 si no está)
