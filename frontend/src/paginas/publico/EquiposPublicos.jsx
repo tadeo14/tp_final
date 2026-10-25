@@ -6,6 +6,7 @@ import Encabezado from '../../componentes/Encabezado.jsx';
 import MensajeError from '../../componentes/MensajeError.jsx';
 import CompartirWhatsApp from '../../componentes/publico/CompartirWhatsApp.jsx';
 import VersionVigente from '../../componentes/publico/VersionVigente.jsx';
+import VolverAlTorneo from '../../componentes/publico/VolverAlTorneo.jsx';
 
 /** Pantalla 5, sin login: equipos de la última versión publicada, agrupados por categoría y rama (D57). */
 export default function EquiposPublicos() {
@@ -35,6 +36,7 @@ export default function EquiposPublicos() {
     <>
       <Encabezado publico />
       <main className="contenedor">
+        <VolverAlTorneo torneoId={id} />
         <MensajeError error={error} />
         {!datos && !error && <Cargando />}
         {datos && (

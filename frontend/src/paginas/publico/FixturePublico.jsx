@@ -6,6 +6,7 @@ import Encabezado from '../../componentes/Encabezado.jsx';
 import MensajeError from '../../componentes/MensajeError.jsx';
 import CompartirWhatsApp from '../../componentes/publico/CompartirWhatsApp.jsx';
 import VersionVigente from '../../componentes/publico/VersionVigente.jsx';
+import VolverAlTorneo from '../../componentes/publico/VolverAlTorneo.jsx';
 import { dia, hora } from '../../formato.js';
 
 /** Pantalla 5, sin login: fixture de un equipo según la última versión publicada (D57). */
@@ -25,6 +26,7 @@ export default function FixturePublico() {
     <>
       <Encabezado publico />
       <main className="contenedor">
+        <VolverAlTorneo torneoId={id} />
         <p><Link to={`/torneo/${id}`}>← Todos los equipos</Link></p>
         <MensajeError error={error} />
         {!datos && !error && <Cargando />}
