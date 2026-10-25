@@ -40,7 +40,7 @@ Juana), sábado y domingo.
 | 10. Frontend del organizador | React + Vite: login, mis torneos, configuración (alta, editar y eliminar), recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
 | 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-**165 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**180 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
