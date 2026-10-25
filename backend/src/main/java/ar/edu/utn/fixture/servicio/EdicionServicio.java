@@ -8,6 +8,7 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaCategoria;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaRama;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
@@ -16,6 +17,7 @@ import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Categoria;
 import ar.edu.utn.fixture.entidad.Club;
@@ -23,6 +25,7 @@ import ar.edu.utn.fixture.entidad.Equipo;
 import ar.edu.utn.fixture.entidad.FranjaHoraria;
 import ar.edu.utn.fixture.entidad.Rama;
 import ar.edu.utn.fixture.entidad.Sede;
+import ar.edu.utn.fixture.entidad.Zona;
 import ar.edu.utn.fixture.repositorio.CanchaRepositorio;
 import ar.edu.utn.fixture.repositorio.CategoriaRepositorio;
 import ar.edu.utn.fixture.repositorio.ClubRepositorio;
@@ -275,6 +278,40 @@ public class EdicionServicio {
         ramas.delete(r);
     }
 
+    // ------------------------------------------------------------------ zonas
+
+    /**
+     * Renombrar una zona no afecta el fixture. Cambiarle la categoría o la rama cuando ya tiene equipos sorteados sí:
+     * esos equipos no pueden quedar en ella, así que se deshace el sorteo (con confirmación).
+     */
+    public ZonaDetalle editarZona(Long organizadorId, Long torneoId, Long zonaId, NuevaZona pedido, boolean confirmar) {
+        torneos.editable(torneoId, organizadorId);
+        Zona z = zona(zonaId, torneoId);
+        Categoria categoria = categoria(pedido.categoriaId(), torneoId);
+        Rama rama = rama(pedido.ramaId(), torneoId);
+        boolean cambiaGrupo = !z.getCategoria().getId().equals(categoria.getId()) || !z.getRama().getId().equals(rama.getId());
+        if (cambiaGrupo && equipos.countByZonaId(zonaId) > 0) {
+            invalidaciones.siHaySorteo(torneoId, confirmar, "Cambiar la categoría o la rama de la zona " + Etiquetas.zona(z));
+            z = zona(zonaId, torneoId);
+        }
+        z.setCategoria(categoria);
+        z.setRama(rama);
+        z.setNombre(pedido.nombre());
+        z = zonas.save(z);
+        return new ZonaDetalle(z.getId(), z.getNombre(), categoria.getId(), rama.getId(), Etiquetas.zona(z));
+    }
+
+    /** Una zona con equipos sorteados se puede borrar confirmando: se deshace el sorteo de todo el torneo. */
+    public void borrarZona(Long organizadorId, Long torneoId, Long zonaId, boolean confirmar) {
+        torneos.editable(torneoId, organizadorId);
+        Zona z = zona(zonaId, torneoId);
+        if (equipos.countByZonaId(zonaId) > 0) {
+            invalidaciones.siHaySorteo(torneoId, confirmar, "Borrar la zona " + Etiquetas.zona(z));
+            z = zona(zonaId, torneoId);
+        }
+        zonas.delete(z);
+    }
+
     /** 409 que dice qué lo usa: "La categoría U9 tiene 1 zona y 4 equipos: para borrarla, primero…". */
     private static void noEstaEnUso(String que, String accion, long cantidadZonas, long cantidadEquipos) {
         if (cantidadZonas == 0 && cantidadEquipos == 0) {
@@ -293,6 +330,11 @@ public class EdicionServicio {
     }
 
     // ------------------------------------------------------------------ búsquedas dentro del torneo (404 si no está)
+
+    private Zona zona(Long zonaId, Long torneoId) {
+        return zonas.findByIdAndTorneoId(zonaId, torneoId)
+                .orElseThrow(() -> new NoEncontradoException("No existe la zona " + zonaId + " en el torneo"));
+    }
 
     private Sede sede(Long sedeId, Long torneoId) {
         return sedes.findByIdAndTorneoId(sedeId, torneoId)

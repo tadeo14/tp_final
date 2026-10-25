@@ -16,6 +16,7 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaCategoria;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaRama;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
@@ -24,6 +25,7 @@ import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
 import ar.edu.utn.fixture.servicio.EdicionServicio;
 import jakarta.validation.Valid;
 
@@ -132,5 +134,19 @@ public class EdicionControlador {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void borrarRama(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @PathVariable Long ramaId) {
         servicio.borrarRama(organizadorId, torneoId, ramaId);
+    }
+
+    @PutMapping("/torneos/{torneoId}/zonas/{zonaId}")
+    public ZonaDetalle editarZona(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long zonaId, @Valid @RequestBody NuevaZona pedido,
+            @RequestParam(defaultValue = "false") boolean confirmar) {
+        return servicio.editarZona(organizadorId, torneoId, zonaId, pedido, confirmar);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/zonas/{zonaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarZona(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long zonaId, @RequestParam(defaultValue = "false") boolean confirmar) {
+        servicio.borrarZona(organizadorId, torneoId, zonaId, confirmar);
     }
 }
