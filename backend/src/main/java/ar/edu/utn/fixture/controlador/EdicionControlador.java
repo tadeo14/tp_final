@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
+import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
 import ar.edu.utn.fixture.servicio.EdicionServicio;
 import jakarta.validation.Valid;
 
@@ -58,5 +62,32 @@ public class EdicionControlador {
     public void borrarEquipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
             @PathVariable Long equipoId, @RequestParam(defaultValue = "false") boolean confirmar) {
         servicio.borrarEquipo(organizadorId, torneoId, equipoId, confirmar);
+    }
+
+    @PutMapping("/torneos/{torneoId}/sedes/{sedeId}")
+    public SedeDetalle editarSede(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long sedeId, @Valid @RequestBody NuevaSede pedido) {
+        return servicio.editarSede(organizadorId, torneoId, sedeId, pedido);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/sedes/{sedeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarSede(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long sedeId, @RequestParam(defaultValue = "false") boolean confirmar) {
+        servicio.borrarSede(organizadorId, torneoId, sedeId, confirmar);
+    }
+
+    @PutMapping("/sedes/{sedeId}/canchas/{canchaId}")
+    public CanchaDetalle editarCancha(@AuthenticationPrincipal Long organizadorId, @PathVariable Long sedeId,
+            @PathVariable Long canchaId, @Valid @RequestBody NuevaCancha pedido,
+            @RequestParam(defaultValue = "false") boolean confirmar) {
+        return servicio.editarCancha(organizadorId, sedeId, canchaId, pedido, confirmar);
+    }
+
+    @DeleteMapping("/sedes/{sedeId}/canchas/{canchaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarCancha(@AuthenticationPrincipal Long organizadorId, @PathVariable Long sedeId,
+            @PathVariable Long canchaId, @RequestParam(defaultValue = "false") boolean confirmar) {
+        servicio.borrarCancha(organizadorId, sedeId, canchaId, confirmar);
     }
 }

@@ -3,21 +3,29 @@ package ar.edu.utn.fixture.servicio;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
+import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Categoria;
 import ar.edu.utn.fixture.entidad.Club;
 import ar.edu.utn.fixture.entidad.Equipo;
 import ar.edu.utn.fixture.entidad.FranjaHoraria;
 import ar.edu.utn.fixture.entidad.Rama;
+import ar.edu.utn.fixture.entidad.Sede;
+import ar.edu.utn.fixture.repositorio.CanchaRepositorio;
 import ar.edu.utn.fixture.repositorio.CategoriaRepositorio;
 import ar.edu.utn.fixture.repositorio.ClubRepositorio;
 import ar.edu.utn.fixture.repositorio.EquipoRepositorio;
 import ar.edu.utn.fixture.repositorio.FranjaHorariaRepositorio;
 import ar.edu.utn.fixture.repositorio.PartidoRepositorio;
 import ar.edu.utn.fixture.repositorio.RamaRepositorio;
+import ar.edu.utn.fixture.repositorio.SedeRepositorio;
 
 /**
  * Edición y baja de la configuración del torneo (D66). Solo en BORRADOR y solo el dueño (D45): con el torneo
@@ -33,18 +41,22 @@ public class EdicionServicio {
     private final Invalidaciones invalidaciones;
     private final PartidoRepositorio partidos;
     private final FranjaHorariaRepositorio franjas;
+    private final SedeRepositorio sedes;
+    private final CanchaRepositorio canchas;
     private final CategoriaRepositorio categorias;
     private final RamaRepositorio ramas;
     private final ClubRepositorio clubes;
     private final EquipoRepositorio equipos;
 
     public EdicionServicio(Torneos torneos, Invalidaciones invalidaciones, PartidoRepositorio partidos,
-            FranjaHorariaRepositorio franjas, CategoriaRepositorio categorias, RamaRepositorio ramas,
+            FranjaHorariaRepositorio franjas, SedeRepositorio sedes, CanchaRepositorio canchas, CategoriaRepositorio categorias, RamaRepositorio ramas,
             ClubRepositorio clubes, EquipoRepositorio equipos) {
         this.torneos = torneos;
         this.invalidaciones = invalidaciones;
         this.partidos = partidos;
         this.franjas = franjas;
+        this.sedes = sedes;
+        this.canchas = canchas;
         this.categorias = categorias;
         this.ramas = ramas;
         this.clubes = clubes;
@@ -120,7 +132,81 @@ public class EdicionServicio {
         equipos.delete(e);
     }
 
+    // ------------------------------------------------------------------ sedes y canchas
+
+    /** El nombre y la dirección de una sede no afectan el fixture. */
+    public SedeDetalle editarSede(Long organizadorId, Long torneoId, Long sedeId, NuevaSede pedido) {
+        torneos.editable(torneoId, organizadorId);
+        Sede s = sede(sedeId, torneoId);
+        s.setNombre(pedido.nombre());
+        s.setDireccion(pedido.direccion());
+        s = sedes.save(s);
+        return new SedeDetalle(s.getId(), s.getNombre(), s.getDireccion(), canchas.findBySedeIdOrderByIdAsc(sedeId).stream()
+                .map(EdicionServicio::detalle).toList());
+    }
+
+    /** Borra la sede con sus canchas. Si alguna cancha tiene partidos programados, pide confirmación. */
+    public void borrarSede(Long organizadorId, Long torneoId, Long sedeId, boolean confirmar) {
+        torneos.editable(torneoId, organizadorId);
+        Sede s = sede(sedeId, torneoId);
+        if (partidos.contarEnLaSede(sedeId) > 0) {
+            invalidaciones.siHayProgramados(torneoId, confirmar, "Borrar la sede " + s.getNombre());
+            s = sede(sedeId, torneoId);
+        }
+        canchas.deleteAll(canchas.findBySedeIdOrderByIdAsc(sedeId)); // primero sus canchas, después la sede
+        sedes.delete(s);
+    }
+
+    /** Renombrar no afecta el fixture; deshabilitar una cancha con partidos programados sí (R5). */
+    public CanchaDetalle editarCancha(Long organizadorId, Long sedeId, Long canchaId, NuevaCancha pedido, boolean confirmar) {
+        Sede sede = sedeDelOrganizador(sedeId, organizadorId);
+        Long torneoId = sede.getTorneo().getId();
+        torneos.editable(torneoId, organizadorId);
+        Cancha c = cancha(canchaId, sedeId);
+        boolean habilitada = pedido.habilitada() == null || pedido.habilitada();
+        if (c.getHabilitada() && !habilitada && partidos.countByCanchaId(canchaId) > 0) {
+            invalidaciones.siHayProgramados(torneoId, confirmar, "Deshabilitar la cancha " + Etiquetas.cancha(c));
+            c = cancha(canchaId, sedeId);
+        }
+        c.setNombre(pedido.nombre());
+        c.setHabilitada(habilitada);
+        return detalle(canchas.save(c));
+    }
+
+    public void borrarCancha(Long organizadorId, Long sedeId, Long canchaId, boolean confirmar) {
+        Sede sede = sedeDelOrganizador(sedeId, organizadorId);
+        Long torneoId = sede.getTorneo().getId();
+        torneos.editable(torneoId, organizadorId);
+        Cancha c = cancha(canchaId, sedeId);
+        if (partidos.countByCanchaId(canchaId) > 0) {
+            invalidaciones.siHayProgramados(torneoId, confirmar, "Borrar la cancha " + Etiquetas.cancha(c));
+            c = cancha(canchaId, sedeId);
+        }
+        canchas.delete(c);
+    }
+
+    private static CanchaDetalle detalle(Cancha c) {
+        return new CanchaDetalle(c.getId(), c.getNombre(), c.getHabilitada());
+    }
+
     // ------------------------------------------------------------------ búsquedas dentro del torneo (404 si no está)
+
+    private Sede sede(Long sedeId, Long torneoId) {
+        return sedes.findByIdAndTorneoId(sedeId, torneoId)
+                .orElseThrow(() -> new NoEncontradoException("No existe la sede " + sedeId + " en el torneo"));
+    }
+
+    /** Una sede de un torneo ajeno se trata igual que una que no existe (D45). */
+    private Sede sedeDelOrganizador(Long sedeId, Long organizadorId) {
+        return sedes.findById(sedeId)
+                .filter(s -> s.getTorneo().getOrganizador().getId().equals(organizadorId))
+                .orElseThrow(() -> new NoEncontradoException("No existe la sede " + sedeId));
+    }
+
+    private Cancha cancha(Long canchaId, Long sedeId) {
+        return canchas.findByIdAndSedeId(canchaId, sedeId)
+                .orElseThrow(() -> new NoEncontradoException("No existe la cancha " + canchaId + " en la sede"));
+    }
 
     private Equipo equipo(Long equipoId, Long torneoId) {
         return equipos.findByIdAndTorneoId(equipoId, torneoId)
