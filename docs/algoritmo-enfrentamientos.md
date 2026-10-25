@@ -1,8 +1,37 @@
 # Algoritmo: sorteo de zonas y enfrentamientos
 
 > Primera mitad del fixture: **quién juega contra quién**. Cancha y horario los asigna después el Programador.
-> Código: `backend/src/main/java/ar/edu/utn/fixture/dominio/` — `SorteoZonas` y `GeneradorEnfrentamientos`.
+> Código: `backend/src/main/java/ar/edu/utn/fixture/dominio/` — `PropuestaZonas`, `SorteoZonas` y `GeneradorEnfrentamientos`.
 > Son clases de dominio puras: no usan Spring ni la base de datos (regla 4 de `CLAUDE.md`).
+
+## 0. Propuesta de zonas (`PropuestaZonas`, D69)
+
+Antes del sorteo hay que definir **cuántas zonas** tiene cada categoría y rama. El botón "Proponer zonas" las
+calcula con una regla simple; el organizador la revisa y después puede editar o eliminar zonas.
+
+Entrada: la cantidad de equipos `n` de cada categoría y rama y el **máximo de equipos por zona** `m`. El máximo no
+está fijo en el código (regla 1): viene en el pedido; la pantalla precarga 5, que reproduce el caso real.
+
+1. Cantidad de zonas: **ceil(n / m)**.
+2. Los equipos se reparten **lo más parejo posible**: las primeras zonas quedan con uno más, igual que en el sorteo.
+3. Nombres "Zona A", "Zona B"…
+4. Con `n = 1` no se propone zona y se avisa (una zona necesita al menos 2 equipos). Con `n = 0` el grupo se omite.
+5. `m` tiene que ser al menos 3: con `m = 2` y una cantidad impar de equipos quedaría una zona de 1.
+   Con `m ≥ 3`, ceil(n / m) ≤ n / 2 para todo `n ≥ 2`, así que ninguna zona queda con menos de 2.
+
+Caso real con `m = 5` (las mismas 13 zonas de `caso-real.md`, sección 3):
+
+| Grupo | Equipos | ceil(n / 5) | Zonas |
+|---|---|---|---|
+| U9 masc | 10 | 2 | 5 + 5 |
+| U9 fem | 5 | 1 | 5 |
+| U11 masc | 12 | 3 | 4 + 4 + 4 |
+| U11 fem | 9 | 2 | 5 + 4 |
+| U13 masc | 8 | 2 | 4 + 4 |
+| U13 fem | 11 | 3 | 4 + 4 + 3 |
+
+La propuesta es solo la **estructura**: no mueve equipos. Qué equipo va a cada zona lo decide el sorteo (sección 1).
+Si un grupo ya tiene zonas, reemplazarlas pide confirmación y deshace el sorteo (D66).
 
 ## 1. Sorteo de zonas (`SorteoZonas`)
 
@@ -113,3 +142,5 @@ igual al total de la tabla. Está cubierto por un test (`casoReal_conLasZonasEle
 | Sorteo: 9 → 5 + 4, 11 → 4 + 4 + 3, 12 → 4 + 4 + 4 | Tamaños de zona del caso real |
 | Sorteo: misma semilla, mismo resultado | El sorteo se puede reproducir en los tests |
 | Validaciones | Zonas con menos de 2 equipos, equipos repetidos, 0 zonas |
+| Propuesta: caso real con máximo 5 | Las 13 zonas del caso real con los mismos tamaños (`PropuestaZonasTest`) |
+| Propuesta: 11 con máximo 5 → 4 + 4 + 3; n = 1 avisa; n = 0 se omite; máximo ≥ 3 | Regla de la sección 0 |
