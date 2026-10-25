@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaCategoria;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaRama;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.CategoriaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
@@ -103,5 +106,31 @@ public class EdicionControlador {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void borrarClub(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @PathVariable Long clubId) {
         servicio.borrarClub(organizadorId, torneoId, clubId);
+    }
+
+    @PutMapping("/torneos/{torneoId}/categorias/{categoriaId}")
+    public CategoriaDetalle editarCategoria(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long categoriaId, @Valid @RequestBody NuevaCategoria pedido,
+            @RequestParam(defaultValue = "false") boolean confirmar) {
+        return servicio.editarCategoria(organizadorId, torneoId, categoriaId, pedido, confirmar);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/categorias/{categoriaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarCategoria(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long categoriaId) {
+        servicio.borrarCategoria(organizadorId, torneoId, categoriaId);
+    }
+
+    @PutMapping("/torneos/{torneoId}/ramas/{ramaId}")
+    public Creado editarRama(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long ramaId, @Valid @RequestBody NuevaRama pedido) {
+        return servicio.editarRama(organizadorId, torneoId, ramaId, pedido);
+    }
+
+    @DeleteMapping("/torneos/{torneoId}/ramas/{ramaId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void borrarRama(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId, @PathVariable Long ramaId) {
+        servicio.borrarRama(organizadorId, torneoId, ramaId);
     }
 }

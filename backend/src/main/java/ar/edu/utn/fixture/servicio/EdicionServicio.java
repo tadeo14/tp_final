@@ -4,11 +4,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.utn.fixture.dto.Pedidos.NuevaCancha;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaCategoria;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaFranja;
+import ar.edu.utn.fixture.dto.Pedidos.NuevaRama;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.CategoriaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
@@ -28,6 +31,7 @@ import ar.edu.utn.fixture.repositorio.FranjaHorariaRepositorio;
 import ar.edu.utn.fixture.repositorio.PartidoRepositorio;
 import ar.edu.utn.fixture.repositorio.RamaRepositorio;
 import ar.edu.utn.fixture.repositorio.SedeRepositorio;
+import ar.edu.utn.fixture.repositorio.ZonaRepositorio;
 
 /**
  * Edición y baja de la configuración del torneo (D66). Solo en BORRADOR y solo el dueño (D45): con el torneo
@@ -48,11 +52,12 @@ public class EdicionServicio {
     private final CategoriaRepositorio categorias;
     private final RamaRepositorio ramas;
     private final ClubRepositorio clubes;
+    private final ZonaRepositorio zonas;
     private final EquipoRepositorio equipos;
 
     public EdicionServicio(Torneos torneos, Invalidaciones invalidaciones, PartidoRepositorio partidos,
             FranjaHorariaRepositorio franjas, SedeRepositorio sedes, CanchaRepositorio canchas, CategoriaRepositorio categorias, RamaRepositorio ramas,
-            ClubRepositorio clubes, EquipoRepositorio equipos) {
+            ClubRepositorio clubes, ZonaRepositorio zonas, EquipoRepositorio equipos) {
         this.torneos = torneos;
         this.invalidaciones = invalidaciones;
         this.partidos = partidos;
@@ -62,6 +67,7 @@ public class EdicionServicio {
         this.categorias = categorias;
         this.ramas = ramas;
         this.clubes = clubes;
+        this.zonas = zonas;
         this.equipos = equipos;
     }
 
@@ -212,6 +218,73 @@ public class EdicionServicio {
                     + ": para borrarlo, primero hay que dar de baja sus equipos o pasarlos a otro club");
         }
         clubes.delete(c);
+    }
+
+    // ------------------------------------------------------------------ categorías y ramas
+
+    /**
+     * El nombre y la cantidad de cuartos (informativa, no entra en el cálculo) no afectan el fixture. La duración y
+     * el tope diario sí, si la categoría ya tiene partidos programados.
+     */
+    public CategoriaDetalle editarCategoria(Long organizadorId, Long torneoId, Long categoriaId, NuevaCategoria pedido,
+            boolean confirmar) {
+        torneos.editable(torneoId, organizadorId);
+        Categoria c = categoria(categoriaId, torneoId);
+        boolean cambiaElCalculo = !c.getMinutosNetos().equals(pedido.minutosNetos()) || !c.getPausasMin().equals(pedido.pausasMin())
+                || !c.getMargenDetencionesMin().equals(pedido.margenDetencionesMin())
+                || !c.getMaxPartidosDia().equals(pedido.maxPartidosDia());
+        if (cambiaElCalculo && partidos.contarProgramadosDeLaCategoria(categoriaId) > 0) {
+            invalidaciones.siHayProgramados(torneoId, confirmar,
+                    "Cambiar la duración o el tope diario de la categoría " + c.getNombre());
+            c = categoria(categoriaId, torneoId);
+        }
+        c.setNombre(pedido.nombre());
+        c.setMinutosNetos(pedido.minutosNetos());
+        c.setCantidadCuartos(pedido.cantidadCuartos());
+        c.setPausasMin(pedido.pausasMin());
+        c.setMargenDetencionesMin(pedido.margenDetencionesMin());
+        c.setMaxPartidosDia(pedido.maxPartidosDia());
+        c = categorias.save(c);
+        return new CategoriaDetalle(c.getId(), c.getNombre(), c.getMinutosNetos(), c.getCantidadCuartos(), c.getPausasMin(),
+                c.getMargenDetencionesMin(), c.getMaxPartidosDia());
+    }
+
+    /** Una categoría con zonas o equipos no se borra. */
+    public void borrarCategoria(Long organizadorId, Long torneoId, Long categoriaId) {
+        torneos.editable(torneoId, organizadorId);
+        Categoria c = categoria(categoriaId, torneoId);
+        noEstaEnUso("La categoría " + c.getNombre(), "borrarla", zonas.countByCategoriaId(categoriaId),
+                equipos.countByCategoriaId(categoriaId));
+        categorias.delete(c);
+    }
+
+    /** El nombre de la rama no afecta el fixture. */
+    public Creado editarRama(Long organizadorId, Long torneoId, Long ramaId, NuevaRama pedido) {
+        torneos.editable(torneoId, organizadorId);
+        Rama r = rama(ramaId, torneoId);
+        r.setNombre(pedido.nombre());
+        r = ramas.save(r);
+        return new Creado(r.getId(), r.getNombre());
+    }
+
+    /** Una rama con zonas o equipos no se borra. */
+    public void borrarRama(Long organizadorId, Long torneoId, Long ramaId) {
+        torneos.editable(torneoId, organizadorId);
+        Rama r = rama(ramaId, torneoId);
+        noEstaEnUso("La rama " + r.getNombre(), "borrarla", zonas.countByRamaId(ramaId), equipos.countByRamaId(ramaId));
+        ramas.delete(r);
+    }
+
+    /** 409 que dice qué lo usa: "La categoría U9 tiene 1 zona y 4 equipos: para borrarla, primero…". */
+    private static void noEstaEnUso(String que, String accion, long cantidadZonas, long cantidadEquipos) {
+        if (cantidadZonas == 0 && cantidadEquipos == 0) {
+            return;
+        }
+        String usos = cantidadZonas > 0 && cantidadEquipos > 0
+                ? cantidad(cantidadZonas, "zona", "zonas") + " y " + cantidad(cantidadEquipos, "equipo", "equipos")
+                : cantidadZonas > 0 ? cantidad(cantidadZonas, "zona", "zonas") : cantidad(cantidadEquipos, "equipo", "equipos");
+        throw new ConflictoException(que + " tiene " + usos + ": para " + accion
+                + ", primero hay que borrar sus zonas y dar de baja sus equipos (o pasarlos a otra)");
     }
 
     /** "1 equipo", "4 equipos". */

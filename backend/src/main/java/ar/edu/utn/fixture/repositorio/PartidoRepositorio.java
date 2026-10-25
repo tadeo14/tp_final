@@ -34,6 +34,9 @@ public interface PartidoRepositorio extends JpaRepository<Partido, Long> {
 
     long countByCanchaId(Long canchaId);
 
+    @Query("select count(p) from Partido p where p.zona.categoria.id = :categoriaId and p.inicio is not null")
+    long contarProgramadosDeLaCategoria(@Param("categoriaId") Long categoriaId);
+
     @Query("select count(p) from Partido p where p.cancha.sede.id = :sedeId")
     long contarEnLaSede(@Param("sedeId") Long sedeId);
 
