@@ -8,7 +8,7 @@ React + Vite en JavaScript, con `react-router-dom` y CSS propio (D54). Requiere 
 |---|---|---|
 | `/login` | Ingresar y crear cuenta del organizador | No |
 | `/torneos` | Mis torneos: lista y crear torneo | Sí |
-| `/torneos/:id` | Detalle: Configuración, Recorrido (sortear → generar → programar → validar) y Publicación (publicar, reabrir, historial) | Sí |
+| `/torneos/:id` | Detalle: parámetros (editables), Configuración (alta, editar y eliminar cada elemento, D68), Recorrido (sortear → generar → programar → validar) y Publicación (publicar, reabrir, historial) | Sí |
 | `/torneo/:id` | Vista pública: equipos con su club, versión y motivo de la corrección | No |
 | `/torneo/:id/equipo/:equipoId` | Vista pública: fixture del equipo (rival, club del rival, cancha, día y hora) | No |
 

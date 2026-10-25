@@ -92,6 +92,8 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .boton-secundario:hover:not(:disabled) { background: var(--naranja-claro); }
 .encabezado .boton-secundario { border-color: #fff; }
 .boton-chico { padding: 0.35rem 0.7rem; min-height: 36px; font-size: 0.9rem; }
+.boton-peligro { background: var(--rojo); }
+.boton-peligro:hover:not(:disabled) { background: #7f1d1d; }
 .botones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 /* ---------- Pestañas ---------- */
@@ -110,6 +112,8 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .aviso-error { background: var(--rojo-claro); color: var(--rojo); border: 1px solid #f5c2bc; }
 .aviso-ok { background: var(--verde-claro); color: var(--verde); border: 1px solid #b7e1c3; }
 .aviso-info { background: var(--azul-claro); color: var(--azul); border: 1px solid #c3d4fb; }
+.aviso-advertencia { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+.aviso .botones { margin-top: 0.5rem; }
 
 /* ---------- Estado del torneo ---------- */
 .estado {
@@ -143,6 +147,17 @@ th { background: #eef1f5; }
 .formulario-alta fieldset:disabled { opacity: 0.6; }
 .formulario-alta h3 { margin: 0.5rem 0 0; }
 .paso button { margin-bottom: 0.25rem; }
+
+/* ---------- Elementos de la configuración (editar / eliminar) ---------- */
+.lista-config { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+.elemento { border-bottom: 1px solid var(--borde); padding: 0.5rem 0; }
+.elemento:last-child { border-bottom: none; }
+.elemento-fila { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.elemento-texto { flex: 1 1 12rem; min-width: 0; }
+.acciones-elemento { display: flex; gap: 0.4rem; }
+.parametros { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; margin-bottom: 0.75rem; }
+.parametros .nota { margin: 0; }
+.elemento-editando { background: var(--naranja-claro); border-radius: var(--radio); padding: 0.25rem 0.75rem 0.75rem; }
 
 /* ---------- Vista pública ---------- */
 .version { color: var(--texto-suave); font-size: 0.875rem; margin-bottom: 1rem; }

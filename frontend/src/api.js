@@ -3,12 +3,16 @@ import { borrarSesion, leerToken } from './sesion.js';
 
 const URL_API = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
-/** Error de la API con el mensaje y los detalles tal cual los manda el backend: {"error": "...", "detalles": [...]}. */
+/**
+ * Error de la API con el mensaje y los detalles tal cual los manda el backend: {"error": "...", "detalles": [...]}.
+ * `requiereConfirmacion` es true cuando el cambio se puede hacer igual repitiéndolo con confirmar=true (D66).
+ */
 export class ErrorApi extends Error {
-  constructor(mensaje, detalles = [], estado = 0) {
+  constructor(mensaje, detalles = [], estado = 0, requiereConfirmacion = false) {
     super(mensaje);
     this.detalles = detalles;
     this.estado = estado;
+    this.requiereConfirmacion = requiereConfirmacion;
   }
 }
 
@@ -48,7 +52,7 @@ export async function pedir(ruta, { metodo = 'GET', cuerpo, autenticado = true }
   }
   if (!respuesta.ok) {
     throw new ErrorApi(datos?.error ?? `El servidor respondió con un error (${respuesta.status}).`,
-      datos?.detalles ?? [], respuesta.status);
+      datos?.detalles ?? [], respuesta.status, datos?.requiereConfirmacion === true);
   }
   return datos;
 }
@@ -57,4 +61,11 @@ export async function pedir(ruta, { metodo = 'GET', cuerpo, autenticado = true }
 export const api = {
   get: (ruta, opciones) => pedir(ruta, opciones),
   post: (ruta, cuerpo, opciones) => pedir(ruta, { ...opciones, metodo: 'POST', cuerpo }),
+  put: (ruta, cuerpo, opciones) => pedir(ruta, { ...opciones, metodo: 'PUT', cuerpo }),
+  borrar: (ruta, opciones) => pedir(ruta, { ...opciones, metodo: 'DELETE' }),
 };
+
+/** Agrega ?confirmar=true a la ruta cuando el organizador confirmó un cambio que invalida el fixture (D66). */
+export function conConfirmacion(ruta, confirmar) {
+  return confirmar ? `${ruta}?confirmar=true` : ruta;
+}
