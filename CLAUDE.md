@@ -24,19 +24,19 @@ Si algo de este archivo contradice esos documentos, mandan los documentos. Si en
 | Backend | Java 17 + Spring Boot 3 + Spring Data JPA, Maven |
 | Base de datos | PostgreSQL |
 | Tests | JUnit 5 |
-| Frontend | React (más adelante, no es prioridad ahora) |
-| Despliegue | Backend + BD en Render o Railway; frontend en Vercel o Netlify |
+| Frontend | React + Vite (JavaScript), react-router-dom, CSS propio (D54) |
+| Despliegue | Backend en Render (Docker) + BD en Supabase; frontend como sitio estático de Render (D49–D58) |
 
 ## Estructura del repo
 
 ```
-/backend    Proyecto Spring Boot
-/frontend   App React (todavía no)
-/database   DDL (schema.sql), datos de ejemplo (seed), migraciones
+/backend    Proyecto Spring Boot (las migraciones Flyway van en backend/src/main/resources/db/migration)
+/frontend   App React con Vite (organizador + vista pública)
+/database   Datos de ejemplo (seed) y pruebas de la base. El esquema NO va acá: ver D21
 /docs       Documentación, decisiones, DER, informes
 ```
 
-Todo archivo nuevo va en una de estas carpetas.
+Todo archivo nuevo va en una de estas carpetas. Única excepción: `render.yaml` en la raíz, porque Render lo exige ahí (D51).
 
 ## Alcance actual (P0)
 
@@ -86,7 +86,7 @@ carga de resultados, jugadores, pagos, notificaciones, roles complejos.
 
 ## Próxima entrega (lo que pidió el tutor)
 
-1. DER en `docs/der.md` (Mermaid) y `database/schema.sql`
+1. DER en `docs/der.md` (Mermaid) y esquema SQL (hoy migración Flyway V1, ver D21)
 2. Proyecto Spring Boot en `/backend` que compile y arranque
 3. Generador de enfrentamientos y zonas, con tests
 4. Validador R1–R8 y programador, con tests T1–T11
