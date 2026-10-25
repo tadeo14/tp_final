@@ -159,6 +159,13 @@ th { background: #eef1f5; }
 .parametros .nota { margin: 0; }
 .elemento-editando { background: var(--naranja-claro); border-radius: var(--radio); padding: 0.25rem 0.75rem 0.75rem; }
 
+.propuesta-zonas { margin-bottom: 0.75rem; }
+.propuesta-zonas fieldset { border: none; margin: 0; padding: 0; }
+.propuesta-zonas table { margin-bottom: 0.5rem; font-size: 0.85rem; }
+.propuesta-zonas th, .propuesta-zonas td { padding: 0.4rem 0.35rem; }
+.zonas-propuestas { list-style: none; margin: 0; padding: 0; white-space: nowrap; }
+.reemplaza { color: #92400e; display: block; }
+
 /* ---------- Vista pública ---------- */
 .version { color: var(--texto-suave); font-size: 0.875rem; margin-bottom: 1rem; }
 .version p { margin: 0; }

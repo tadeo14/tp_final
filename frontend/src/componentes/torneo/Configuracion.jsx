@@ -2,6 +2,7 @@ import { api, conConfirmacion } from '../../api.js';
 import { dia, hora } from '../../formato.js';
 import ElementoConfig from './ElementoConfig.jsx';
 import FormularioAlta from './FormularioAlta.jsx';
+import ProponerZonas from './ProponerZonas.jsx';
 
 /**
  * Configuración del torneo: franjas, sedes y canchas, categorías, ramas, clubes, zonas y equipos.
@@ -173,6 +174,7 @@ export default function Configuracion({ torneoId, configuracion, equipos, public
       <section className="tarjeta">
         <h2>Zonas</h2>
         <p className="nota">Cada categoría y rama se divide en zonas; el sorteo reparte sus equipos entre ellas.</p>
+        {!publicado && <ProponerZonas torneoId={torneoId} recargar={recargar} />}
         {zonas.length === 0 ? <p className="vacio">Sin zonas.</p> : (
           <ul className="lista-config">
             {zonas.map((z) => elemento({
