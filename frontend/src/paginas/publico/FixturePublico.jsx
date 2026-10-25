@@ -30,7 +30,8 @@ export default function FixturePublico() {
         {!datos && !error && <Cargando />}
         {datos && (
           <>
-            <h1>{datos.equipo}</h1>
+            <h1>{datos.torneo}</h1>
+            <h2>{datos.equipo}</h2>
             <p className="nota">{datos.club} · {datos.zona}</p>
             <VersionVigente version={datos.version} />
             <ul className="lista">
@@ -48,7 +49,7 @@ export default function FixturePublico() {
                 Fecha libre en la{datos.rondasLibres.length > 1 ? 's rondas' : ' ronda'} {datos.rondasLibres.join(', ')}.
               </p>
             )}
-            <CompartirWhatsApp texto={`Fixture de ${datos.equipo} (${datos.club})`} />
+            <CompartirWhatsApp texto={`Fixture de ${datos.equipo} (${datos.club}) en ${datos.torneo}`} />
           </>
         )}
       </main>

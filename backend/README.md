@@ -110,8 +110,8 @@ aunque el torneo se haya reabierto. Un torneo nunca publicado responde 404.
 
 | Método | Ruta | Qué hace |
 |---|---|---|
-| GET | `/api/publico/torneos/{id}/equipos` | Equipos del torneo |
-| GET | `/api/publico/torneos/{id}/equipos/{equipoId}/fixture` | Partidos del equipo y sus fechas libres |
+| GET | `/api/publico/torneos/{id}/equipos` | Nombre del torneo, versión publicada y equipos con su club y zona |
+| GET | `/api/publico/torneos/{id}/equipos/{equipoId}/fixture` | Nombre del torneo, versión, partidos del equipo y sus fechas libres |
 
 ## Probar el recorrido con el caso real
 

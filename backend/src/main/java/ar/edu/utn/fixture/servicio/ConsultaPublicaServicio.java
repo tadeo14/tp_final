@@ -22,7 +22,8 @@ import ar.edu.utn.fixture.repositorio.PartidoPublicadoRepositorio;
 /**
  * Consultas de la vista pública, sin login. Leen SIEMPRE la última versión publicada (la foto), nunca las tablas
  * vivas: lo que ve el público es exactamente lo que se publicó, aunque después se reabra y se corrija el
- * torneo (D46, D47). Nunca muestran datos de contacto (regla 7).
+ * torneo (D46, D47). Nunca muestran datos de contacto (regla 7). La excepción es el nombre del torneo, que se lee
+ * del torneo y no de la foto (D60).
  */
 @Service
 @Transactional(readOnly = true)
@@ -47,7 +48,7 @@ public class ConsultaPublicaServicio {
                     p.getClubVisitante(), p.getCategoria(), p.getRama(), p.etiquetaZona()));
         }
         List<EquipoPublicado> ordenados = equipos.values().stream().sorted(Comparator.comparing(EquipoPublicado::id)).toList();
-        return new EquiposPublicados(Publicaciones.version(vigente), ordenados);
+        return new EquiposPublicados(vigente.getTorneo().getNombre(), Publicaciones.version(vigente), ordenados);
     }
 
     /** Partidos de un equipo ordenados por horario, y las rondas en las que tiene fecha libre (se deducen, D18). */
@@ -76,6 +77,6 @@ public class ConsultaPublicaServicio {
         Set<Integer> jugadas = delEquipo.stream().map(PartidoPublicado::getRonda).collect(Collectors.toSet());
         List<Integer> libres = IntStream.rangeClosed(1, rondas).filter(r -> !jugadas.contains(r)).boxed().toList();
 
-        return new FixtureDeEquipo(Publicaciones.version(vigente), equipoId, nombre, club, zona, lista, libres);
+        return new FixtureDeEquipo(vigente.getTorneo().getNombre(), Publicaciones.version(vigente), equipoId, nombre, club, zona, lista, libres);
     }
 }

@@ -35,11 +35,11 @@ export default function EquiposPublicos() {
     <>
       <Encabezado publico />
       <main className="contenedor">
-        <h1>Fixture del torneo</h1>
         <MensajeError error={error} />
         {!datos && !error && <Cargando />}
         {datos && (
           <>
+            <h1>{datos.torneo}</h1>
             <VersionVigente version={datos.version} />
             <p>Elegí tu equipo para ver contra quién juega, dónde y a qué hora.</p>
             <label className="buscador">
@@ -67,7 +67,7 @@ export default function EquiposPublicos() {
                 </ul>
               </section>
             ))}
-            <CompartirWhatsApp texto="Fixture del torneo de básquet" />
+            <CompartirWhatsApp texto={`Fixture de ${datos.torneo}`} />
           </>
         )}
       </main>

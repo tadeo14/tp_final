@@ -89,11 +89,12 @@ public final class Respuestas {
     public record EquipoPublicado(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
-    public record EquiposPublicados(VersionPublicada version, List<EquipoPublicado> equipos) {
+    /** {@code torneo} es solo el nombre del torneo: la vista pública no muestra datos del organizador (D60). */
+    public record EquiposPublicados(String torneo, VersionPublicada version, List<EquipoPublicado> equipos) {
     }
 
     /** Fixture de un equipo según la última versión publicada. Las rondas libres se deducen: no se guardan (D18). */
-    public record FixtureDeEquipo(VersionPublicada version, Long equipoId, String equipo, String club, String zona,
+    public record FixtureDeEquipo(String torneo, VersionPublicada version, Long equipoId, String equipo, String club, String zona,
             List<PartidoDeEquipo> partidos, List<Integer> rondasLibres) {
     }
 

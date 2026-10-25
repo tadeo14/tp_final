@@ -1,8 +1,11 @@
 package ar.edu.utn.fixture.controlador;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -90,6 +93,10 @@ class RecorridoApiTest extends ApiTestBase {
 
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba"))
+                .andExpect(jsonPath("$.organizador").doesNotExist())
+                .andExpect(content().string(not(containsString("Organizador de prueba"))))
+                .andExpect(content().string(not(containsString("@prueba.test"))))
                 .andExpect(jsonPath("$.version.numero").value(1))
                 .andExpect(jsonPath("$.equipos", hasSize(9)))
                 .andExpect(jsonPath("$.equipos[0].club").value("Club de prueba"));
@@ -99,6 +106,8 @@ class RecorridoApiTest extends ApiTestBase {
         boolean zonaDeCinco = zonaDelPrimero.endsWith("Zona A");
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equiposU9.get(0) + "/fixture"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba"))
+                .andExpect(jsonPath("$.organizador").doesNotExist())
                 .andExpect(jsonPath("$.equipo").value("Equipo 1"))
                 .andExpect(jsonPath("$.club").value("Club de prueba"))
                 .andExpect(jsonPath("$.partidos[0].clubRival").value("Club de prueba"))
