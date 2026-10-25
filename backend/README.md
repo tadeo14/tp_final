@@ -92,6 +92,26 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | POST | `/api/torneos/{id}/equipos` | Inscribe un equipo |
 | GET | `/api/torneos/{id}/equipos` | Lista los equipos (sin datos de contacto) |
 
+**Editar y eliminar la configuración (organizador, con token, solo en BORRADOR, D66)**
+
+El cuerpo de cada PUT es el mismo del alta y reemplaza el elemento entero. Con el torneo PUBLICADO responden 409
+(hay que reabrirlo). Si el cambio invalida el fixture, responden 409 con `"requiereConfirmacion": true`; repitiendo el
+pedido con `?confirmar=true` se hace y se borran todos los partidos (y, si corresponde, se deshace el sorteo).
+Borrar algo que otra parte de la configuración usa (un club con equipos, una categoría o rama con zonas o equipos)
+responde 409 sin opción de confirmar.
+
+| Método | Ruta | Pide confirmación si… |
+|---|---|---|
+| PUT | `/api/torneos/{id}` | cambian turnos, recambio o descanso y hay partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/franjas/{franjaId}` | hay partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/sedes/{sedeId}` | (DELETE) sus canchas tienen partidos programados. Borra también sus canchas |
+| PUT, DELETE | `/api/sedes/{sedeId}/canchas/{canchaId}` | se deshabilita o se borra una cancha con partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/categorias/{categoriaId}` | cambian duraciones o tope diario y la categoría tiene partidos programados. DELETE: 409 si tiene zonas o equipos |
+| PUT, DELETE | `/api/torneos/{id}/ramas/{ramaId}` | nunca. DELETE: 409 si tiene zonas o equipos |
+| PUT, DELETE | `/api/torneos/{id}/clubes/{clubId}` | nunca. DELETE: 409 si tiene equipos |
+| PUT, DELETE | `/api/torneos/{id}/zonas/{zonaId}` | se borra o se cambia de categoría o rama una zona con equipos (deshace el sorteo) |
+| PUT, DELETE | `/api/torneos/{id}/equipos/{equipoId}` | se da de baja un equipo con partidos (conserva el sorteo), o se cambia la categoría o rama de un equipo sorteado (deshace el sorteo) |
+
 **Fixture (organizador, con token)**
 
 | Método | Ruta | Qué hace |

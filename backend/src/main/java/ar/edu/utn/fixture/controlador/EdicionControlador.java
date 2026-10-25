@@ -19,12 +19,14 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
+import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.CategoriaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
 import ar.edu.utn.fixture.servicio.EdicionServicio;
 import jakarta.validation.Valid;
@@ -41,6 +43,12 @@ public class EdicionControlador {
 
     public EdicionControlador(EdicionServicio servicio) {
         this.servicio = servicio;
+    }
+
+    @PutMapping("/torneos/{torneoId}")
+    public TorneoDetalle editarTorneo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @Valid @RequestBody NuevoTorneo pedido, @RequestParam(defaultValue = "false") boolean confirmar) {
+        return servicio.editarTorneo(organizadorId, torneoId, pedido, confirmar);
     }
 
     @PutMapping("/torneos/{torneoId}/franjas/{franjaId}")

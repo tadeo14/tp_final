@@ -11,12 +11,14 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaSede;
 import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
+import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
 import ar.edu.utn.fixture.dto.Respuestas.CanchaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.CategoriaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.FranjaDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.SedeDetalle;
+import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.ZonaDetalle;
 import ar.edu.utn.fixture.entidad.Cancha;
 import ar.edu.utn.fixture.entidad.Categoria;
@@ -25,6 +27,7 @@ import ar.edu.utn.fixture.entidad.Equipo;
 import ar.edu.utn.fixture.entidad.FranjaHoraria;
 import ar.edu.utn.fixture.entidad.Rama;
 import ar.edu.utn.fixture.entidad.Sede;
+import ar.edu.utn.fixture.entidad.Torneo;
 import ar.edu.utn.fixture.entidad.Zona;
 import ar.edu.utn.fixture.repositorio.CanchaRepositorio;
 import ar.edu.utn.fixture.repositorio.CategoriaRepositorio;
@@ -72,6 +75,29 @@ public class EdicionServicio {
         this.clubes = clubes;
         this.zonas = zonas;
         this.equipos = equipos;
+    }
+
+    // ------------------------------------------------------------------ parámetros del torneo
+
+    /**
+     * El nombre no afecta el fixture (en la vista pública se ve enseguida, D60). "Turnos cada", recambio y descanso
+     * sí, si hay partidos programados.
+     */
+    public TorneoDetalle editarTorneo(Long organizadorId, Long torneoId, NuevoTorneo pedido, boolean confirmar) {
+        Torneo t = torneos.editable(torneoId, organizadorId);
+        boolean cambiaElCalculo = !t.getTurnosCadaMin().equals(pedido.turnosCadaMin())
+                || !t.getRecambioMin().equals(pedido.recambioMin())
+                || !t.getDescansoMinimoMin().equals(pedido.descansoMinimoMin());
+        if (cambiaElCalculo) {
+            invalidaciones.siHayProgramados(torneoId, confirmar, "Cambiar los turnos, el recambio o el descanso del torneo");
+            t = torneos.editable(torneoId, organizadorId);
+        }
+        t.setNombre(pedido.nombre());
+        t.setTurnosCadaMin(pedido.turnosCadaMin());
+        t.setRecambioMin(pedido.recambioMin());
+        t.setDescansoMinimoMin(pedido.descansoMinimoMin());
+        torneos.guardar(t);
+        return Torneos.detalle(t);
     }
 
     // ------------------------------------------------------------------ franjas
