@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../../api.js';
 import { momento } from '../../formato.js';
 import MensajeError from '../MensajeError.jsx';
+import ConfirmacionEnLinea from './ConfirmacionEnLinea.jsx';
 
 /**
  * Publicación del fixture (D46, D47): publicar, reabrir para corregir e historial de versiones.
@@ -42,10 +43,12 @@ export default function Publicacion({ torneoId, publicado, publicaciones, recarg
     }, `Se publicó la versión ${proxima}.`);
   }
 
-  function reabrir() {
-    const confirmado = window.confirm('El torneo vuelve a BORRADOR para corregirlo. El público va a seguir viendo la '
-      + `versión ${publicaciones.length} hasta que publiques la corrección. ¿Seguimos?`);
-    if (confirmado) ejecutar(() => api.post(`${base}/reabrir`), 'El torneo volvió a BORRADOR: ya podés corregirlo.');
+  // Reabrir se pregunta dentro de la página, sin ventanas del navegador (D68).
+  const [preguntandoReabrir, setPreguntandoReabrir] = useState(false);
+
+  async function reabrir() {
+    await ejecutar(() => api.post(`${base}/reabrir`), 'El torneo volvió a BORRADOR: ya podés corregirlo.');
+    setPreguntandoReabrir(false);
   }
 
   return (
@@ -58,9 +61,16 @@ export default function Publicacion({ torneoId, publicado, publicaciones, recarg
               El público ve la versión {publicaciones.length}. Para corregir algo (por ejemplo, si se da de baja un equipo o una
               cancha queda fuera de servicio), reabrí el torneo, corregí y volvé a publicar.
             </p>
-            <button type="button" className="boton-secundario" disabled={enCurso} onClick={reabrir}>
-              {enCurso ? 'Reabriendo…' : 'Reabrir para corregir'}
-            </button>
+            {preguntandoReabrir ? (
+              <ConfirmacionEnLinea textoConfirmar="Sí, reabrir" textoEnCurso="Reabriendo…" enCurso={enCurso}
+                texto={`El torneo vuelve a BORRADOR para corregirlo. El público va a seguir viendo la versión ${publicaciones.length} `
+                  + 'hasta que publiques la corrección. ¿Seguimos?'}
+                alConfirmar={reabrir} alCancelar={() => setPreguntandoReabrir(false)} />
+            ) : (
+              <button type="button" className="boton-secundario" disabled={enCurso} onClick={() => setPreguntandoReabrir(true)}>
+                Reabrir para corregir
+              </button>
+            )}
           </>
         ) : (
           <form className="formulario" onSubmit={publicar}>

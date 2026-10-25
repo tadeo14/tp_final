@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import MensajeError from '../MensajeError.jsx';
+import ConfirmacionEnLinea from './ConfirmacionEnLinea.jsx';
 import ConfirmarInvalidacion from './ConfirmarInvalidacion.jsx';
 import FormularioAlta from './FormularioAlta.jsx';
 
@@ -82,15 +83,8 @@ export default function ElementoConfig({ children, descripcion, publicado, formu
         )}
       </div>
       {modo === 'eliminar' && !error && (
-        <div className="aviso aviso-advertencia">
-          <p>¿Eliminar {descripcion}?</p>
-          <div className="botones">
-            <button type="button" className="boton-peligro" disabled={enCurso} onClick={() => confirmarEliminacion(false)}>
-              {enCurso ? 'Eliminando…' : 'Sí, eliminar'}
-            </button>
-            <button type="button" className="boton-secundario" disabled={enCurso} onClick={volver}>Cancelar</button>
-          </div>
-        </div>
+        <ConfirmacionEnLinea texto={`¿Eliminar ${descripcion}?`} textoConfirmar="Sí, eliminar" textoEnCurso="Eliminando…"
+          enCurso={enCurso} alConfirmar={() => confirmarEliminacion(false)} alCancelar={volver} />
       )}
       {error?.requiereConfirmacion ? (
         <ConfirmarInvalidacion error={error} enCurso={enCurso} alConfirmar={() => confirmarEliminacion(true)}

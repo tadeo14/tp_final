@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../api.js';
 import MensajeError from '../MensajeError.jsx';
+import ConfirmacionEnLinea from './ConfirmacionEnLinea.jsx';
 import TablaFixture from './TablaFixture.jsx';
 
 /**
@@ -29,8 +30,11 @@ export default function Recorrido({ torneoId, publicado, fixture, recargar }) {
     }
   }
 
+  // Con partidos generados, volver a sortear los borra: se pregunta dentro de la página (D68).
+  const [preguntandoSorteo, setPreguntandoSorteo] = useState(false);
+
   function sortear() {
-    if (fixture.length > 0 && !window.confirm('Volver a sortear borra los partidos generados. ¿Seguimos?')) return;
+    setPreguntandoSorteo(false);
     ejecutar('sorteo', () => api.post(`${base}/sorteo`));
   }
 
@@ -50,9 +54,14 @@ export default function Recorrido({ torneoId, publicado, fixture, recargar }) {
       <section className="tarjeta paso">
         <h2>1. Sortear zonas</h2>
         <p className="nota">Reparte al azar los equipos de cada categoría y rama entre sus zonas.</p>
-        <button type="button" disabled={publicado || ocupado} onClick={sortear}>
+        <button type="button" disabled={publicado || ocupado || preguntandoSorteo}
+          onClick={() => (fixture.length > 0 ? setPreguntandoSorteo(true) : sortear())}>
           {enCurso === 'sorteo' ? 'Sorteando…' : 'Sortear'}
         </button>
+        {preguntandoSorteo && (
+          <ConfirmacionEnLinea texto={`Volver a sortear borra los ${fixture.length} partidos generados. ¿Seguimos?`}
+            textoConfirmar="Sí, volver a sortear" alConfirmar={sortear} alCancelar={() => setPreguntandoSorteo(false)} />
+        )}
         <MensajeError error={errores.sorteo} />
         {sorteo && (
           <div className="aviso aviso-ok">
