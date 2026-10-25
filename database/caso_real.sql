@@ -19,7 +19,7 @@
 --   1. Arrancar el backend una vez (Flyway crea las tablas).
 --   2. Registrar el organizador dueño del torneo: POST /api/auth/registro con el email
 --      ejemplo@fixture.test y la contraseña que quieran (ver backend/recorrido.http).
---   3. Ejecutar este archivo en la base (psql o el editor SQL de Neon). Al final muestra el id del torneo.
+--   3. Ejecutar este archivo en la base (psql o el SQL Editor de Supabase). Al final muestra el id del torneo.
 --   4. Iniciar sesión con ese organizador (POST /api/auth/login) y seguir el recorrido.
 -- Se puede ejecutar más de una vez: cada vez crea un torneo nuevo.
 -- =============================================================================
