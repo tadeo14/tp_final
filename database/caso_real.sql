@@ -5,7 +5,8 @@
 -- con sus duraciones, ramas, las 13 zonas elegidas y los 55 equipos. NO sortea ni genera partidos:
 -- eso se hace con la API (POST /sorteo, /fixture/generar, /fixture/programar, /publicar).
 --
--- Del caso real: cantidades, parámetros, sedes ("Club A" y "Club B", anonimizadas) y zonas.
+-- Del caso real: cantidades, parámetros, sedes ("Atlético María Juana" y "Litoral María Juana", con el acuerdo del
+-- organizador, D63) y zonas. Las sedes no son clubes participantes.
 -- DATOS DE PRUEBA (no figuran en el caso real): las fechas, los clubes de los equipos y el reparto de los equipos
 -- entre ellos, los nombres de los equipos, el responsable y el teléfono, y el email del organizador.
 --
@@ -36,8 +37,8 @@ VALUES (currval(pg_get_serial_sequence('torneo', 'id')), DATE '2026-11-07', TIME
        (currval(pg_get_serial_sequence('torneo', 'id')), DATE '2026-11-08', TIME '09:00', TIME '16:00');
 
 INSERT INTO sede (torneo_id, nombre)
-VALUES (currval(pg_get_serial_sequence('torneo', 'id')), 'Club A'),
-       (currval(pg_get_serial_sequence('torneo', 'id')), 'Club B');
+VALUES (currval(pg_get_serial_sequence('torneo', 'id')), 'Atlético María Juana'),
+       (currval(pg_get_serial_sequence('torneo', 'id')), 'Litoral María Juana');
 
 -- 4 canchas por sede, en orden (el programador las recorre en el orden de carga, D37).
 INSERT INTO cancha (sede_id, nombre)

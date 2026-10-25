@@ -1,7 +1,9 @@
 # Caso real de referencia
 
-> Torneo formativo real, anonimizado (las sedes se identifican como Club A y Club B).
-> Los clubes de los equipos en los datos de ejemplo son nombres reales con participación ficticia (sección 4).
+> Torneo formativo real. Las sedes son dos clubes reales: **Atlético María Juana** y **Litoral María Juana** (D63).
+> El organizador está de acuerdo con que figuren sus clubes.
+> Los equipos y su reparto entre los clubes siguen siendo **datos de prueba**: nombres reales de clubes con
+> participación ficticia (sección 4). Las dos sedes no figuran como clubes participantes.
 > Es el **principal caso de prueba del sistema**, como pidió el tutor.
 
 ## 1. Situación actual (cómo se organiza hoy)
@@ -28,8 +30,8 @@ Problemas: superposiciones de horarios, canchas ociosas, equipos que no saben d�
 
 | Sede | Canchas |
 |---|---|
-| Club A | 4 |
-| Club B | 4 |
+| Atlético María Juana | 4 |
+| Litoral María Juana | 4 |
 | **Total** | **8** |
 
 Todas las canchas sirven para todas las categorías. Un equipo puede jugar en las dos sedes el mismo día (el descanso mínimo cubre el traslado).

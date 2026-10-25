@@ -81,7 +81,7 @@ class CasoRealApiTest extends ApiTestBase {
         int libres = fixture.get("rondasLibres").size();
         assertThat(partidos + libres).isEqualTo(3); // las zonas de 3 y de 4 tienen 3 rondas
         assertThat(partidos).isIn(2, 3);
-        assertThat(fixture.get("partidos").get(0).get("sede").asText()).isIn("Club A", "Club B");
+        assertThat(fixture.get("partidos").get(0).get("sede").asText()).isIn("Atlético María Juana", "Litoral María Juana");
     }
 
     @Test

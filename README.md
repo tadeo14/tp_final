@@ -19,8 +19,9 @@ enfrentamientos** (todos contra todos dentro de cada zona, con fecha libre si es
 
 ## Caso real
 
-El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`](docs/caso-real.md)):
-**55 equipos**, U9/U11/U13 masculino y femenino, **2 sedes × 4 canchas**, sábado y domingo.
+El principal caso de prueba es un torneo real ([`docs/caso-real.md`](docs/caso-real.md)):
+**55 equipos**, U9/U11/U13 masculino y femenino, **2 sedes × 4 canchas** (Atlético María Juana y Litoral María
+Juana), sábado y domingo.
 
 - Con todos contra todos **no hay solución** (un equipo de 10 necesitaría 9 partidos y puede jugar 6).
 - Con **13 zonas** sí: **91 partidos**, programados sin violar ninguna regla.
