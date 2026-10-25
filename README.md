@@ -36,11 +36,11 @@ Juana), sábado y domingo.
 | 4. Sorteo y enfrentamientos | Método del círculo — tests T1, T2 | [`algoritmo-enfrentamientos.md`](docs/algoritmo-enfrentamientos.md) |
 | 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
 | 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
-| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT | [`backend/README.md`](backend/README.md) |
-| 10. Frontend del organizador | React + Vite: login, mis torneos, configuración, recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
+| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT, editar y eliminar la configuración (D66) | [`backend/README.md`](backend/README.md) |
+| 10. Frontend del organizador | React + Vite: login, mis torneos, configuración (alta, editar y eliminar), recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
 | 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-**108 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**165 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
