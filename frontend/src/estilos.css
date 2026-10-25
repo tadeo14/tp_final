@@ -38,6 +38,7 @@ a { color: var(--naranja-oscuro); }
 .titulo-app { text-align: center; margin-top: 2rem; }
 .subtitulo { text-align: center; color: var(--texto-suave); }
 .nota, .ayuda { color: var(--texto-suave); font-size: 0.875rem; }
+.centrado { text-align: center; }
 
 /* ---------- Encabezado ---------- */
 .encabezado {

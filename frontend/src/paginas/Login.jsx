@@ -83,6 +83,10 @@ export default function Login() {
           {enviando ? 'Un momento…' : modo === 'ingresar' ? 'Ingresar' : 'Crear cuenta e ingresar'}
         </button>
       </form>
+
+      <p className="nota centrado">
+        ¿Sos de un club o una familia? Pedile el enlace del fixture al organizador del torneo.
+      </p>
     </main>
   );
 }
