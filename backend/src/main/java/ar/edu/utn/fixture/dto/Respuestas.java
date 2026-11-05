@@ -116,7 +116,7 @@ public final class Respuestas {
     public record EquipoPublicado(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
-    /** {@code torneo} es solo el nombre del torneo: la vista pública no muestra datos del organizador (D60). */
+    /** {@code torneo} es el nombre del torneo tal como se publicó (D70); no se muestran datos del organizador (D60). */
     public record EquiposPublicados(String torneo, VersionPublicada version, List<EquipoPublicado> equipos) {
     }
 

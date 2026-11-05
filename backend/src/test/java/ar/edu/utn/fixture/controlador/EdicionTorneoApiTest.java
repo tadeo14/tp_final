@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Editar los parámetros del torneo (D66). Torneo chico de PRUEBA con 6 partidos programados.
@@ -22,6 +25,9 @@ class EdicionTorneoApiTest extends EdicionApiTestBase {
             {"nombre": "Torneo de prueba", "turnosCadaMin": 15, "recambioMin": 10, "descansoMinimoMin": 120}
             """;
 
+    @Autowired
+    private JdbcTemplate jdbc;
+
     private long torneo;
     private String url;
 
@@ -31,17 +37,32 @@ class EdicionTorneoApiTest extends EdicionApiTestBase {
     }
 
     @Test
-    void renombrar_noAfectaElFixtureYElPublicoLoVeEnseguida() throws Exception {
+    void renombrar_laVersionPublicadaConservaElNombreYLaSiguienteTomaElNuevo() throws Exception {
         conFixtureProgramado();
         publicar(torneo);
         mvc.perform(post(url + "/reabrir")).andExpect(status().isOk());
+        long equipo = equipos(torneo).get(0).get("id").asLong();
+        String publicoEquipos = "/api/publico/torneos/" + torneo + "/equipos";
+        String publicoFixture = publicoEquipos + "/" + equipo + "/fixture";
 
         editar(url, RENOMBRADO).andExpect(status().isOk()).andExpect(jsonPath("$.nombre").value("Torneo de prueba corregido"));
         assertThat(partidos(torneo)).isEqualTo(6);
-        // D60: el nombre sale de la tabla viva, aunque el resto sea la versión 1.
-        mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
-                .andExpect(jsonPath("$.torneo").value("Torneo de prueba corregido"))
+
+        // D70: la versión 1 es una foto, conserva el nombre con el que se publicó.
+        mvcSinToken.perform(get(publicoEquipos))
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba"))
                 .andExpect(jsonPath("$.version.numero").value(1));
+        mvcSinToken.perform(get(publicoFixture)).andExpect(jsonPath("$.torneo").value("Torneo de prueba"));
+
+        // Una nueva publicación toma el nombre nuevo.
+        mvc.perform(post(url + "/publicar").contentType(MediaType.APPLICATION_JSON).content("{\"motivo\": \"Corrección del nombre\"}"))
+                .andExpect(status().isOk());
+        mvcSinToken.perform(get(publicoEquipos))
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba corregido"))
+                .andExpect(jsonPath("$.version.numero").value(2));
+        mvcSinToken.perform(get(publicoFixture)).andExpect(jsonPath("$.torneo").value("Torneo de prueba corregido"));
+        assertThat(jdbc.queryForList("select nombre_torneo from publicacion where torneo_id = ? order by numero", String.class, torneo))
+                .containsExactly("Torneo de prueba", "Torneo de prueba corregido");
     }
 
     @Test

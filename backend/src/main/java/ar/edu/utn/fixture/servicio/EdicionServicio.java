@@ -80,7 +80,7 @@ public class EdicionServicio {
     // ------------------------------------------------------------------ parámetros del torneo
 
     /**
-     * El nombre no afecta el fixture (en la vista pública se ve enseguida, D60). "Turnos cada", recambio y descanso
+     * El nombre no afecta el fixture ni lo ya publicado (cada versión guarda el suyo, D70). "Turnos cada", recambio y descanso
      * sí, si hay partidos programados.
      */
     public TorneoDetalle editarTorneo(Long organizadorId, Long torneoId, NuevoTorneo pedido, boolean confirmar) {

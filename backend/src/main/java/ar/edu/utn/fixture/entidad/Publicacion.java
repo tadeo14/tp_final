@@ -17,6 +17,7 @@ import org.hibernate.annotations.Immutable;
 /**
  * Una versión publicada del fixture de un torneo: 1, 2, 3… (D46). La última es la que ve el público.
  * Es inmutable: Hibernate nunca le hace UPDATE. El motivo es obligatorio desde la versión 2.
+ * Guarda el nombre que tenía el torneo al publicar (D70): renombrarlo después no cambia lo publicado.
  */
 @Entity
 @Immutable
@@ -40,12 +41,16 @@ public class Publicacion {
     @Column(name = "motivo", length = 500)
     private String motivo;
 
+    @Column(name = "nombre_torneo", nullable = false, length = 150)
+    private String nombreTorneo;
+
     protected Publicacion() {
         // para JPA
     }
 
     public Publicacion(Torneo torneo, int numero, Instant publicadaEn, String motivo) {
         this.torneo = torneo;
+        this.nombreTorneo = torneo.getNombre(); // se copia al publicar: es parte de la foto (D70)
         this.numero = numero;
         this.publicadaEn = publicadaEn;
         this.motivo = motivo;
@@ -57,6 +62,11 @@ public class Publicacion {
 
     public Torneo getTorneo() {
         return torneo;
+    }
+
+    /** El nombre del torneo tal como se publicó en esta versión. */
+    public String getNombreTorneo() {
+        return nombreTorneo;
     }
 
     public Integer getNumero() {

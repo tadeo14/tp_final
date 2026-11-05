@@ -85,6 +85,7 @@ class MapeoEntidadesTest {
         assertThat(foto.getFin()).isEqualTo(LocalDateTime.of(2030, 1, 5, 10, 0));
         assertThat(foto.getPublicacion().getNumero()).isEqualTo(1);
         assertThat(foto.getPublicacion().getPublicadaEn()).isEqualTo(ahora);
+        assertThat(foto.getPublicacion().getNombreTorneo()).isEqualTo("Torneo de prueba"); // V4, D70
         assertThat(foto.getPublicacion().getMotivo()).isNull();
     }
 
