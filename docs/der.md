@@ -2,7 +2,8 @@
 
 > DDL completo en las migraciones Flyway [`V1__esquema_inicial.sql`](../backend/src/main/resources/db/migration/V1__esquema_inicial.sql)
 > , [`V2__publicaciones.sql`](../backend/src/main/resources/db/migration/V2__publicaciones.sql) (versiones publicadas)
-> y [`V3__club_en_foto.sql`](../backend/src/main/resources/db/migration/V3__club_en_foto.sql) (club en la foto).
+> , [`V3__club_en_foto.sql`](../backend/src/main/resources/db/migration/V3__club_en_foto.sql) (club en la foto)
+> y [`V4__nombre_torneo_en_publicacion.sql`](../backend/src/main/resources/db/migration/V4__nombre_torneo_en_publicacion.sql) (nombre del torneo en la versión).
 > Cubre solo el alcance P0 de `CLAUDE.md`: no hay comidas, resultados, fase final ni jugadores.
 
 ## Diagrama
@@ -117,6 +118,7 @@ erDiagram
         int numero "1, 2, 3... único por torneo"
         timestamptz publicada_en
         varchar motivo "NULL solo en la versión 1"
+        varchar nombre_torneo "V4: el nombre al publicar"
     }
     PARTIDO_PUBLICADO {
         bigint id PK
@@ -155,7 +157,7 @@ sirven para filtrar el fixture de un equipo, pero no son claves foráneas (D46).
 | `club` | Club que inscribe equipos | Por torneo. Puede coincidir con una sede, pero son conceptos distintos |
 | `equipo` | Equipo inscripto | Solo responsable y teléfono como datos personales. `zona_id` + `orden_en_zona` = resultado del sorteo |
 | `partido` | Enfrentamiento del fixture | Lo crea el generador (zona, equipos, ronda) y lo completa el programador (cancha, inicio). La base no impide asignar una cancha de otro torneo: eso lo controla R5 |
-| `publicacion` | Una versión publicada del fixture (V2) | Número 1, 2, 3… por torneo. La última es la que ve el público. El motivo es obligatorio desde la versión 2 |
+| `publicacion` | Una versión publicada del fixture (V2) | Número 1, 2, 3… por torneo. La última es la que ve el público. El motivo es obligatorio desde la versión 2. Guarda el nombre del torneo al publicar (V4, D70) |
 | `partido_publicado` | Foto de un partido tal como se publicó (V2, club en V3) | Textos desnormalizados (equipos y sus clubes, zona, sede, cancha, horarios), inmutable: nunca se hace UPDATE. Cambiar equipos, clubes, canchas o configuración no la afecta |
 
 ## Versiones publicadas (D46, D47, D48)
@@ -168,6 +170,8 @@ sirven para filtrar el fixture de un equipo, pero no son claves foráneas (D46).
 - **La foto guarda el `fin`** del partido, a diferencia de `partido` (D8): es el horario que se comunicó, y no tiene
   que cambiar si después cambian las duraciones de la categoría (D48).
 - **La foto guarda el club** de cada equipo (V3): las familias buscan el fixture por club (D48).
+- **La versión guarda el nombre del torneo** (V4, D70): renombrar el torneo no cambia lo publicado; el nombre nuevo
+  aparece en la publicación siguiente.
 
 ## Cálculos que no se guardan (D8)
 
@@ -205,7 +209,7 @@ La base asegura que los datos sean **coherentes entre sí**; las reglas del fixt
 | No se sortea, genera, programa ni configura un torneo PUBLICADO; para corregirlo hay que reabrirlo (D20, D39, D47) | Backend | Servicio, antes de llamar al generador o al programador |
 | Número de versión único por torneo; motivo obligatorio desde la versión 2 | Base | `UNIQUE (torneo_id, numero)` y `CHECK` |
 | La foto publicada no se modifica | Backend | Entidades `@Immutable` sin setters; ninguna operación la actualiza |
-| La vista pública muestra solo lo publicado | Backend | `ConsultaPublicaServicio` lee solo `partido_publicado` |
+| La vista pública muestra solo lo publicado | Backend | `ConsultaPublicaServicio` lee solo `partido_publicado` y `publicacion` (incluido el nombre del torneo) |
 
 R1 y R2 no se pueden expresar en la base sin guardar el fin del partido, que es un dato derivado (D8).
 
