@@ -43,6 +43,9 @@ Juana), sábado y domingo.
 **182 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
+**Manual de usuario:** [`docs/manual-usuario.md`](docs/manual-usuario.md) — guía rápida, recorrido paso a paso,
+glosario, preguntas frecuentes y solución de problemas.
+
 ## Cómo correrlo
 
 Requiere Java 17+ y un PostgreSQL. La configuración va por variables de entorno (nunca en el repo):
@@ -106,6 +109,6 @@ Despliegue: Render (Docker y sitio estático) + Supabase ([`docs/deploy.md`](doc
 ```
 /backend    API Spring Boot (dominio puro, entidades, servicios, controladores, tests)
 /database   Datos de ejemplo del caso real y pruebas del esquema
-/docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta
+/docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta, manual de usuario
 /frontend   App React: pantallas del organizador y vista pública
 ```
