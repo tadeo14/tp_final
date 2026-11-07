@@ -70,6 +70,23 @@ un equipo). Detalle en [`backend/README.md`](backend/README.md).
 cd frontend && npm ci && npm run dev   # http://localhost:5173
 ```
 
+## Cuenta de demostración
+
+Para probar la app desplegada sin crear una cuenta:
+
+| | |
+|---|---|
+| App | <https://fixture-frontend-i2w8.onrender.com> |
+| Usuario | `demo@fixture.test` |
+| Contraseña | `demo-fixture-2026` |
+
+- Es una **cuenta de prueba, pública y descartable**: tiene solo torneos de prueba y **puede reiniciarse en cualquier
+  momento** (se borran sus torneos). No cargues datos reales ni teléfonos reales de responsables.
+- **No es la cuenta del caso real.** El torneo del caso real está a nombre de `ejemplo@fixture.test`, cuya
+  contraseña no se publica (D71).
+- Cada organizador ve solo sus torneos (D45): con otra cuenta, los de la demostración no aparecen.
+- Si la app estuvo sin uso, el primer ingreso tarda cerca de un minuto (plan gratis de Render).
+
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo

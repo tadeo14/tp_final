@@ -26,19 +26,22 @@ GET {{base}}/api/salud
 # =============================================================================
 
 @torneo = 1
+# Contraseña del organizador del caso real: elíjanla ustedes y NO la suban al repo (D71). No es la cuenta de
+# demostración del README (demo@fixture.test), que es pública y descartable.
+@claveCasoReal = cambiar-por-una-clave-propia
 
-### Registrar el organizador del caso real (una sola vez; la contraseña la eligen ustedes)
+### Registrar el organizador del caso real (una sola vez)
 POST {{base}}/api/auth/registro
 Content-Type: application/json
 
-{"nombre": "Organizador de ejemplo", "email": "ejemplo@fixture.test", "contrasenia": "clave-de-prueba"}
+{"nombre": "Organizador de ejemplo", "email": "ejemplo@fixture.test", "contrasenia": "{{claveCasoReal}}"}
 
 ### Iniciar sesión: devuelve el token
 # @name loginCasoReal
 POST {{base}}/api/auth/login
 Content-Type: application/json
 
-{"email": "ejemplo@fixture.test", "contrasenia": "clave-de-prueba"}
+{"email": "ejemplo@fixture.test", "contrasenia": "{{claveCasoReal}}"}
 
 ### Ver el torneo (estado BORRADOR)
 GET {{base}}/api/torneos/{{torneo}}

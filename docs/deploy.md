@@ -133,11 +133,28 @@ Los valores **nunca** se suben al repo ni se pegan en chats: solo en el panel de
       ```
       @base = https://fixture-backend.onrender.com
       ```
-   2. Ejecutar **Registrar el organizador del caso real** (crea `ejemplo@fixture.test`).
+   2. Poner en `@claveCasoReal` una contraseña propia (no la de la cuenta de demostración, y sin subirla al repo)
+      y ejecutar **Registrar el organizador del caso real** (crea `ejemplo@fixture.test`).
    3. En Supabase → **SQL Editor**, pegar y ejecutar [`database/caso_real.sql`](../database/caso_real.sql).
       Al final muestra el id del torneo: ponerlo en `@torneo`.
    4. Seguir los pedidos en orden: login, sortear, generar (91 partidos), programar, validar, publicar,
       vista pública sin token, reabrir y republicar con motivo.
+
+### Cuenta de demostración (D71)
+
+La cuenta pública del README (`demo@fixture.test`) se crea una sola vez, desde el frontend: **Crear cuenta** con el
+usuario y la contraseña que figuran en el README. Solo se usan torneos de prueba: nunca el caso real ni teléfonos
+reales.
+
+**Reiniciarla** (por ejemplo, antes de una entrega o si alguien la llenó de datos): en Supabase → **SQL Editor**,
+
+```sql
+-- Borra todos los torneos de la cuenta de demostración, con su configuración, fixture y versiones publicadas.
+-- La cuenta sigue existiendo, con la misma contraseña.
+DELETE FROM torneo WHERE organizador_id = (SELECT id FROM organizador WHERE email = 'demo@fixture.test');
+```
+
+No toca los torneos de otras cuentas.
 
 ## 5. Backup de la base (pg_dump)
 
