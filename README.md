@@ -40,7 +40,7 @@ Juana), sábado y domingo.
 | 10. Frontend del organizador | React + Vite: login, mis torneos, configuración (alta, editar y eliminar), recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
 | 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-**180 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**182 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
 ## Cómo correrlo
@@ -81,7 +81,8 @@ Para probar la app desplegada sin crear una cuenta:
 | Contraseña | `demo-fixture-2026` |
 
 - Es una **cuenta de prueba, pública y descartable**: tiene solo torneos de prueba y **puede reiniciarse en cualquier
-  momento** (se borran sus torneos). No cargues datos reales ni teléfonos reales de responsables.
+  momento** (se borran sus torneos y se vuelve a cargar "[PRUEBA] Torneo demo" con
+  [`database/demo.sql`](database/demo.sql)). No cargues datos reales ni teléfonos reales de responsables.
 - **No es la cuenta del caso real.** El torneo del caso real está a nombre de `ejemplo@fixture.test`, cuya
   contraseña no se publica (D71).
 - Cada organizador ve solo sus torneos (D45): con otra cuenta, los de la demostración no aparecen.

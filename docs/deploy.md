@@ -142,19 +142,28 @@ Los valores **nunca** se suben al repo ni se pegan en chats: solo en el panel de
 
 ### Cuenta de demostración (D71)
 
-La cuenta pública del README (`demo@fixture.test`) se crea una sola vez, desde el frontend: **Crear cuenta** con el
-usuario y la contraseña que figuran en el README. Solo se usan torneos de prueba: nunca el caso real ni teléfonos
-reales.
+La cuenta pública del README (`demo@fixture.test`) solo tiene torneos de prueba: nunca el caso real ni teléfonos
+reales. Su torneo de ejemplo, "[PRUEBA] Torneo demo", lo carga [`database/demo.sql`](../database/demo.sql) (D72):
+todo ficticio, 2 sedes, 2 categorías, 4 clubes, 10 equipos y 3 zonas, listo para sortear.
 
-**Reiniciarla** (por ejemplo, antes de una entrega o si alguien la llenó de datos): en Supabase → **SQL Editor**,
+**Primera vez:**
+1. En la app: **Crear cuenta** con el usuario y la contraseña que figuran en el README.
+2. En Supabase → **SQL Editor**: pegar y ejecutar todo [`database/demo.sql`](../database/demo.sql).
 
-```sql
--- Borra todos los torneos de la cuenta de demostración, con su configuración, fixture y versiones publicadas.
--- La cuenta sigue existiendo, con la misma contraseña.
-DELETE FROM torneo WHERE organizador_id = (SELECT id FROM organizador WHERE email = 'demo@fixture.test');
-```
+**Reiniciarla** (por ejemplo, antes de una entrega o si alguien la llenó de datos), en Supabase → **SQL Editor**,
+en este orden:
 
-No toca los torneos de otras cuentas.
+1. Borrar todos sus torneos, con su configuración, fixture y versiones publicadas. La cuenta sigue existiendo, con
+   la misma contraseña, y no se tocan los torneos de otras cuentas:
+
+   ```sql
+   DELETE FROM torneo WHERE organizador_id = (SELECT id FROM organizador WHERE email = 'demo@fixture.test');
+   ```
+
+2. Pegar y ejecutar todo [`database/demo.sql`](../database/demo.sql): vuelve a cargar "[PRUEBA] Torneo demo".
+
+Si `demo.sql` falla con `null value in column "organizador_id"`, la cuenta no está registrada: crearla desde la app
+y volver a ejecutarlo. Ejecutarlo dos veces sin el paso 1 deja dos torneos demo.
 
 ## 5. Backup de la base (pg_dump)
 

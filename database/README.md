@@ -19,5 +19,8 @@ en local y en el despliegue (decisión D21).
 
 - `pruebas_schema.sql`: pruebas de integridad del esquema. Cargan datos inválidos y muestran si la base
   los rechaza. Se corren en una base de desarrollo con la migración V1 aplicada.
+- `demo.sql`: torneo de prueba "[PRUEBA] Torneo demo" para la cuenta pública `demo@fixture.test` (D72). Todo
+  ficticio: 2 sedes, 2 categorías, 4 clubes, 10 equipos y 3 zonas. También es el paso 2 del reinicio de esa cuenta
+  (ver `docs/deploy.md`, "Cuenta de demostración").
 - `caso_real.sql`: datos de ejemplo del caso real (torneo en BORRADOR con 55 equipos y 13 zonas), para probar el
   recorrido de la API. Antes hay que registrar el organizador `ejemplo@fixture.test` por la API. Ver `backend/README.md`.
