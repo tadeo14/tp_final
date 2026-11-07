@@ -106,7 +106,7 @@ gratuito de Render "duerme" el servidor. No es un error: esperar y reintentar.
 <!-- CAPTURA: pantalla de login (pestañas Ingresar / Crear cuenta) con el aviso para clubes y familias debajo del formulario -->
 
 **Cuenta de demostración:** ver credenciales de demo en el [README](../README.md#cuenta-de-demostración). También se
-puede crear una cuenta propia con "Registrarse" en la pantalla de login.
+puede crear una cuenta propia con "Crear cuenta" en la pantalla de login.
 
 Cada organizador ve solo sus torneos. Si entrás con otra cuenta, los torneos de la cuenta de demostración no aparecen.
 
@@ -271,8 +271,10 @@ Los términos de la app, en el orden en que aparecen en el recorrido.
 **¿Puedo cambiar algo después de publicar?** No directamente: hay que reabrir el torneo, y desde la versión 2 la app
 pide un motivo. La versión anterior queda guardada.
 
-**¿Qué pasa si agrego o borro un equipo con el fixture ya generado?** La app pide confirmación y, si aceptás, descarta
-el fixture generado para que lo vuelvas a armar.
+**¿Qué pasa si agrego o borro un equipo con el fixture ya generado?** Si lo **das de baja**, la app pide confirmación
+y, si aceptás, descarta los partidos generados; el sorteo se conserva y alcanza con volver a generar y programar. Si lo
+**agregás**, no pide confirmación: el equipo nuevo queda sin zona y no se puede publicar hasta volver a sortear,
+generar y programar.
 
 **¿Quién puede ver mi torneo?** Solo vos mientras está en borrador; los demás organizadores no lo ven. Al publicar,
 cualquiera con el enlace público puede consultarlo, sin cuenta.
@@ -291,7 +293,7 @@ reabrilo primero.
 | La página tarda cerca de un minuto en cargar o no responde | El servicio gratuito se duerme tras 15 minutos sin uso | Esperá y recargá; si persiste, abrí primero el enlace de salud del backend |
 | "No existe una programación válida con la configuración actual" | La app comprobó que no alcanzan canchas, horarios o descansos | Agregá canchas o franjas, o reducí equipos o descanso; no se relajan reglas |
 | "No se encontró una programación válida..." | El método automático no encontró solución, aunque podría existir | Ajustá la configuración y volvé a programar |
-| Hay equipos sin partidos y no se puede publicar | El fixture quedó incompleto (R8) | Regenerá enfrentamientos y volvé a programar |
+| Hay equipos sin partidos y no se puede publicar | El fixture quedó incompleto (R8), por ejemplo porque se agregó un equipo después del sorteo | Volvé a sortear, generar y programar |
 | El enlace público manda al login | Se abrió la dirección raíz de la app | Usá la dirección con el formato `/torneo/ID` |
 
 <!-- CAPTURA: aviso "El servidor se está despertando: puede tardar hasta un minuto." mientras carga la app -->
@@ -344,7 +346,7 @@ El repositorio (`tadeo14/tp_final`) se organiza así:
 |---|---|
 | `/backend` | Proyecto Spring Boot, tests y las migraciones de la base (`src/main/resources/db/migration`) |
 | `/frontend` | App React con Vite: panel del organizador y vista pública |
-| `/database` | Datos de ejemplo, como `caso_real.sql` (el torneo de prueba) |
+| `/database` | Datos de ejemplo: `caso_real.sql` (el torneo del caso real) y `demo.sql` (el torneo de prueba de la cuenta de demostración) |
 | `/docs` | Documentación: `caso-real.md`, `restricciones.md`, `decisiones.md`, `der.md`, `algoritmo-enfrentamientos.md`, `algoritmo-programador.md`, `deploy.md`, `hoja-de-ruta.md` y este manual |
 | `render.yaml` (raíz) | Definición de los servicios de Render |
 
@@ -355,7 +357,7 @@ tiene número (D1, D2…) y una justificación de dos o tres líneas.
 
 | Versión | Fecha | Cambio | Autor |
 |---|---|---|---|
-| 1.1 | 07/11/2026 | Versión editable en el repositorio (`docs/manual-usuario.md`), reconstruida del PDF 1.0. Correcciones: cuenta de demostración remitida al README; el nombre del torneo también queda congelado en cada versión (D70); "Proponer zonas" está en Configuración; regla del máximo por zona en la FAQ; la rama principal es `master` | Tadeo |
+| 1.1 | 07/11/2026 | Versión editable en el repositorio (`docs/manual-usuario.md`), reconstruida del PDF 1.0. Correcciones: cuenta de demostración remitida al README; el nombre del torneo también queda congelado en cada versión (D70); "Proponer zonas" está en Configuración; regla del máximo por zona en la FAQ; la rama principal es `master`; alta y baja de equipos en la FAQ; qué hacer con equipos sin partidos; botón "Crear cuenta"; `demo.sql` en `/database` | Tadeo |
 | 1.0 | 25/10/2026 | Estructura según la teoría de manuales (ficha, guía rápida, FAQ, solución de problemas, historial) | Tadeo |
 | 0.9 | 24/10/2026 | Primer borrador: recorrido, estados, versiones, glosario | Tadeo |
 
