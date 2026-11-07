@@ -8,8 +8,9 @@ El esquema de la base **no está en esta carpeta**: lo crean las migraciones de 
 - `V1__esquema_inicial.sql` crea las 11 tablas del modelo (ver [`docs/der.md`](../docs/der.md)).
 - `V2__publicaciones.sql` agrega las versiones publicadas del fixture y su foto (D46).
 - `V3__club_en_foto.sql` agrega el club de cada equipo a la foto (D48).
+- `V4__nombre_torneo_en_publicacion.sql` guarda en cada versión publicada el nombre del torneo (D70).
 - Flyway las aplica solo al arrancar el backend y anota cuáles ya corrió en la tabla `flyway_schema_history`.
-- Una migración ya aplicada **no se modifica**: cualquier cambio va en una nueva (`V4__...`, `V5__...`).
+- Una migración ya aplicada **no se modifica**: cualquier cambio va en una nueva (`V5__...`, `V6__...`).
 
 Están dentro del backend porque tienen que viajar dentro del jar para que funcionen igual
 en local y en el despliegue (decisión D21).
