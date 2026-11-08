@@ -103,7 +103,7 @@ La app está online: el organizador entra por el frontend, el público por el en
 **Primer ingreso:** el login tarda hasta un minuto si nadie usó la app en los últimos 15 minutos, porque el plan
 gratuito de Render "duerme" el servidor. No es un error: esperar y reintentar.
 
-<!-- CAPTURA: pantalla de login (pestañas Ingresar / Crear cuenta) con el aviso para clubes y familias debajo del formulario -->
+![Pantalla de login con las pestañas Ingresar y Crear cuenta resaltadas, el formulario de email y contraseña y, debajo, el aviso para clubes y familias](img/manual/01-login.png)
 
 **Cuenta de demostración:** ver credenciales de demo en el [README](../README.md#cuenta-de-demostración). También se
 puede crear una cuenta propia con "Crear cuenta" en la pantalla de login.
@@ -119,7 +119,7 @@ Las pantallas del torneo tienen tres pestañas: **Configuración**, **Recorrido*
    cuántos minutos puede empezar un partido), *recambio* (tiempo para que una cancha pase de un partido al siguiente)
    y *descanso mínimo* (tiempo que tiene que pasar entre dos partidos del mismo equipo).
 
-   <!-- CAPTURA: "Mis torneos" con el formulario "+ Nuevo torneo" abierto (nombre, turnos cada, recambio, descanso mínimo) -->
+   ![Mis torneos con el formulario Nuevo torneo abierto: nombre, turnos cada, recambio y descanso mínimo, y los botones Crear torneo y Cancelar](img/manual/02-torneoNuevo.png)
 
 2. **Configuración** (primera pestaña). Se cargan:
    - Días y franjas horarias: cada día con su hora de inicio y de fin.
@@ -129,26 +129,26 @@ Las pantallas del torneo tienen tres pestañas: **Configuración**, **Recorrido*
    - Ramas (Masculino, Femenino) y clubes.
    - Equipos: nombre, club, categoría, rama, responsable y teléfono. Solo se piden esos datos personales, nada más.
 
-   <!-- CAPTURA: pestaña Configuración con franjas, sedes y canchas cargadas y los botones Editar / Eliminar de cada elemento -->
+   ![Pestaña Configuración del torneo de prueba, con las pestañas resaltadas, la franja del sábado y las sedes con sus canchas, cada una con los botones Editar y Eliminar](img/manual/03-configuracion.png)
 
 3. **Zonas** (en la pestaña Configuración). Una zona es un grupo de equipos de la misma categoría y rama que juegan
    todos contra todos. Se pueden cargar a mano o con el botón "Proponer zonas", que calcula cuántas hacen falta según
    el máximo de equipos por zona que elijas (por defecto 5).
 
-   <!-- CAPTURA: "Proponer zonas" con la vista previa en tabla (categoría, rama, equipos y zonas con sus tamaños) y los botones "Crear zonas" / "Cancelar" -->
+   ![Sección Zonas con el botón Proponer zonas resaltado y las tres zonas del torneo de prueba, cada una con Editar y Eliminar](img/manual/04-zonas.png)
 
 4. **Sortear** (pestaña Recorrido). Reparte al azar los equipos en las zonas. El resultado queda guardado.
 5. **Generar enfrentamientos.** Arma quién juega contra quién dentro de cada zona. Si la zona tiene cantidad impar de
    equipos, en cada ronda uno queda libre.
 6. **Programar.** Le asigna a cada partido una cancha y un horario sin pisar a nadie.
 
-   <!-- CAPTURA: pestaña Recorrido después de programar, con la tabla del fixture por día (hora, cancha, partido, zona y ronda) -->
+   ![Pestaña Recorrido con los pasos Sortear, Generar, Programar y Validar, y el resultado del sorteo con los equipos de cada zona](img/manual/05-recorrido.png)
 
 7. **Validar.** Revisa que se cumplan las restricciones obligatorias R1 a R8 y lista las que fallen.
 8. **Publicar** (pestaña Publicación). Solo se puede publicar un fixture válido. Desde ese momento el público lo ve en
    el enlace del torneo.
 
-   <!-- CAPTURA: pestaña Publicación con el historial de versiones y el enlace "Ver la vista pública" -->
+   ![Pestaña Publicación con el torneo publicado, el botón Reabrir para corregir, el enlace Ver la vista pública resaltado y el historial con la versión 1](img/manual/06-publicacion.png)
 
 Si con la configuración actual no se puede programar todo, la app no relaja ninguna regla: avisa que no existe (o no
 se encontró) una programación válida y dice qué zona o equipo no pudo ubicar, para que el organizador ajuste franjas,
@@ -171,7 +171,7 @@ La configuración solo se modifica con el torneo en BORRADOR; un torneo PUBLICAD
 cuando ya hay partidos programados), la app avisa cuántos partidos se pierden y pide confirmar dentro de la misma
 página. Al confirmar se borran los partidos generados y hay que volver a generarlos y programarlos.
 
-<!-- CAPTURA: aviso de confirmación dentro de la página ("Cambiar la franja invalida el fixture: hay N partidos programados…") con el botón "Confirmar el cambio" -->
+![Aviso de confirmación dentro de la página al dar de baja un equipo: "invalida el fixture: hay 12 partidos generados", con los botones Confirmar el cambio y Cancelar](img/manual/07-Correcion.png)
 
 **Qué no se puede borrar.** Un club con equipos, o una categoría o rama con zonas o equipos: la app lo rechaza y
 explica qué lo usa.
@@ -216,7 +216,7 @@ abrirse en el celular.
   equipo en particular.
 - **Versión:** arriba se ve el número de versión y la fecha de publicación, y el motivo si hubo una corrección.
 
-<!-- CAPTURA: vista pública en el celular — lista de equipos con el buscador y, al lado, el fixture de un equipo con el botón "Compartir por WhatsApp" -->
+![Vista pública del torneo con la versión 2 y el motivo de la corrección, el buscador filtrando por "norte", los equipos agrupados por categoría y rama, y el botón Compartir por WhatsApp](img/manual/08-Vista.png)
 
 La vista pública no muestra el responsable ni el teléfono de los equipos, y un torneo que nunca se publicó no aparece.
 Si el organizador la abre con su sesión iniciada, ve además el enlace "← Volver al torneo".
@@ -296,8 +296,6 @@ reabrilo primero.
 | Hay equipos sin partidos y no se puede publicar | El fixture quedó incompleto (R8), por ejemplo porque se agregó un equipo después del sorteo | Volvé a sortear, generar y programar |
 | El enlace público manda al login | Se abrió la dirección raíz de la app | Usá la dirección con el formato `/torneo/ID` |
 
-<!-- CAPTURA: aviso "El servidor se está despertando: puede tardar hasta un minuto." mientras carga la app -->
-
 Si el problema no figura acá, avisá a Daniel o Tadeo con una captura y la hora aproximada del error.
 
 ## Límites actuales y mejoras futuras
@@ -366,7 +364,7 @@ tiene número (D1, D2…) y una justificación de dos o tres líneas.
 Este manual se revisa cada vez que cambia la app. Comentarios y correcciones: dejalos como comentario en este
 documento o avisá a Tadeo.
 
-- Agregar capturas anotadas de cada paso del recorrido (login, configuración, zonas, programación, publicación, vista
-  pública): están marcadas con `<!-- CAPTURA: ... -->`.
+- Capturas anotadas del recorrido: agregadas en `docs/img/manual/` (login, nuevo torneo, configuración, zonas,
+  recorrido, publicación, confirmación de un cambio y vista pública).
 - Revisión de Daniel.
 - Revisión de Oscar.
