@@ -142,7 +142,7 @@ Las pantallas del torneo tienen tres pestañas: **Configuración**, **Recorrido*
    equipos, en cada ronda uno queda libre.
 6. **Programar.** Le asigna a cada partido una cancha y un horario sin pisar a nadie.
 
-   ![Pestaña Recorrido con los pasos Sortear, Generar, Programar y Validar, y el resultado del sorteo con los equipos de cada zona](img/manual/05-recorrido.png)
+   ![Tabla del fixture programado del sábado 12/12 con los 12 partidos (hora, cancha, partido y zona con su ronda), con los dos partidos de Norte U9 Blanco resaltados: 9:00 y 14:00, con el descanso mínimo entre ambos](img/manual/05-recorrido.png)
 
 7. **Validar.** Revisa que se cumplan las restricciones obligatorias R1 a R8 y lista las que fallen.
 8. **Publicar** (pestaña Publicación). Solo se puede publicar un fixture válido. Desde ese momento el público lo ve en
