@@ -6,14 +6,26 @@ Spring Boot 3.5 · Java 17 · Maven (incluye wrapper: no hace falta instalar Mav
 
 | Variable | Ejemplo |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://<host>/<base>?sslmode=require` |
-| `DB_USER` | usuario de la base |
+| `DB_URL` | En local: `jdbc:postgresql://localhost:5432/fixture_test`. En Supabase: el Session pooler, `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require` (ver [`docs/deploy.md`](../docs/deploy.md)) |
+| `DB_USER` | usuario de la base (en Supabase: `postgres.<id-del-proyecto>`) |
 | `DB_PASSWORD` | contraseña de la base — **nunca** se sube al repo |
 | `JWT_SECRETO` | secreto para firmar los tokens, al menos 32 caracteres. Generarlo con `head -c 48 /dev/urandom \| base64` — **nunca** se sube al repo |
-| `JWT_EXPIRACION_MIN` | minutos que dura un token, por ejemplo `120` |
-| `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-front.onrender.com` |
+| `JWT_EXPIRACION_MIN` | (opcional) minutos que dura un token; `480` si no se define |
+| `CORS_ORIGENES` | (opcional) dominios del frontend separados por coma, por ejemplo `https://fixture-frontend.onrender.com`. En local, `http://localhost:5173` para usar el frontend |
 
-Sin `JWT_SECRETO` o `JWT_EXPIRACION_MIN` la aplicación no arranca. Los tests no las necesitan: generan un secreto al azar.
+| `PORT` | (opcional) puerto HTTP; `8080` si no se define. Render lo define solo |
+
+Sin `JWT_SECRETO` la aplicación no arranca. Los tests no lo necesitan: generan un secreto al azar.
+
+## Docker
+
+```bash
+docker build -t fixture-backend .
+docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e JWT_SECRETO=... fixture-backend
+```
+
+La imagen compila con Maven y JDK 17 y corre con el JRE 17, con la memoria limitada para el plan gratis de
+Render (D49). Despliegue paso a paso en [`docs/deploy.md`](../docs/deploy.md).
 
 ## Comandos
 
@@ -69,6 +81,7 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | GET | `/api/torneos` | Mis torneos |
 | POST | `/api/torneos` | Crea un torneo en BORRADOR, a nombre del organizador del token |
 | GET | `/api/torneos/{id}` | Datos y estado del torneo |
+| GET | `/api/torneos/{id}/configuracion` | Toda la configuración: franjas, sedes con sus canchas, categorías, ramas, clubes y zonas |
 | POST | `/api/torneos/{id}/franjas` | Agrega una franja horaria |
 | POST | `/api/torneos/{id}/sedes` | Agrega una sede |
 | POST | `/api/sedes/{sedeId}/canchas` | Agrega una cancha a la sede |
@@ -76,8 +89,31 @@ login incorrecto, 404 no existe (o es de otro organizador, D45), 409 torneo publ
 | POST | `/api/torneos/{id}/ramas` | Agrega una rama |
 | POST | `/api/torneos/{id}/clubes` | Agrega un club |
 | POST | `/api/torneos/{id}/zonas` | Define una zona de una categoría y rama |
+| POST | `/api/torneos/{id}/zonas/propuesta` | Vista previa de "Proponer zonas" con `{"maximoEquiposPorZona": 5}`: zonas y tamaños por categoría y rama. No guarda nada (D69) |
+| POST | `/api/torneos/{id}/zonas/propuesta/crear` | Crea las zonas propuestas. Si un grupo ya tiene zonas, pide `?confirmar=true` (las reemplaza y deshace el sorteo) |
 | POST | `/api/torneos/{id}/equipos` | Inscribe un equipo |
 | GET | `/api/torneos/{id}/equipos` | Lista los equipos (sin datos de contacto) |
+| GET | `/api/torneos/{id}/equipos/{equipoId}` | Un equipo con responsable y teléfono, para editarlo (D67) |
+
+**Editar y eliminar la configuración (organizador, con token, solo en BORRADOR, D66)**
+
+El cuerpo de cada PUT es el mismo del alta y reemplaza el elemento entero. Con el torneo PUBLICADO responden 409
+(hay que reabrirlo). Si el cambio invalida el fixture, responden 409 con `"requiereConfirmacion": true`; repitiendo el
+pedido con `?confirmar=true` se hace y se borran todos los partidos (y, si corresponde, se deshace el sorteo).
+Borrar algo que otra parte de la configuración usa (un club con equipos, una categoría o rama con zonas o equipos)
+responde 409 sin opción de confirmar.
+
+| Método | Ruta | Pide confirmación si… |
+|---|---|---|
+| PUT | `/api/torneos/{id}` | cambian turnos, recambio o descanso y hay partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/franjas/{franjaId}` | hay partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/sedes/{sedeId}` | (DELETE) sus canchas tienen partidos programados. Borra también sus canchas |
+| PUT, DELETE | `/api/sedes/{sedeId}/canchas/{canchaId}` | se deshabilita o se borra una cancha con partidos programados |
+| PUT, DELETE | `/api/torneos/{id}/categorias/{categoriaId}` | cambian duraciones o tope diario y la categoría tiene partidos programados. DELETE: 409 si tiene zonas o equipos |
+| PUT, DELETE | `/api/torneos/{id}/ramas/{ramaId}` | nunca. DELETE: 409 si tiene zonas o equipos |
+| PUT, DELETE | `/api/torneos/{id}/clubes/{clubId}` | nunca. DELETE: 409 si tiene equipos |
+| PUT, DELETE | `/api/torneos/{id}/zonas/{zonaId}` | se borra o se cambia de categoría o rama una zona con equipos (deshace el sorteo) |
+| PUT, DELETE | `/api/torneos/{id}/equipos/{equipoId}` | se da de baja un equipo con partidos (conserva el sorteo), o se cambia la categoría o rama de un equipo sorteado (deshace el sorteo) |
 
 **Fixture (organizador, con token)**
 
@@ -97,8 +133,8 @@ aunque el torneo se haya reabierto. Un torneo nunca publicado responde 404.
 
 | Método | Ruta | Qué hace |
 |---|---|---|
-| GET | `/api/publico/torneos/{id}/equipos` | Equipos del torneo |
-| GET | `/api/publico/torneos/{id}/equipos/{equipoId}/fixture` | Partidos del equipo y sus fechas libres |
+| GET | `/api/publico/torneos/{id}/equipos` | Nombre del torneo, versión publicada y equipos con su club y zona |
+| GET | `/api/publico/torneos/{id}/equipos/{equipoId}/fixture` | Nombre del torneo, versión, partidos del equipo y sus fechas libres |
 
 ## Probar el recorrido con el caso real
 

@@ -22,7 +22,8 @@ import ar.edu.utn.fixture.repositorio.PartidoPublicadoRepositorio;
 /**
  * Consultas de la vista pública, sin login. Leen SIEMPRE la última versión publicada (la foto), nunca las tablas
  * vivas: lo que ve el público es exactamente lo que se publicó, aunque después se reabra y se corrija el
- * torneo (D46, D47). Nunca muestran datos de contacto (regla 7).
+ * torneo (D46, D47). Nunca muestran datos de contacto (regla 7). El nombre del torneo también sale de la versión
+ * publicada, no de la tabla torneo (D70).
  */
 @Service
 @Transactional(readOnly = true)
@@ -42,12 +43,12 @@ public class ConsultaPublicaServicio {
         Map<Long, EquipoPublicado> equipos = new LinkedHashMap<>();
         for (PartidoPublicado p : partidosPublicados.findByPublicacionIdOrderByInicioAscIdAsc(vigente.getId())) {
             equipos.putIfAbsent(p.getEquipoLocalId(), new EquipoPublicado(p.getEquipoLocalId(), p.getEquipoLocal(),
-                    p.getCategoria(), p.getRama(), p.etiquetaZona()));
+                    p.getClubLocal(), p.getCategoria(), p.getRama(), p.etiquetaZona()));
             equipos.putIfAbsent(p.getEquipoVisitanteId(), new EquipoPublicado(p.getEquipoVisitanteId(), p.getEquipoVisitante(),
-                    p.getCategoria(), p.getRama(), p.etiquetaZona()));
+                    p.getClubVisitante(), p.getCategoria(), p.getRama(), p.etiquetaZona()));
         }
         List<EquipoPublicado> ordenados = equipos.values().stream().sorted(Comparator.comparing(EquipoPublicado::id)).toList();
-        return new EquiposPublicados(Publicaciones.version(vigente), ordenados);
+        return new EquiposPublicados(vigente.getNombreTorneo(), Publicaciones.version(vigente), ordenados);
     }
 
     /** Partidos de un equipo ordenados por horario, y las rondas en las que tiene fecha libre (se deducen, D18). */
@@ -61,11 +62,14 @@ public class ConsultaPublicaServicio {
         }
         PartidoPublicado alguno = delEquipo.get(0);
         String zona = alguno.etiquetaZona();
-        String nombre = alguno.getEquipoLocalId().equals(equipoId) ? alguno.getEquipoLocal() : alguno.getEquipoVisitante();
+        boolean esLocal = alguno.getEquipoLocalId().equals(equipoId);
+        String nombre = esLocal ? alguno.getEquipoLocal() : alguno.getEquipoVisitante();
+        String club = esLocal ? alguno.getClubLocal() : alguno.getClubVisitante();
 
         List<PartidoDeEquipo> lista = delEquipo.stream().map(p -> {
             boolean local = p.getEquipoLocalId().equals(equipoId);
             return new PartidoDeEquipo(p.getRonda(), local ? p.getEquipoVisitante() : p.getEquipoLocal(),
+                    local ? p.getClubVisitante() : p.getClubLocal(),
                     local ? "Local" : "Visitante", p.getSede(), p.getCancha(), p.getInicio(), p.getFin());
         }).toList();
 
@@ -73,6 +77,6 @@ public class ConsultaPublicaServicio {
         Set<Integer> jugadas = delEquipo.stream().map(PartidoPublicado::getRonda).collect(Collectors.toSet());
         List<Integer> libres = IntStream.rangeClosed(1, rondas).filter(r -> !jugadas.contains(r)).boxed().toList();
 
-        return new FixtureDeEquipo(Publicaciones.version(vigente), equipoId, nombre, zona, lista, libres);
+        return new FixtureDeEquipo(vigente.getNombreTorneo(), Publicaciones.version(vigente), equipoId, nombre, club, zona, lista, libres);
     }
 }

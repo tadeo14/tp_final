@@ -1,0 +1,187 @@
+/* Estilos propios, sin frameworks. Primero para el celular; en pantallas grandes se centra el contenido. */
+
+:root {
+  --naranja: #c2410c;
+  --naranja-oscuro: #9a3412;
+  --naranja-claro: #fff1e8;
+  --texto: #1f2933;
+  --texto-suave: #52606d;
+  --fondo: #f5f6f8;
+  --tarjeta: #ffffff;
+  --borde: #d9dee5;
+  --verde: #166534;
+  --verde-claro: #e8f6ec;
+  --rojo: #b42318;
+  --rojo-claro: #fdecea;
+  --azul-claro: #e8f0fe;
+  --azul: #1d4ed8;
+  --radio: 10px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--texto);
+  background: var(--fondo);
+  line-height: 1.45;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: var(--fondo); }
+
+h1 { font-size: 1.5rem; margin: 0.5rem 0 1rem; }
+h2 { font-size: 1.2rem; margin: 0 0 0.75rem; }
+h3 { font-size: 1.05rem; margin: 1rem 0 0.5rem; }
+p { margin: 0.25rem 0 0.75rem; }
+a { color: var(--naranja-oscuro); }
+
+.contenedor { max-width: 760px; margin: 0 auto; padding: 1rem; }
+.contenedor-angosto { max-width: 440px; }
+
+.titulo-app { text-align: center; margin-top: 2rem; }
+.subtitulo { text-align: center; color: var(--texto-suave); }
+.nota, .ayuda { color: var(--texto-suave); font-size: 0.875rem; }
+.centrado { text-align: center; }
+
+/* ---------- Encabezado ---------- */
+.encabezado {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+  padding: 0.6rem 1rem; background: var(--naranja); color: #fff;
+  position: sticky; top: 0; z-index: 10;
+}
+.marca { color: #fff; font-weight: 700; text-decoration: none; font-size: 1.1rem; }
+.usuario { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.nombre-usuario { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45vw; }
+
+/* ---------- Tarjetas y listas ---------- */
+.tarjeta {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio);
+  padding: 1rem; margin-bottom: 1rem;
+}
+.lista { list-style: none; margin: 0 0 1rem; padding: 0; }
+.lista li {
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio);
+  padding: 0.75rem 1rem; margin-bottom: 0.5rem;
+}
+.lista-enlaces a {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: inherit;
+}
+.lista-simple { margin: 0 0 0.5rem; padding-left: 1.2rem; }
+.vacio { color: var(--texto-suave); font-style: italic; }
+
+/* ---------- Formularios ---------- */
+.formulario { display: flex; flex-direction: column; gap: 0.75rem; }
+.formulario label { display: flex; flex-direction: column; gap: 0.25rem; font-weight: 600; font-size: 0.95rem; }
+.fila { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+.casilla { flex-direction: row !important; align-items: center; gap: 0.5rem !important; font-weight: 400 !important; }
+input, select, textarea {
+  font: inherit; font-weight: 400; padding: 0.6rem 0.7rem; border: 1px solid var(--borde);
+  border-radius: 8px; background: #fff; color: var(--texto); width: 100%;
+}
+input[type="checkbox"] { width: auto; }
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: 3px solid #fdba74; outline-offset: 1px;
+}
+
+/* ---------- Botones ---------- */
+button {
+  font: inherit; font-weight: 600; cursor: pointer; border: none; border-radius: 8px;
+  padding: 0.7rem 1rem; background: var(--naranja); color: #fff; min-height: 44px;
+}
+button:hover:not(:disabled) { background: var(--naranja-oscuro); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+.boton-secundario { background: #fff; color: var(--naranja-oscuro); border: 1px solid var(--naranja); }
+.boton-secundario:hover:not(:disabled) { background: var(--naranja-claro); }
+.encabezado .boton-secundario { border-color: #fff; }
+.boton-chico { padding: 0.35rem 0.7rem; min-height: 36px; font-size: 0.9rem; }
+.boton-peligro { background: var(--rojo); }
+.boton-peligro:hover:not(:disabled) { background: #7f1d1d; }
+.botones { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* ---------- Pestañas ---------- */
+.pestanias { display: flex; gap: 0.25rem; margin-bottom: 1rem; overflow-x: auto; }
+.pestania {
+  background: transparent; color: var(--texto-suave); border-bottom: 3px solid transparent;
+  border-radius: 0; padding: 0.6rem 0.8rem; flex: 0 0 auto;
+}
+.pestania:hover:not(:disabled) { background: var(--naranja-claro); }
+.pestania.activa { color: var(--naranja-oscuro); border-bottom-color: var(--naranja); }
+
+/* ---------- Avisos ---------- */
+.aviso { border-radius: var(--radio); padding: 0.75rem 1rem; margin: 0.5rem 0 1rem; }
+.aviso p { margin: 0; font-weight: 600; }
+.aviso ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+.aviso-error { background: var(--rojo-claro); color: var(--rojo); border: 1px solid #f5c2bc; }
+.aviso-ok { background: var(--verde-claro); color: var(--verde); border: 1px solid #b7e1c3; }
+.aviso-info { background: var(--azul-claro); color: var(--azul); border: 1px solid #c3d4fb; }
+.aviso-advertencia { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+.aviso .botones { margin-top: 0.5rem; }
+
+/* ---------- Estado del torneo ---------- */
+.estado {
+  display: inline-block; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em;
+  padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap;
+}
+.estado-BORRADOR { background: #fef3c7; color: #92400e; }
+.estado-PUBLICADO { background: var(--verde-claro); color: var(--verde); }
+
+/* ---------- Carga ---------- */
+.cargando { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 1rem 0; color: var(--texto-suave); }
+.cargando .nota { flex-basis: 100%; margin: 0; }
+.ruedita {
+  width: 1.2rem; height: 1.2rem; border: 3px solid var(--borde); border-top-color: var(--naranja);
+  border-radius: 50%; animation: girar 0.8s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------- Tablas (fixture) ---------- */
+.tabla-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: var(--tarjeta); font-size: 0.9rem; }
+th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--borde); vertical-align: top; }
+th { background: #eef1f5; }
+
+/* ---------- Detalle del torneo ---------- */
+.titulo-torneo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.titulo-torneo h1 { margin: 0.25rem 0; }
+.subtarjeta { border-top: 1px solid var(--borde); padding-top: 0.75rem; margin-top: 0.75rem; }
+.formulario-alta { margin-top: 0.75rem; }
+.formulario-alta fieldset { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.formulario-alta fieldset:disabled { opacity: 0.6; }
+.formulario-alta h3 { margin: 0.5rem 0 0; }
+.paso button { margin-bottom: 0.25rem; }
+
+/* ---------- Elementos de la configuración (editar / eliminar) ---------- */
+.lista-config { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+.elemento { border-bottom: 1px solid var(--borde); padding: 0.5rem 0; }
+.elemento:last-child { border-bottom: none; }
+.elemento-fila { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.elemento-texto { flex: 1 1 12rem; min-width: 0; }
+.acciones-elemento { display: flex; gap: 0.4rem; }
+.parametros { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; margin-bottom: 0.75rem; }
+.parametros .nota { margin: 0; }
+.elemento-editando { background: var(--naranja-claro); border-radius: var(--radio); padding: 0.25rem 0.75rem 0.75rem; }
+
+.propuesta-zonas { margin-bottom: 0.75rem; }
+.propuesta-zonas fieldset { border: none; margin: 0; padding: 0; }
+.propuesta-zonas table { margin-bottom: 0.5rem; font-size: 0.85rem; }
+.propuesta-zonas th, .propuesta-zonas td { padding: 0.4rem 0.35rem; }
+.zonas-propuestas { list-style: none; margin: 0; padding: 0; white-space: nowrap; }
+.reemplaza { color: #92400e; display: block; }
+
+/* ---------- Vista pública ---------- */
+.version { color: var(--texto-suave); font-size: 0.875rem; margin-bottom: 1rem; }
+.version p { margin: 0; }
+.aviso .motivo { font-weight: 400; margin-top: 0.25rem; }
+.buscador { display: flex; flex-direction: column; gap: 0.25rem; font-weight: 600; margin-bottom: 1rem; }
+.partido p { margin: 0 0 0.2rem; }
+.partido-cuando { font-weight: 700; color: var(--naranja-oscuro); }
+.partido-rival { font-size: 1.05rem; }
+.boton-whatsapp {
+  display: block; text-align: center; margin: 1rem 0; padding: 0.75rem 1rem; border-radius: var(--radio);
+  background: #128c4b; color: #fff; font-weight: 600; text-decoration: none;
+}
+.boton-whatsapp:hover { background: #0e6f3b; }
+
+/* ---------- Pantallas grandes ---------- */
+@media (min-width: 600px) {
+  .fila { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  h1 { font-size: 1.75rem; }
+}

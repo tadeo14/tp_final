@@ -3,7 +3,7 @@
 Trabajo Final Integrador — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
 Equipo: Daniel y Tadeo · Tutor: Oscar Londero
 
-API web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
+App web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
 horarios **sin conflictos** y publica el fixture en una vista pública de solo lectura.
 
 ## Alcance (P0)
@@ -19,8 +19,9 @@ enfrentamientos** (todos contra todos dentro de cada zona, con fecha libre si es
 
 ## Caso real
 
-El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`](docs/caso-real.md)):
-**55 equipos**, U9/U11/U13 masculino y femenino, **2 sedes × 4 canchas**, sábado y domingo.
+El principal caso de prueba es un torneo real ([`docs/caso-real.md`](docs/caso-real.md)):
+**55 equipos**, U9/U11/U13 masculino y femenino, **2 sedes × 4 canchas** (Atlético María Juana y Litoral María
+Juana), sábado y domingo.
 
 - Con todos contra todos **no hay solución** (un equipo de 10 necesitaría 9 partidos y puede jugar 6).
 - Con **13 zonas** sí: **91 partidos**, programados sin violar ninguna regla.
@@ -30,15 +31,20 @@ El principal caso de prueba es un torneo real anonimizado ([`docs/caso-real.md`]
 | Paso | Entregable | Docs |
 |---|---|---|
 | 1. Definición del problema | Caso real, restricciones R1–R8, decisiones | [`restricciones.md`](docs/restricciones.md), [`decisiones.md`](docs/decisiones.md) |
-| 2. Modelo de datos | DER y migraciones Flyway V1 (11 tablas) y V2 (versiones publicadas) | [`der.md`](docs/der.md) |
+| 2. Modelo de datos | DER y migraciones Flyway V1 (11 tablas), V2 (versiones publicadas) y V3 (club en la foto) | [`der.md`](docs/der.md) |
 | 3. Proyecto Spring Boot | Java 17, Spring Boot 3.5, JPA, Flyway, PostgreSQL | [`backend/README.md`](backend/README.md) |
 | 4. Sorteo y enfrentamientos | Método del círculo — tests T1, T2 | [`algoritmo-enfrentamientos.md`](docs/algoritmo-enfrentamientos.md) |
 | 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
 | 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
-| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT | [`backend/README.md`](backend/README.md) |
+| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT, editar y eliminar la configuración (D66) | [`backend/README.md`](backend/README.md) |
+| 10. Frontend del organizador | React + Vite: login, mis torneos, configuración (alta, editar y eliminar), recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
+| 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-**106 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+**182 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
 propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
+
+**Manual de usuario:** [`docs/manual-usuario.md`](docs/manual-usuario.md) — guía rápida, recorrido paso a paso,
+glosario, preguntas frecuentes y solución de problemas.
 
 ## Cómo correrlo
 
@@ -61,23 +67,48 @@ la vista pública no pide login.
 [`backend/recorrido.http`](backend/recorrido.http) (sortear → generar → programar → validar → publicar → consultar
 un equipo). Detalle en [`backend/README.md`](backend/README.md).
 
+**Frontend** (Node 20.19+): con el backend corriendo y `CORS_ORIGENES=http://localhost:5173`,
+
+```bash
+cd frontend && npm ci && npm run dev   # http://localhost:5173
+```
+
+## Cuenta de demostración
+
+Para probar la app desplegada sin crear una cuenta:
+
+| | |
+|---|---|
+| App | <https://fixture-frontend-i2w8.onrender.com> |
+| Usuario | `demo@fixture.test` |
+| Contraseña | `demo-fixture-2026` |
+
+- Es una **cuenta de prueba, pública y descartable**: tiene solo torneos de prueba y **puede reiniciarse en cualquier
+  momento** (se borran sus torneos y se vuelve a cargar "[PRUEBA] Torneo demo" con
+  [`database/demo.sql`](database/demo.sql)). No cargues datos reales ni teléfonos reales de responsables.
+- **No es la cuenta del caso real.** El torneo del caso real está a nombre de `ejemplo@fixture.test`, cuya
+  contraseña no se publica (D71).
+- Cada organizador ve solo sus torneos (D45): con otra cuenta, los de la demostración no aparecen.
+- Si la app estuvo sin uso, el primer ingreso tarda cerca de un minuto (plan gratis de Render).
+
 ## Limitaciones conocidas
 
 - **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
-  el sábado. El fixture es válido, pero no está equilibrado. Es la primera mejora P1.
-- **Base online:** el entorno de desarrollo no llega a Neon; por ahora se prueba con PostgreSQL local (D24).
-  La base online se configura en el despliegue (paso 9).
+  el sábado. El fixture es válido. Se consultó al organizador real y no tiene problema con cómo queda (D64).
+- **Despliegue (pasos 9 y 12):** listo para Render (backend Docker + frontend estático) + Supabase, guía en
+  [`docs/deploy.md`](docs/deploy.md).
+  En el plan gratis, el primer pedido después de 15 minutos sin uso tarda alrededor de 1 minuto (arranque en frío).
 
 ## Stack
 
-Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven.
-Más adelante: frontend en React y despliegue (Render/Railway + Vercel/Netlify).
+Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven · React + Vite (JavaScript).
+Despliegue: Render (Docker y sitio estático) + Supabase ([`docs/deploy.md`](docs/deploy.md)).
 
 ## Estructura
 
 ```
 /backend    API Spring Boot (dominio puro, entidades, servicios, controladores, tests)
 /database   Datos de ejemplo del caso real y pruebas del esquema
-/docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta
-/frontend   (fase B)
+/docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta, manual de usuario
+/frontend   App React: pantallas del organizador y vista pública
 ```

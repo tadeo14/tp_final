@@ -30,11 +30,11 @@ public class Torneos {
                 .orElseThrow(() -> new NoEncontradoException("No existe el torneo " + torneoId));
     }
 
-    /** El torneo del organizador, solo si se puede modificar: en PUBLICADO no se cambia nada (D20, D39). */
+    /** El torneo del organizador, solo si se puede modificar: en PUBLICADO no se cambia nada hasta reabrirlo (D20, D47). */
     public Torneo editable(Long torneoId, Long organizadorId) {
         Torneo t = delOrganizador(torneoId, organizadorId);
         if (t.getEstado() == EstadoTorneo.PUBLICADO) {
-            throw new ConflictoException("El torneo " + torneoId + " está publicado: no se puede modificar (D20)");
+            throw new ConflictoException("El torneo " + torneoId + " está publicado: para modificarlo, primero hay que reabrirlo (D20, D47)");
         }
         return t;
     }

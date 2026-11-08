@@ -1,8 +1,12 @@
 package ar.edu.utn.fixture.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import ar.edu.utn.fixture.entidad.EstadoTorneo;
 
@@ -12,6 +16,44 @@ import ar.edu.utn.fixture.entidad.EstadoTorneo;
 public final class Respuestas {
 
     private Respuestas() {
+    }
+
+    public record FranjaDetalle(Long id, LocalDate fecha, LocalTime desde, LocalTime hasta) {
+    }
+
+    public record CanchaDetalle(Long id, String nombre, boolean habilitada) {
+    }
+
+    public record SedeDetalle(Long id, String nombre, String direccion, List<CanchaDetalle> canchas) {
+    }
+
+    public record CategoriaDetalle(Long id, String nombre, int minutosNetos, int cantidadCuartos, int pausasMin,
+            int margenDetencionesMin, int maxPartidosDia) {
+    }
+
+    public record ZonaDetalle(Long id, String nombre, Long categoriaId, Long ramaId, String etiqueta) {
+    }
+
+    /** Una zona propuesta y cuántos equipos van a quedar en ella después del sorteo (D69). */
+    public record ZonaPropuesta(String nombre, int equipos) {
+    }
+
+    /**
+     * Propuesta para una categoría y rama: las zonas a crear, las que ya hay (se reemplazarían) y, si no se propone
+     * ninguna, por qué.
+     */
+    public record GrupoPropuesto(Long categoriaId, String categoria, Long ramaId, String rama, int equipos,
+            List<ZonaPropuesta> zonas, List<String> zonasActuales, String aviso) {
+    }
+
+    /** Vista previa de "Proponer zonas" (D69): no guarda nada. */
+    public record PropuestaDeZonas(int maximoEquiposPorZona, List<GrupoPropuesto> grupos, int totalZonas,
+            boolean reemplazaZonas) {
+    }
+
+    /** Toda la configuración de un torneo en una sola respuesta (D56). Los equipos se piden aparte. */
+    public record ConfiguracionDetalle(List<FranjaDetalle> franjas, List<SedeDetalle> sedes,
+            List<CategoriaDetalle> categorias, List<Creado> ramas, List<Creado> clubes, List<ZonaDetalle> zonas) {
     }
 
     /** Respuesta simple al crear algo: el id y un nombre para reconocerlo. */
@@ -33,6 +75,14 @@ public final class Respuestas {
     public record EquipoResumen(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
+    /**
+     * Un equipo con todo lo que se cargó, para editarlo (D67). Incluye responsable y teléfono: solo lo ve el dueño
+     * del torneo, nunca la vista pública (regla 7).
+     */
+    public record EquipoDetalle(Long id, String nombre, Long clubId, Long categoriaId, Long ramaId,
+            String responsableNombre, String responsableTelefono, String zona) {
+    }
+
     public record ZonaSorteada(String zona, List<String> equipos) {
     }
 
@@ -50,7 +100,7 @@ public final class Respuestas {
     public record Validacion(boolean valido, List<ViolacionDetalle> violaciones) {
     }
 
-    public record PartidoDeEquipo(int ronda, String rival, String condicion, String sede, String cancha,
+    public record PartidoDeEquipo(int ronda, String rival, String clubRival, String condicion, String sede, String cancha,
             LocalDateTime inicio, LocalDateTime fin) {
     }
 
@@ -63,18 +113,27 @@ public final class Respuestas {
     }
 
     /** Equipo según la última versión publicada (sin datos de contacto). */
-    public record EquipoPublicado(Long id, String nombre, String categoria, String rama, String zona) {
+    public record EquipoPublicado(Long id, String nombre, String club, String categoria, String rama, String zona) {
     }
 
-    public record EquiposPublicados(VersionPublicada version, List<EquipoPublicado> equipos) {
+    /** {@code torneo} es el nombre del torneo tal como se publicó (D70); no se muestran datos del organizador (D60). */
+    public record EquiposPublicados(String torneo, VersionPublicada version, List<EquipoPublicado> equipos) {
     }
 
     /** Fixture de un equipo según la última versión publicada. Las rondas libres se deducen: no se guardan (D18). */
-    public record FixtureDeEquipo(VersionPublicada version, Long equipoId, String equipo, String zona,
+    public record FixtureDeEquipo(String torneo, VersionPublicada version, Long equipoId, String equipo, String club, String zona,
             List<PartidoDeEquipo> partidos, List<Integer> rondasLibres) {
     }
 
-    /** Formato de todos los errores de la API. */
-    public record Error(String error, List<String> detalles) {
+    /**
+     * Formato de todos los errores de la API. {@code requiereConfirmacion} solo aparece (true) cuando el cambio se
+     * puede hacer igual repitiendo el pedido con {@code confirmar=true} (D66); en los demás errores no se manda.
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record Error(String error, List<String> detalles, Boolean requiereConfirmacion) {
+
+        public Error(String error, List<String> detalles) {
+            this(error, detalles, null);
+        }
     }
 }

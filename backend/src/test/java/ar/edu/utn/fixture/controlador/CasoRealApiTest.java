@@ -66,20 +66,22 @@ class CasoRealApiTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("PUBLICADO"));
 
-        // 4. Vista pública, sin token. Un equipo de U13 femenino: su zona puede ser de 4 (3 partidos)
-        //    o de 3 (2 partidos y una fecha libre).
-        long equipo = jdbc.queryForObject(
-                "select min(id) from equipo where torneo_id = ? and nombre like 'U13 Femenino%'", Long.class, torneo);
+        // 4. Vista pública, sin token. El primer equipo de U13 femenino: su zona puede ser de 4 (3 partidos)
+        //    o de 3 (2 partidos y una fecha libre). Lleva el nombre de su club (D59).
+        long equipo = jdbc.queryForObject("""
+                select min(e.id) from equipo e
+                join categoria c on c.id = e.categoria_id join rama r on r.id = e.rama_id
+                where e.torneo_id = ? and c.nombre = 'U13' and r.nombre = 'Femenino'""", Long.class, torneo);
         JsonNode fixture = json.readTree(mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equipo + "/fixture"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.equipo").value("U13 Femenino 01"))
+                .andExpect(jsonPath("$.equipo").value("Náutico Sportivo Avellaneda"))
                 .andReturn().getResponse().getContentAsString());
 
         int partidos = fixture.get("partidos").size();
         int libres = fixture.get("rondasLibres").size();
         assertThat(partidos + libres).isEqualTo(3); // las zonas de 3 y de 4 tienen 3 rondas
         assertThat(partidos).isIn(2, 3);
-        assertThat(fixture.get("partidos").get(0).get("sede").asText()).isIn("Club A", "Club B");
+        assertThat(fixture.get("partidos").get(0).get("sede").asText()).isIn("Atlético María Juana", "Litoral María Juana");
     }
 
     @Test

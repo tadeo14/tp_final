@@ -18,7 +18,7 @@ final class Etiquetas {
         return z.getCategoria().getNombre() + " " + z.getRama().getNombre() + " - " + z.getNombre();
     }
 
-    /** Ej.: "Club A - Cancha 1". */
+    /** Ej.: "Atlético María Juana - Cancha 1". */
     static String cancha(Cancha c) {
         return c.getSede().getNombre() + " - " + c.getNombre();
     }

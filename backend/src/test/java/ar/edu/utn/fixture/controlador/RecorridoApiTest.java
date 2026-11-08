@@ -1,8 +1,11 @@
 package ar.edu.utn.fixture.controlador;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,6 +14,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Recorrido completo de CLAUDE.md por la API, con un torneo chico de prueba:
@@ -90,15 +95,24 @@ class RecorridoApiTest extends ApiTestBase {
 
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba"))
+                .andExpect(jsonPath("$.organizador").doesNotExist())
+                .andExpect(content().string(not(containsString("Organizador de prueba"))))
+                .andExpect(content().string(not(containsString("@prueba.test"))))
                 .andExpect(jsonPath("$.version.numero").value(1))
-                .andExpect(jsonPath("$.equipos", hasSize(9)));
+                .andExpect(jsonPath("$.equipos", hasSize(9)))
+                .andExpect(jsonPath("$.equipos[0].club").value("Club de prueba"));
 
         String zonaDelPrimero = json.readTree(mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos"))
                 .andReturn().getResponse().getContentAsString()).get("equipos").get(0).get("zona").asText();
         boolean zonaDeCinco = zonaDelPrimero.endsWith("Zona A");
         mvcSinToken.perform(get("/api/publico/torneos/" + torneo + "/equipos/" + equiposU9.get(0) + "/fixture"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.torneo").value("Torneo de prueba"))
+                .andExpect(jsonPath("$.organizador").doesNotExist())
                 .andExpect(jsonPath("$.equipo").value("Equipo 1"))
+                .andExpect(jsonPath("$.club").value("Club de prueba"))
+                .andExpect(jsonPath("$.partidos[0].clubRival").value("Club de prueba"))
                 .andExpect(jsonPath("$.version.numero").value(1))
                 .andExpect(jsonPath("$.partidos", hasSize(zonaDeCinco ? 4 : 3)))
                 .andExpect(jsonPath("$.rondasLibres", hasSize(zonaDeCinco ? 1 : 0)))
@@ -121,7 +135,7 @@ class RecorridoApiTest extends ApiTestBase {
         mvc.perform(post(base + "/publicar")).andExpect(status().isConflict());
         mvc.perform(post(base + "/ramas").contentType(MediaType.APPLICATION_JSON).content("{\"nombre\":\"Femenino\"}"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("El torneo " + torneo + " está publicado: no se puede modificar (D20)"));
+                .andExpect(jsonPath("$.error").value("El torneo " + torneo + " está publicado: para modificarlo, primero hay que reabrirlo (D20, D47)"));
     }
 
     @Test
@@ -135,6 +149,30 @@ class RecorridoApiTest extends ApiTestBase {
         mvc.perform(post(base + "/publicar"))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.detalles[0]").value(org.hamcrest.Matchers.startsWith("R8")));
+        mvc.perform(get(base)).andExpect(jsonPath("$.estado").value("BORRADOR"));
+    }
+
+    @Test
+    void equipoInscriptoDespuesDelSorteo_noSePuedePublicarYSeDiceQueEquipoFalta() throws Exception {
+        configurarTorneoChico();
+        String base = "/api/torneos/" + torneo;
+        mvc.perform(post(base + "/sorteo")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/generar")).andExpect(status().isOk());
+        mvc.perform(post(base + "/fixture/programar")).andExpect(status().isOk());
+
+        // Alta tardía: el equipo no tiene zona ni partidos (D65). El alta no pide confirmación.
+        JsonNode config = json.readTree(mvc.perform(get(base + "/configuracion")).andReturn().getResponse().getContentAsString());
+        crear(base + "/equipos", ConfiguracionApiTest.equipo(config.get("clubes").get(0).get("id").asLong(),
+                config.get("categorias").get(0).get("id").asLong(), config.get("ramas").get(0).get("id").asLong(), "Equipo tardío"));
+
+        String falta = "El equipo Equipo tardío (U9 Masculino) está inscripto pero no tiene partidos en el fixture";
+        mvc.perform(get(base + "/validacion"))
+                .andExpect(jsonPath("$.valido").value(false))
+                .andExpect(jsonPath("$.violaciones[0].regla").value("R8"))
+                .andExpect(jsonPath("$.violaciones[0].detalle").value(falta));
+        mvc.perform(post(base + "/publicar"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.detalles[0]").value("R8: " + falta));
         mvc.perform(get(base)).andExpect(jsonPath("$.estado").value("BORRADOR"));
     }
 

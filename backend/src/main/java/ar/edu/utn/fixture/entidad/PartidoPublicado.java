@@ -15,7 +15,8 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
 /**
- * Foto de un partido tal como se publicó (D46). Guarda textos, no referencias: si después cambian los equipos,
+ * Foto de un partido tal como se publicó (D46). Guarda textos, no referencias (equipos y sus clubes, zona, sede,
+ * cancha, horarios): si después cambian los equipos,
  * las canchas o la configuración, la foto no cambia. Inmutable: no tiene setters y Hibernate nunca le hace UPDATE.
  *
  * <p>Los ids de los equipos no son claves foráneas: solo sirven para filtrar el fixture de un equipo.
@@ -45,6 +46,12 @@ public class PartidoPublicado {
 
     @Column(name = "equipo_visitante", nullable = false, length = 150)
     private String equipoVisitante;
+
+    @Column(name = "club_local", nullable = false, length = 150)
+    private String clubLocal;
+
+    @Column(name = "club_visitante", nullable = false, length = 150)
+    private String clubVisitante;
 
     @Column(name = "categoria", nullable = false, length = 50)
     private String categoria;
@@ -82,6 +89,8 @@ public class PartidoPublicado {
         this.equipoVisitanteId = partido.getEquipoVisitante().getId();
         this.equipoLocal = partido.getEquipoLocal().getNombre();
         this.equipoVisitante = partido.getEquipoVisitante().getNombre();
+        this.clubLocal = partido.getEquipoLocal().getClub().getNombre();
+        this.clubVisitante = partido.getEquipoVisitante().getClub().getNombre();
         this.categoria = z.getCategoria().getNombre();
         this.rama = z.getRama().getNombre();
         this.zona = z.getNombre();
@@ -114,6 +123,14 @@ public class PartidoPublicado {
 
     public String getEquipoVisitante() {
         return equipoVisitante;
+    }
+
+    public String getClubLocal() {
+        return clubLocal;
+    }
+
+    public String getClubVisitante() {
+        return clubVisitante;
     }
 
     public String getCategoria() {

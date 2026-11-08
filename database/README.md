@@ -6,8 +6,11 @@ El esquema de la base **no está en esta carpeta**: lo crean las migraciones de 
 [`backend/src/main/resources/db/migration`](../backend/src/main/resources/db/migration).
 
 - `V1__esquema_inicial.sql` crea las 11 tablas del modelo (ver [`docs/der.md`](../docs/der.md)).
+- `V2__publicaciones.sql` agrega las versiones publicadas del fixture y su foto (D46).
+- `V3__club_en_foto.sql` agrega el club de cada equipo a la foto (D48).
+- `V4__nombre_torneo_en_publicacion.sql` guarda en cada versión publicada el nombre del torneo (D70).
 - Flyway las aplica solo al arrancar el backend y anota cuáles ya corrió en la tabla `flyway_schema_history`.
-- Una migración ya aplicada **no se modifica**: cualquier cambio va en una nueva (`V2__...`, `V3__...`).
+- Una migración ya aplicada **no se modifica**: cualquier cambio va en una nueva (`V5__...`, `V6__...`).
 
 Están dentro del backend porque tienen que viajar dentro del jar para que funcionen igual
 en local y en el despliegue (decisión D21).
@@ -16,5 +19,8 @@ en local y en el despliegue (decisión D21).
 
 - `pruebas_schema.sql`: pruebas de integridad del esquema. Cargan datos inválidos y muestran si la base
   los rechaza. Se corren en una base de desarrollo con la migración V1 aplicada.
+- `demo.sql`: torneo de prueba "[PRUEBA] Torneo demo" para la cuenta pública `demo@fixture.test` (D72). Todo
+  ficticio: 2 sedes, 2 categorías, 4 clubes, 10 equipos y 3 zonas. También es el paso 2 del reinicio de esa cuenta
+  (ver `docs/deploy.md`, "Cuenta de demostración").
 - `caso_real.sql`: datos de ejemplo del caso real (torneo en BORRADOR con 55 equipos y 13 zonas), para probar el
   recorrido de la API. Antes hay que registrar el organizador `ejemplo@fixture.test` por la API. Ver `backend/README.md`.

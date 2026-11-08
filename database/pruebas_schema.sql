@@ -17,7 +17,7 @@ INSERT INTO categoria (torneo_id, nombre, minutos_netos, cantidad_cuartos, pausa
 VALUES (1, 'U13', 40, 4, 4, 10, 3),
        (2, 'U9', 28, 4, 4, 10, 3);
 INSERT INTO rama (torneo_id, nombre) VALUES (1, 'Masculino');
-INSERT INTO club (torneo_id, nombre) VALUES (1, 'Club A');
+INSERT INTO club (torneo_id, nombre) VALUES (1, 'Club de prueba');
 INSERT INTO zona (torneo_id, categoria_id, rama_id, nombre) VALUES (1, 1, 1, 'Zona A'), (1, 1, 1, 'Zona B');
 INSERT INTO equipo (torneo_id, club_id, categoria_id, rama_id, nombre, responsable_nombre, responsable_telefono, zona_id, orden_en_zona)
 VALUES (1, 1, 1, 1, 'Equipo 1', 'Responsable', '000', 1, 1),

@@ -15,21 +15,26 @@
 | 6 | A | Programador de cancha y horario | Programador greedy, tests T3, T10, T11 | HECHO |
 | 7 | A | API REST del recorrido | Endpoints + BORRADOR/PUBLICADO + datos del caso real | HECHO |
 | 8 | A | Entrega de avance a Oscar | README actualizado + mensaje al tutor | PENDIENTE |
-| 9 | B | Despliegue del backend | API online (Render o Railway) + base online; verificar que Flyway crea las tablas | PENDIENTE |
-| 10 | B | Frontend del organizador | Pantallas: configurar, inscribir, generar, publicar | PENDIENTE |
-| 11 | B | Vista pública y difusión | Fixture por equipo/cancha/horario + link para WhatsApp | PENDIENTE |
-| 12 | B | Despliegue del frontend | App online (Vercel o Netlify) | PENDIENTE |
+| 9 | B | Despliegue del backend | Render (Docker) + Supabase. Imagen, `render.yaml` y guía en `deploy.md` listos; falta crear las cuentas y el servicio | EN CURSO |
+| 10 | B | Frontend del organizador | React + Vite (D54): login, mis torneos, configuración, recorrido, publicación con versiones | HECHO |
+| 11 | B | Vista pública y difusión | Equipos y fixture por equipo sin login + botón de WhatsApp (D57) | HECHO |
+| 12 | B | Despliegue del frontend | Sitio estático de Render (D58). Configuración y guía en `deploy.md` listas; falta crear el sitio | EN CURSO |
 | 13 | C | Documentación e informe final | README final, informe, merge a `master` | PENDIENTE |
 | 14 | C | Video | Guion en inglés + grabación | PENDIENTE |
 | 15 | C | Defensa oral | Presentación + ensayo de preguntas | PENDIENTE |
 
+## Consultado con el organizador real
+
+**Reparto de los partidos entre sábado y domingo (resuelto, D64).** El programador llena el sábado primero: con el
+caso real, 35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida"). El fixture
+es válido. La consulta se hizo y **el organizador no tiene problema con cómo queda hoy**: no se cambia el programador.
+
 ## Mejoras P1 (si sobra tiempo, en este orden)
 
-Ninguna se empieza antes de terminar la fase A.
+Ninguna se empieza antes de terminar la fase A. Según la devolución G165-dev_3, el foco ahora es
+autenticación → frontend mínimo → despliegue → prueba con el organizador real, no módulos nuevos.
 
-1. **Repartir los partidos de cada equipo entre los días.** Hoy el programador llena el sábado primero:
-   con el caso real, 35 de 55 equipos juegan solo el sábado (ver `algoritmo-programador.md`, "Limitación conocida").
-2. Fase final con cruces entre zonas.
-3. Edición manual de partidos (validada con las mismas reglas R1–R8).
-4. Carga de resultados.
-5. Turnos de comidas.
+1. Fase final con cruces entre zonas.
+2. Edición manual de partidos (validada con las mismas reglas R1–R8).
+3. Carga de resultados.
+4. Turnos de comidas.

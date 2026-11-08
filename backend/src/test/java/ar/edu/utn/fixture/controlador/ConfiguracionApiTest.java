@@ -83,6 +83,45 @@ class ConfiguracionApiTest extends ApiTestBase {
     }
 
     @Test
+    void configuracion_devuelveTodoLoCargadoDelTorneo() throws Exception {
+        long torneo = crearTorneoDePrueba();
+        String base = "/api/torneos/" + torneo;
+        crear(base + "/franjas", "{\"fecha\":\"2030-01-05\",\"desde\":\"09:00\",\"hasta\":\"20:00\"}");
+        long sede = crearId(base + "/sedes", "{\"nombre\":\"Sede de prueba\",\"direccion\":\"Calle de prueba 123\"}");
+        crear("/api/sedes/" + sede + "/canchas", "{\"nombre\":\"Cancha 1\"}");
+        crear("/api/sedes/" + sede + "/canchas", "{\"nombre\":\"Cancha 2\",\"habilitada\":false}");
+        long categoria = crearId(base + "/categorias", CATEGORIA_U9);
+        long rama = crearId(base + "/ramas", "{\"nombre\":\"Femenino\"}");
+        crear(base + "/clubes", "{\"nombre\":\"Club de prueba\"}");
+        crear(base + "/zonas", "{\"categoriaId\":%d,\"ramaId\":%d,\"nombre\":\"Zona A\"}".formatted(categoria, rama));
+
+        mvc.perform(get(base + "/configuracion"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.franjas[0].fecha").value("2030-01-05"))
+                .andExpect(jsonPath("$.franjas[0].desde").value("09:00:00"))
+                .andExpect(jsonPath("$.sedes[0].nombre").value("Sede de prueba"))
+                .andExpect(jsonPath("$.sedes[0].direccion").value("Calle de prueba 123"))
+                .andExpect(jsonPath("$.sedes[0].canchas.length()").value(2))
+                .andExpect(jsonPath("$.sedes[0].canchas[1].habilitada").value(false))
+                .andExpect(jsonPath("$.categorias[0].nombre").value("U9"))
+                .andExpect(jsonPath("$.categorias[0].minutosNetos").value(28))
+                .andExpect(jsonPath("$.ramas[0].nombre").value("Femenino"))
+                .andExpect(jsonPath("$.clubes[0].nombre").value("Club de prueba"))
+                .andExpect(jsonPath("$.zonas[0].etiqueta").value("U9 Femenino - Zona A"))
+                .andExpect(jsonPath("$.zonas[0].categoriaId").value(categoria));
+    }
+
+    @Test
+    void configuracion_deUnTorneoAjeno_respondeNotFound() throws Exception {
+        long torneo = crearTorneoDePrueba();
+
+        mvcCon(nuevoOrganizador().token()).perform(get("/api/torneos/" + torneo + "/configuracion"))
+                .andExpect(status().isNotFound());
+        mvcSinToken.perform(get("/api/torneos/" + torneo + "/configuracion"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void torneoInexistente_respondeNotFound() throws Exception {
         mvc.perform(get("/api/torneos/999999999"))
                 .andExpect(status().isNotFound())

@@ -21,7 +21,9 @@ import ar.edu.utn.fixture.dto.Pedidos.NuevaZona;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoClub;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoEquipo;
 import ar.edu.utn.fixture.dto.Pedidos.NuevoTorneo;
+import ar.edu.utn.fixture.dto.Respuestas.ConfiguracionDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.Creado;
+import ar.edu.utn.fixture.dto.Respuestas.EquipoDetalle;
 import ar.edu.utn.fixture.dto.Respuestas.EquipoResumen;
 import ar.edu.utn.fixture.dto.Respuestas.TorneoDetalle;
 import ar.edu.utn.fixture.servicio.ConfiguracionServicio;
@@ -107,8 +109,21 @@ public class TorneoControlador {
         return servicio.inscribirEquipo(organizadorId, torneoId, pedido);
     }
 
+    /** Toda la configuración del torneo (franjas, sedes y canchas, categorías, ramas, clubes y zonas), D56. */
+    @GetMapping("/torneos/{torneoId}/configuracion")
+    public ConfiguracionDetalle configuracion(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
+        return servicio.configuracion(organizadorId, torneoId);
+    }
+
     @GetMapping("/torneos/{torneoId}/equipos")
     public List<EquipoResumen> listarEquipos(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId) {
         return servicio.listarEquipos(organizadorId, torneoId);
+    }
+
+    /** Un equipo con responsable y teléfono, para editarlo (D67). */
+    @GetMapping("/torneos/{torneoId}/equipos/{equipoId}")
+    public EquipoDetalle equipo(@AuthenticationPrincipal Long organizadorId, @PathVariable Long torneoId,
+            @PathVariable Long equipoId) {
+        return servicio.equipo(organizadorId, torneoId, equipoId);
     }
 }

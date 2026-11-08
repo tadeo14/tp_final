@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import ar.edu.utn.fixture.dto.Respuestas.Error;
+import ar.edu.utn.fixture.servicio.ConfirmacionRequeridaException;
 import ar.edu.utn.fixture.servicio.ConflictoException;
 import ar.edu.utn.fixture.servicio.CredencialesInvalidasException;
 import ar.edu.utn.fixture.servicio.DatosInvalidosException;
@@ -38,6 +39,12 @@ public class ManejadorErrores {
         return respuesta(HttpStatus.CONFLICT, e.getMessage(), List.of());
     }
 
+    /** El cambio invalida el fixture: se puede hacer igual repitiendo el pedido con confirmar=true (D66). */
+    @ExceptionHandler(ConfirmacionRequeridaException.class)
+    public ResponseEntity<Error> confirmacionRequerida(ConfirmacionRequeridaException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new Error(e.getMessage(), List.of(), true));
+    }
+
     @ExceptionHandler(DatosInvalidosException.class)
     public ResponseEntity<Error> datosInvalidos(DatosInvalidosException e) {
         return respuesta(HttpStatus.BAD_REQUEST, e.getMessage(), List.of());
@@ -48,11 +55,12 @@ public class ManejadorErrores {
         return respuesta(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(), e.getDetalles());
     }
 
-    /** Fallan las anotaciones de los pedidos (@NotBlank, @Positive...). */
+    /** Fallan las anotaciones de los pedidos (@NotBlank, @Positive...). Los detalles van en español y ordenados (D61). */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Error> pedidoInvalido(MethodArgumentNotValidException e) {
         List<String> detalles = e.getBindingResult().getFieldErrors().stream()
-                .map(f -> f.getField() + ": " + f.getDefaultMessage())
+                .map(MensajesValidacion::traducir)
+                .sorted()
                 .toList();
         return respuesta(HttpStatus.BAD_REQUEST, "Hay datos inválidos en el pedido", detalles);
     }

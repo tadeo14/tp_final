@@ -76,6 +76,8 @@ class MapeoEntidadesTest {
         assertThat(foto.getEquipoLocal()).isEqualTo("Equipo 1");
         assertThat(foto.getEquipoVisitante()).isEqualTo("Equipo 2");
         assertThat(foto.getEquipoLocalId()).isEqualTo(partido.getEquipoLocal().getId());
+        assertThat(foto.getClubLocal()).isEqualTo("Club de prueba");
+        assertThat(foto.getClubVisitante()).isEqualTo("Club de prueba");
         assertThat(foto.etiquetaZona()).isEqualTo("U9 Masculino - Zona A");
         assertThat(foto.getSede()).isEqualTo("Sede de prueba");
         assertThat(foto.getCancha()).isEqualTo("Cancha 1");
@@ -83,6 +85,7 @@ class MapeoEntidadesTest {
         assertThat(foto.getFin()).isEqualTo(LocalDateTime.of(2030, 1, 5, 10, 0));
         assertThat(foto.getPublicacion().getNumero()).isEqualTo(1);
         assertThat(foto.getPublicacion().getPublicadaEn()).isEqualTo(ahora);
+        assertThat(foto.getPublicacion().getNombreTorneo()).isEqualTo("Torneo de prueba"); // V4, D70
         assertThat(foto.getPublicacion().getMotivo()).isNull();
     }
 

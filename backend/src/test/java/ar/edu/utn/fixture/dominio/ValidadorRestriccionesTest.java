@@ -245,6 +245,29 @@ class ValidadorRestriccionesTest {
         assertThat(validador.validar(config, partidos).esValido()).isTrue();
     }
 
+    @Test
+    void r8_equipoInscriptoSinPartidos_violaR8YDiceQueEquipoFalta() {
+        // "E" se inscribió después del sorteo: no tiene zona ni partidos (D65).
+        List<PartidoProgramado<String, String>> partidos = List.of(
+                partido("A", "B", U9, "Cancha 1", SABADO, 9, 0));
+
+        ResultadoValidacion<String, String> resultado = validador.validar(config, partidos, List.of("A", "B", "E"));
+
+        assertThat(resultado.esValido()).isFalse();
+        assertThat(resultado.violaciones()).singleElement().satisfies(v -> {
+            assertThat(v.restriccion()).isEqualTo(Restriccion.R8);
+            assertThat(v.detalle()).isEqualTo("El equipo E está inscripto pero no tiene partidos en el fixture");
+        });
+    }
+
+    @Test
+    void r8_todosLosEquiposInscriptosJuegan_esValido() {
+        List<PartidoProgramado<String, String>> partidos = List.of(
+                partido("A", "B", U9, "Cancha 1", SABADO, 9, 0));
+
+        assertThat(validador.validar(config, partidos, List.of("A", "B")).esValido()).isTrue();
+    }
+
     // ---------------------------------------------------------------- informe
 
     @Test
