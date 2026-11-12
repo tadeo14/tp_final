@@ -70,13 +70,11 @@ cualquier cambio (un equipo que se baja, una cancha que no está disponible) obl
 ### Evidencia
 
 - **Torneo real como caso principal** (D2): el torneo de María Juana con **55 equipos**, categorías U9, U11 y U13 en
-  rama masculina y femenina, **2 sedes × 4 canchas**, sábado de 9 a 20 y domingo de 9 a 16. El relevamiento con el
-  organizador real aportó las cantidades, las duraciones de los partidos, las reglas del torneo y el esfuerzo actual
-  (≈ 10 horas). El relevamiento se hizo con el organizador real en una charla en persona el 24/09/2026,
-  y se completó por WhatsApp. El organizador aportó la cantidad de equipos, las categorías,
-  las ramas y las sedes, y describió cómo se organiza hoy el torneo: el armado de la grilla
-  lleva ≈ 10 horas de reuniones, a las que se suman la comunicación a los equipos y
-  los cambios del fixture cuando algo se modifica.
+  rama masculina y femenina, **2 sedes × 4 canchas**, sábado de 9 a 20 y domingo de 9 a 16. El relevamiento se hizo
+  con el organizador real en una charla en persona el 24/09/2026, y se completó por WhatsApp. El organizador aportó
+  la cantidad de equipos, las categorías, las ramas, las sedes, las duraciones de los partidos y las reglas del
+  torneo, y describió cómo se organiza hoy: el armado de la grilla lleva ≈ 10 horas de reuniones, a las que se suman
+  la comunicación a los equipos y los cambios del fixture cuando algo se modifica.
 - **Análisis de factibilidad** sobre ese caso ([`caso-real.md`](caso-real.md), sección 3): con un tope de 3 partidos
   por día, un equipo juega como máximo 6 partidos en el fin de semana. Con todos contra todos por categoría, 5 de los
   6 grupos no entran (por ejemplo, un equipo de U9 masculino necesitaría 9 partidos) y harían falta ≈ 261 horas de
@@ -529,7 +527,26 @@ El recorrido completo para usuarios está en el [manual de usuario](manual-usuar
 | Servicios (contraseñas, JWT) | 2 | 9 |
 | Base y contexto (mapeo de entidades, arranque con Flyway) | 2 | 4 |
 
-[PENDIENTE: cobertura de código, si se quiere informar]
+**Cobertura de código** (JaCoCo 0.8.12, sobre los 182 tests; porcentajes truncados a un decimal):
+
+| Alcance | Líneas | Ramas (*branches*) |
+|---|---|---|
+| **Total del backend** | **98,0 %** (1473 de 1502) | **88,5 %** (365 de 412) |
+| **Dominio** (`dominio`: algoritmos y `ValidadorRestricciones`) | **97,9 %** (334 de 341) | **92,7 %** (167 de 180) |
+
+Comando usado (desde `backend/`, con el PostgreSQL local de D24; no modifica el `pom.xml`):
+
+```bash
+DB_URL=jdbc:postgresql://localhost:5432/fixture_test DB_USER=fixture DB_PASSWORD=fixture \
+./mvnw org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent test org.jacoco:jacoco-maven-plugin:0.8.12:report
+```
+
+El reporte queda en `backend/target/site/jacoco/index.html`.
+
+Lo que tiene menos cobertura son las **ramas** de `EdicionServicio` (58 de 78 cubiertas, aunque todas sus líneas se
+ejecutan): son condiciones compuestas, del tipo "cambió la duración, las pausas, el margen o el tope", y los tests
+cambian uno o dos de esos campos, no cada combinación. Además, el método `main` que arranca la aplicación no corre en
+los tests (en ellos el contexto lo levanta Spring).
 
 ### 7.2 Batería T1–T11 y cómo prueba cada restricción
 
