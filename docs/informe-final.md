@@ -684,7 +684,21 @@ Con las 13 zonas (resultado documentado en [`algoritmo-programador.md`](algoritm
 - **Registrar cada decisión** (72 decisiones en [`decisiones.md`](decisiones.md)) permitió revisar y cambiar algunas
   con trazabilidad: por ejemplo, D70 modifica D60.
 
-[PENDIENTE: aprendizajes personales de cada integrante, si se quieren agregar]
+### Aprendizajes personales
+
+**Tadeo Acosta**
+- Llegar más al detalle con el usuario antes de programar: algunas reglas del torneo
+  aparecieron después y obligaron a modificar código ya escrito.
+- Conectar el backend en Render con la base en Supabase me enseñó que la conexión se
+  configura distinto en local y en producción (D50).
+- Si empezara de nuevo, probaría la app con el organizador antes, no al final del desarrollo.
+
+**Daniel Alderete**
+- Separar el problema en piezas chicas (generar enfrentamientos, programar, validar)
+  hizo que el algoritmo fuera fácil de probar y de explicar.
+- El diseño de la base fue lo que más aprendí, en especial guardar cada publicación como
+  una foto inmutable (D46, D70).
+- Si empezara de nuevo, mediría la cobertura de código desde el principio y no al final.
 
 ---
 
