@@ -1,7 +1,13 @@
 # 🏀 Fixture de Torneos de Básquet
 
 Trabajo Final Integrador — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
-Equipo: Daniel y Tadeo · Tutor: Oscar Londero
+Grupo 165 · Integrantes: Daniel Alderete y Tadeo Acosta · Tutor: Oscar Londero
+
+## Entrega final
+
+- **Informe final:** [`docs/informe-final.md`](docs/informe-final.md)
+- **Video final:** [PENDIENTE]
+- **Versión entregada:** [PENDIENTE: tag]
 
 App web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
 horarios **sin conflictos** y publica el fixture en una vista pública de solo lectura.
