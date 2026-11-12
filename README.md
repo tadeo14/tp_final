@@ -1,100 +1,120 @@
-<!-- /docs/propuesta.md (o README.md en la raíz del repo) -->
+# 🏀 Fixture de Torneos de Básquet
 
-# 🏀 Fixture y Difusión de Torneos de Básquet
+Trabajo Final Integrador — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
+Grupo 165 · Integrantes: Daniel Alderete y Tadeo Acosta · Tutor: Oscar Londero
 
-Proyecto Final — **Tecnicatura Universitaria en Programación a Distancia (UTN)**
+App web que organiza torneos formativos de básquet: arma los enfrentamientos, los programa en canchas y
+horarios **sin conflictos** y publica el fixture en una vista pública de solo lectura.
 
-## 📌 Descripción
+## Entrega final
 
-Los organizadores de torneos de básquet en clubes locales arman a mano el fixture,
-la asignación de canchas y horarios, y la coordinación de comidas, y difunden esa
-información por canales informales (WhatsApp, grupos, planillas impresas). Esto
-genera superposiciones de horarios, canchas ociosas y equipos que no saben dónde
-ni cuándo juegan.
+- **Informe final:** [`docs/informe-final.md`](docs/informe-final.md)
+- **Video final:** [PENDIENTE]
+- **Versión entregada:** [PENDIENTE: tag]
 
-Este proyecto propone una **app web** que centraliza en un solo lugar la
-configuración del torneo, la generación automática del fixture (sin superposiciones
-y con descanso mínimo entre partidos), la logística de comidas y una vista pública
-de difusión, para torneos de cualquier categoría y tamaño (infantiles, juveniles o
-mayores).
+## Alcance (P0)
 
-## 🎯 Objetivos
+Recorrido: crear torneo → categorías → equipos → canchas y franjas → **sortear zonas** → **generar
+enfrentamientos** (todos contra todos dentro de cada zona, con fecha libre si es impar) → **programar** →
+**validar** las reglas R1–R8 → **publicar** → consultar por equipo.
 
-**Objetivo general**
+- Si no hay solución, el sistema lo informa y **no relaja reglas**.
+- Estados BORRADOR y PUBLICADO. Un torneo publicado no se modifica; para corregirlo se reabre y se publica una
+  nueva versión con motivo, y el público sigue viendo la última versión publicada (D46, D47).
+- **Fuera de P0:** comidas, fase final, edición manual, resultados, jugadores, notificaciones.
 
-Desarrollar una plataforma web que automatice la organización de torneos de
-básquet (fixture, canchas, horarios, comidas) y publique la información en una
-vista pública de solo lectura.
+## Caso real
 
-**Objetivos específicos**
+El principal caso de prueba es un torneo real ([`docs/caso-real.md`](docs/caso-real.md)):
+**55 equipos**, U9/U11/U13 masculino y femenino, **2 sedes × 4 canchas** (Atlético María Juana y Litoral María
+Juana), sábado y domingo.
 
-- Permitir configurar un torneo (días, sedes, canchas, franjas horarias, categorías y ramas) sin valores fijos en el código.
-- Permitir inscribir equipos por club, categoría y rama.
-- Generar automáticamente un fixture sin superposiciones de cancha/horario y con descanso mínimo entre partidos de un mismo equipo.
-- Asignar turnos de comida a los equipos según su propia grilla de partidos.
-- Publicar una vista pública del fixture, filtrable por equipo, cancha u horario, con link para compartir.
+- Con todos contra todos **no hay solución** (un equipo de 10 necesitaría 9 partidos y puede jugar 6).
+- Con **13 zonas** sí: **91 partidos**, programados sin violar ninguna regla.
 
-## 🔎 Antecedentes
+## Qué está hecho
 
-*Información pública relevada de cada sitio, no verificada — se toma solo la idea, no diseño ni marca.*
-
-| App | Qué resuelve | Qué tomamos de referencia |
+| Paso | Entregable | Docs |
 |---|---|---|
-| Playinga | Fixture multisede, calendario drag & drop, detección de conflictos | Idea de detección automática de superposiciones |
-| Xporty | Horarios automáticos según disponibilidad de cancha, fases y clasificaciones | Enfoque de asignación automática de horarios |
-| Enjore | Página pública del torneo y difusión | Vista pública de solo lectura |
-| Exposure Basketball | Flujo específico de básquet: agenda, tablas y resultados | Validación de agenda por equipo |
-| Reservaplay | Formulario de inscripción por categoría | Formulario de inscripción de equipos |
+| 1. Definición del problema | Caso real, restricciones R1–R8, decisiones | [`restricciones.md`](docs/restricciones.md), [`decisiones.md`](docs/decisiones.md) |
+| 2. Modelo de datos | DER y migraciones Flyway V1 (11 tablas), V2 (versiones publicadas) y V3 (club en la foto) | [`der.md`](docs/der.md) |
+| 3. Proyecto Spring Boot | Java 17, Spring Boot 3.5, JPA, Flyway, PostgreSQL | [`backend/README.md`](backend/README.md) |
+| 4. Sorteo y enfrentamientos | Método del círculo — tests T1, T2 | [`algoritmo-enfrentamientos.md`](docs/algoritmo-enfrentamientos.md) |
+| 5. Validador R1–R8 | Un solo `ValidadorRestricciones` — tests T4 a T9 | [`restricciones.md`](docs/restricciones.md) |
+| 6. Programador | Greedy + chequeo por conteo — tests T3, T10, T11 | [`algoritmo-programador.md`](docs/algoritmo-programador.md) |
+| 7. API REST | Recorrido completo, BORRADOR/PUBLICADO con versiones, datos del caso real, login con JWT, editar y eliminar la configuración (D66) | [`backend/README.md`](backend/README.md) |
+| 10. Frontend del organizador | React + Vite: login, mis torneos, configuración (alta, editar y eliminar), recorrido, publicación con versiones | [`frontend/README.md`](frontend/README.md) |
+| 11. Vista pública | Sin login: equipos y fixture por equipo, versión y motivo, botón de WhatsApp | [`frontend/README.md`](frontend/README.md) |
 
-## 💡 Diferencial
+**182 tests** (JUnit 5), todos pasan. Plan completo en [`docs/hoja-de-ruta.md`](docs/hoja-de-ruta.md);
+propuesta original (objetivos, antecedentes, diferencial) en [`docs/propuesta.md`](docs/propuesta.md).
 
-Las apps de referencia ya resuelven fixture, canchas y horarios por separado. Nuestro
-diferencial es una herramienta **simple, en español y gratuita**, pensada para clubes
-locales (no ligas profesionales), que integra en un solo lugar **fixture + logística
-de comidas + difusión pública**, algo que ninguna de las referencias cubre junta.
+**Manual de usuario:** [`docs/manual-usuario.md`](docs/manual-usuario.md) — guía rápida, recorrido paso a paso,
+glosario, preguntas frecuentes y solución de problemas.
 
-## 🧩 Alcance del proyecto (MVP)
+## Cómo correrlo
 
-| Módulo | Organizador | Público (sin login) |
-|---|---|---|
-| Configuración del torneo | Define sedes, canchas, franjas, categorías y ramas | — |
-| Inscripción de equipos | Carga club, categoría, rama y contacto del responsable | — |
-| Fixture automático | Genera partidos sin superposición ni conflicto de cancha | Ve el fixture completo |
-| Turnos de comida | Asigna equipos a turnos según su grilla de partidos | Ve su turno asignado |
-| Vista pública | — | Filtra por equipo, cancha u horario; link para compartir |
+Requiere Java 17+ y un PostgreSQL. La configuración va por variables de entorno (nunca en el repo):
 
+```bash
+cd backend
+export DB_URL=jdbc:postgresql://localhost:5432/fixture_test DB_USER=fixture DB_PASSWORD=fixture
+./mvnw test             # tests (no dejan datos en la base)
 
-## 🛠️ Stack tecnológico
+export JWT_SECRETO="$(head -c 48 /dev/urandom | base64)" JWT_EXPIRACION_MIN=120
+./mvnw spring-boot:run  # API en http://localhost:8080 — Flyway crea las tablas
+```
 
-| Área | Tecnología |
+Las operaciones del organizador exigen iniciar sesión (JWT, D44) y cada organizador solo ve sus torneos (D45);
+la vista pública no pide login.
+
+**Recorrido con el caso real:** registrar el organizador `ejemplo@fixture.test`, ejecutar
+[`database/caso_real.sql`](database/caso_real.sql) en la base, iniciar sesión y seguir
+[`backend/recorrido.http`](backend/recorrido.http) (sortear → generar → programar → validar → publicar → consultar
+un equipo). Detalle en [`backend/README.md`](backend/README.md).
+
+**Frontend** (Node 20.19+): con el backend corriendo y `CORS_ORIGENES=http://localhost:5173`,
+
+```bash
+cd frontend && npm ci && npm run dev   # http://localhost:5173
+```
+
+## Cuenta de demostración
+
+Para probar la app desplegada sin crear una cuenta:
+
+| | |
 |---|---|
-| Backend | Java + Spring Boot (Spring Data JPA) |
-| Frontend | React |
-| Base de datos | PostgreSQL |
-| Despliegue | Backend + BD en Render/Railway; frontend en Vercel/Netlify |
-| Control de versiones | Git y GitHub |
+| App | <https://fixture-frontend-i2w8.onrender.com> |
+| Usuario | `demo@fixture.test` |
+| Contraseña | `demo-fixture-2026` |
 
-## 🗓️ Plan de trabajo
+- Es una **cuenta de prueba, pública y descartable**: tiene solo torneos de prueba y **puede reiniciarse en cualquier
+  momento** (se borran sus torneos y se vuelve a cargar "[PRUEBA] Torneo demo" con
+  [`database/demo.sql`](database/demo.sql)). No cargues datos reales ni teléfonos reales de responsables.
+- **No es la cuenta del caso real.** El torneo del caso real está a nombre de `ejemplo@fixture.test`, cuya
+  contraseña no se publica (D71).
+- Cada organizador ve solo sus torneos (D45): con otra cuenta, los de la demostración no aparecen.
+- Si la app estuvo sin uso, el primer ingreso tarda cerca de un minuto (plan gratis de Render).
 
-| Etapa | Actividad | Duración estimada |
-|---|---|---|
-| 1 | Propuesta, tutor, repo, antecedentes | Semanas 1-2 |
-| 2 | Diseño: modelo de datos y listado de módulos | Semanas 2-3 |
-| 3 | Backend: modelos, API REST, algoritmo de fixture | Semanas 3-6 |
-| 4 | Frontend: configuración, inscripción, vista pública | Semanas 5-7 |
-| 5 | Integración, datos de prueba, turnos de comida | Semana 8 |
-| 6 | Despliegue, documentación, video | Semanas 9-10 |
+## Limitaciones conocidas
 
-> Estimación inicial, se ajusta con el tutor tras aprobar la propuesta.
+- **Reparto entre días:** el programador llena el sábado primero; con el caso real, 35 de 55 equipos juegan solo
+  el sábado. El fixture es válido. Se consultó al organizador real y no tiene problema con cómo queda (D64).
+- **Despliegue (pasos 9 y 12):** listo para Render (backend Docker + frontend estático) + Supabase, guía en
+  [`docs/deploy.md`](docs/deploy.md).
+  En el plan gratis, el primer pedido después de 15 minutos sin uso tarda alrededor de 1 minuto (arranque en frío).
 
-## 👥 Equipo
+## Stack
 
-- Daniel
-- Tadeo
+Java 17 · Spring Boot 3.5 · Spring Data JPA · Flyway · PostgreSQL · JUnit 5 · Maven · React + Vite (JavaScript).
+Despliegue: Render (Docker y sitio estático) + Supabase ([`docs/deploy.md`](docs/deploy.md)).
 
-**Tutor propuesto:** Oscar Londero
+## Estructura
 
-## 📂 Repositorio
-
-Todo el desarrollo (backend, frontend, base de datos y documentación) vive en este
-repositorio, organizado en `/frontend`, `/backend`, `/database` y `/docs`.
+```
+/backend    API Spring Boot (dominio puro, entidades, servicios, controladores, tests)
+/database   Datos de ejemplo del caso real y pruebas del esquema
+/docs       Caso real, restricciones, decisiones, DER, algoritmos, hoja de ruta, manual de usuario
+/frontend   App React: pantallas del organizador y vista pública
+```
