@@ -72,7 +72,11 @@ cualquier cambio (un equipo que se baja, una cancha que no está disponible) obl
 - **Torneo real como caso principal** (D2): el torneo de María Juana con **55 equipos**, categorías U9, U11 y U13 en
   rama masculina y femenina, **2 sedes × 4 canchas**, sábado de 9 a 20 y domingo de 9 a 16. El relevamiento con el
   organizador real aportó las cantidades, las duraciones de los partidos, las reglas del torneo y el esfuerzo actual
-  (≈ 10 horas). [PENDIENTE: forma y fecha del relevamiento inicial con el organizador (entrevista, planillas, etc.)]
+  (≈ 10 horas). El relevamiento se hizo con el organizador real en una charla en persona el 24/09/2026,
+  y se completó por WhatsApp. El organizador aportó la cantidad de equipos, las categorías,
+  las ramas y las sedes, y describió cómo se organiza hoy el torneo: el armado de la grilla
+  lleva ≈ 10 horas de reuniones, a las que se suman la comunicación a los equipos y
+  los cambios del fixture cuando algo se modifica.
 - **Análisis de factibilidad** sobre ese caso ([`caso-real.md`](caso-real.md), sección 3): con un tope de 3 partidos
   por día, un equipo juega como máximo 6 partidos en el fin de semana. Con todos contra todos por categoría, 5 de los
   6 grupos no entran (por ejemplo, un equipo de U9 masculino necesitaría 9 partidos) y harían falta ≈ 261 horas de

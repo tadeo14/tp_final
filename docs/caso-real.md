@@ -8,6 +8,8 @@
 
 ## 1. Situación actual (cómo se organiza hoy)
 
+Relevado con el organizador real en una charla en persona el 24/09/2026, completada por WhatsApp.
+
 | Tarea | Cómo se hace hoy |
 |---|---|
 | Enfrentamientos (quién juega contra quién) | Por sorteo |
