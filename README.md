@@ -8,7 +8,7 @@ horarios **sin conflictos** y publica el fixture en una vista pública de solo l
 
 ## Entrega final
 
-- **Informe final:** [`docs/informe-final.md`](docs/informe-final.md)
+- **Informe final (PDF):** https://github.com/tadeo14/tp_final/releases/download/v1.0.0/Informe_Final_Grupo165_v1.0.0.pdf (fuente en [`docs/informe-final.md`](docs/informe-final.md))
 - **Video final:** https://youtu.be/WlJ1itfUMbM
 - **Versión entregada:** [v1.0.0](https://github.com/tadeo14/tp_final/releases/tag/v1.0.0) (tag en la rama `master`)
 
