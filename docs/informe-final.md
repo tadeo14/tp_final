@@ -616,7 +616,14 @@ Con las 13 zonas (resultado documentado en [`algoritmo-programador.md`](algoritm
 | **Concentración en el sábado** (D64) | Con el caso real, 35 de 55 equipos juegan solo el sábado, porque el greedy llena primero el primer día | No es un problema: para clubes y familias puede ser mejor jugar un solo día y evitar un segundo traslado | No se cambia el programador. Si se pidiera repartir, sería una preferencia de optimización, no una regla nueva |
 | **Cambio de sede el mismo día** (validado el 04/11/2026) | Un equipo puede tener partidos en las dos sedes el mismo día | El descanso mínimo (90 minutos en el caso real) alcanza para el traslado | No hace falta una regla extra: R3 lo cubre |
 
-[PENDIENTE: prueba de uso de la app desplegada por el organizador real (fecha, qué hizo y qué observó), si se realizó]
+**Prueba de uso con el organizador real (15/11/2026).** El organizador se registró en la app
+desplegada, cargó el torneo completo (días, horarios, las dos sedes con sus canchas, las
+categorías y los equipos) y publicó el fixture en ≈ 10 minutos. Destacó que el fixture sale
+solo y sin superposiciones, que la app avisa cuando algo no entra y el enlace para compartir
+por WhatsApp. Lo que más le costó fue cargar los equipos uno por uno, y propuso importar una
+planilla con los inscriptos. También notó demora al registrar la cuenta, que corresponde al
+arranque en frío del servidor gratuito (sección 8, limitaciones). Concluyó que usaría la app
+para un torneo como el suyo. Evidencia: [`evidencia/organizador-prueba.pdf`](evidencia/organizador-prueba.pdf).
 
 ---
 
@@ -637,13 +644,15 @@ Con las 13 zonas (resultado documentado en [`algoritmo-programador.md`](algoritm
 
 | Aspecto | A mano | Con la app |
 |---|---|---|
-| Armado de la grilla | ≈ 10 horas de reuniones | Una vez cargada la configuración, se calcula en alrededor de un segundo |
+| Armado de la grilla | ≈ 10 horas de reuniones | ≈ 10 minutos de carga (prueba del organizador) y alrededor de un segundo de cálculo |
 | Superposiciones de cancha o de equipo, descansos y topes | Se controlan a ojo | Se verifican automáticamente (R1–R8) antes de publicar |
 | Cuando no entra | Se descubre armando | El sistema lo informa y dice qué no entra |
 | Un cambio de último momento | Rehacer la grilla | Reabrir, corregir, volver a programar y publicar una nueva versión con motivo |
 | Difusión | Mensajes y grupos de WhatsApp | Un enlace por torneo y por equipo, siempre con la última versión |
 
-[PENDIENTE: tiempo real que le lleva al organizador cargar la configuración del torneo en la app, para comparar el proceso completo y no solo el cálculo]
+En la prueba del 15/11/2026, el organizador cargó la
+configuración completa y publicó el fixture en ≈ 10 minutos, frente a las ≈ 10 horas
+de reuniones del proceso manual.
 
 ### Limitaciones conocidas
 
@@ -661,6 +670,7 @@ Con las 13 zonas (resultado documentado en [`algoritmo-programador.md`](algoritm
 
 ### Evolución futura (no implementado)
 
+- Importar una planilla con los equipos inscriptos, pedido por el organizador real en la prueba del 15/11/2026.
 - Fase final o cruces entre zonas.
 - Carga de resultados y tablas de posiciones.
 - Turnos de comida (parte de la propuesta original).
