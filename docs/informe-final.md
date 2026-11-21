@@ -714,4 +714,4 @@ Con las 13 zonas (resultado documentado en [`algoritmo-programador.md`](algoritm
 | Cuenta de demostración | Ver la sección "Cuenta de demostración" del [README](../README.md#cuenta-de-demostración) |
 | Manual de usuario | [`docs/manual-usuario.md`](manual-usuario.md) |
 | Decisiones técnicas | [`docs/decisiones.md`](decisiones.md) |
-| Video final | [PENDIENTE] |
+| Video final | <https://youtu.be/WlJ1itfUMbM> |

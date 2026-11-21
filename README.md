@@ -9,7 +9,7 @@ horarios **sin conflictos** y publica el fixture en una vista pública de solo l
 ## Entrega final
 
 - **Informe final:** [`docs/informe-final.md`](docs/informe-final.md)
-- **Video final:** [PENDIENTE]
+- **Video final:** https://youtu.be/WlJ1itfUMbM
 - **Versión entregada:** [PENDIENTE: tag]
 
 ## Alcance (P0)
