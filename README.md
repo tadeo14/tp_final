@@ -10,7 +10,7 @@ horarios **sin conflictos** y publica el fixture en una vista pública de solo l
 
 - **Informe final:** [`docs/informe-final.md`](docs/informe-final.md)
 - **Video final:** https://youtu.be/WlJ1itfUMbM
-- **Versión entregada:** [PENDIENTE: tag]
+- **Versión entregada:** [v1.0.0](https://github.com/tadeo14/tp_final/releases/tag/v1.0.0) (tag en la rama `master`)
 
 ## Alcance (P0)
 

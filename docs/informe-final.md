@@ -22,7 +22,7 @@ Daniel Alderete · Tadeo Acosta
 
 ---
 
-> **Versión del proyecto a la que corresponde este informe:** [PENDIENTE: commit, tag o release de la entrega final]
+> **Versión del proyecto a la que corresponde este informe:** v1.0.0 (tag en la rama `master`)
 >
 > En todo el informe se distingue lo **implementado y probado** de lo que es **trabajo futuro**. Las decisiones
 > técnicas se citan por su número (Dxx) y están justificadas en [`docs/decisiones.md`](decisiones.md).
@@ -716,8 +716,8 @@ de reuniones del proceso manual.
 
 | Recurso | Enlace |
 |---|---|
-| Repositorio | <https://github.com/tadeo14/tp_final> (rama `developC`) |
-| Versión entregada | [PENDIENTE: commit, tag o release] |
+| Repositorio | <https://github.com/tadeo14/tp_final> (rama `master`; la app desplegada sale de `developC`, con el mismo contenido) |
+| Versión entregada | [v1.0.0](https://github.com/tadeo14/tp_final/releases/tag/v1.0.0) (tag en la rama `master`) |
 | App desplegada (organizador) | <https://fixture-frontend-i2w8.onrender.com> |
 | Vista pública de un torneo | `https://fixture-frontend-i2w8.onrender.com/torneo/ID` |
 | Estado del backend | <https://fixture-backend-anko.onrender.com/api/salud> |

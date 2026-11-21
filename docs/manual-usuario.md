@@ -26,7 +26,7 @@ instructivo de uso.
 | App (frontend) | <https://fixture-frontend-i2w8.onrender.com> |
 | Vista pública de un torneo | `https://fixture-frontend-i2w8.onrender.com/torneo/ID` (ID = número del torneo publicado) |
 | Estado del backend | <https://fixture-backend-anko.onrender.com/api/salud> |
-| Repositorio | <https://github.com/tadeo14/tp_final> (rama `developC`, [Pull Request #2](https://github.com/tadeo14/tp_final/pull/2); todavía sin merge a `master`) |
+| Repositorio | <https://github.com/tadeo14/tp_final> (rama `master`, [Pull Request #2](https://github.com/tadeo14/tp_final/pull/2)) |
 | Cuenta de demostración | Ver credenciales de demo en el [README](../README.md#cuenta-de-demostración) |
 
 **Qué incorporamos:**
@@ -98,7 +98,7 @@ La app está online: el organizador entra por el frontend, el público por el en
 | Frontend (login y panel del organizador) | <https://fixture-frontend-i2w8.onrender.com> | Organizador |
 | Vista pública de un torneo | `https://fixture-frontend-i2w8.onrender.com/torneo/ID` (cambiar ID por el número del torneo) | Familias y clubes, sin login |
 | Backend (API) | <https://fixture-backend-anko.onrender.com/api/salud> | Verificar que responde |
-| Repositorio | <https://github.com/tadeo14/tp_final> (rama `developC`) | Equipo y tutor |
+| Repositorio | <https://github.com/tadeo14/tp_final> (rama `master`) | Equipo y tutor |
 
 **Primer ingreso:** el login tarda hasta un minuto si nadie usó la app en los últimos 15 minutos, porque el plan
 gratuito de Render "duerme" el servidor. No es un error: esperar y reintentar.
